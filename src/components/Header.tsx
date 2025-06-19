@@ -1,11 +1,28 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Bell, User, MessageCircle, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 
 const Header = () => {
+  const navigate = useNavigate();
+
+  const handleMessagesClick = () => {
+    // For now, navigate to documentation as a placeholder for messages
+    navigate('/documentation');
+  };
+
+  const handleSettingsClick = () => {
+    // For now, navigate to documentation as a placeholder for settings
+    navigate('/documentation');
+  };
+
+  const handleNotificationsClick = () => {
+    navigate('/alerts');
+  };
+
   return (
     <header className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
@@ -30,17 +47,31 @@ const Header = () => {
         </div>
 
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="sm" className="relative">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="relative"
+            onClick={handleMessagesClick}
+          >
             <MessageCircle className="w-5 h-5" />
             <Badge className="absolute -top-1 -right-1 w-5 h-5 text-xs bg-walgreens-red">3</Badge>
           </Button>
           
-          <Button variant="ghost" size="sm" className="relative">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="relative"
+            onClick={handleNotificationsClick}
+          >
             <Bell className="w-5 h-5" />
             <Badge className="absolute -top-1 -right-1 w-5 h-5 text-xs bg-walgreens-red">7</Badge>
           </Button>
           
-          <Button variant="ghost" size="sm">
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={handleSettingsClick}
+          >
             <Settings className="w-5 h-5" />
           </Button>
           
