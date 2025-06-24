@@ -1,114 +1,316 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { User, Mail, Phone, MapPin, Settings, Bell, Shield, Key } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { User, Settings as SettingsIcon, Bell, Shield, Palette, Globe, Download, Trash2, Camera } from 'lucide-react';
 
 const SettingsPage = () => {
+  const [profileData, setProfileData] = useState({
+    firstName: 'John',
+    lastName: 'Smith',
+    email: 'john.smith@walgreens.com',
+    phone: '(555) 123-4567',
+    role: 'Pharmacy Technician',
+    employeeId: 'WT-12345',
+    storeLocation: 'Store #001 - Main Street'
+  });
+
+  const [notifications, setNotifications] = useState({
+    emailAlerts: true,
+    pushNotifications: true,
+    prescriptionAlerts: true,
+    inventoryAlerts: false,
+    deliveryUpdates: true
+  });
+
+  const [preferences, setPreferences] = useState({
+    theme: 'light',
+    language: 'en',
+    timezone: 'EST',
+    defaultView: 'dashboard'
+  });
+
   return (
-    <Layout title="Settings & Profile" subtitle="Manage your account settings and preferences">
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
+    <Layout title="Settings" subtitle="Manage your profile and application preferences">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <Tabs defaultValue="profile" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="profile" className="flex items-center">
+              <User className="w-4 h-4 mr-2" />
+              Profile
+            </TabsTrigger>
+            <TabsTrigger value="preferences" className="flex items-center">
+              <SettingsIcon className="w-4 h-4 mr-2" />
+              Preferences
+            </TabsTrigger>
+            <TabsTrigger value="notifications" className="flex items-center">
+              <Bell className="w-4 h-4 mr-2" />
+              Notifications
+            </TabsTrigger>
+            <TabsTrigger value="security" className="flex items-center">
+              <Shield className="w-4 h-4 mr-2" />
+              Security
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="profile">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <User className="w-5 h-5 mr-2 text-walgreens-red" />
-                  Profile Information
+                  User Profile
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-16 h-16 bg-walgreens-blue rounded-full flex items-center justify-center">
-                      <User className="w-8 h-8 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-lg">Sarah Johnson, PharmD</h3>
-                      <p className="text-gray-600">Lead Pharmacist</p>
-                      <Badge className="bg-green-100 text-green-800 mt-1">Active</Badge>
-                    </div>
+              <CardContent className="space-y-6">
+                <div className="flex items-center space-x-4">
+                  <Avatar className="w-20 h-20">
+                    <AvatarImage src="/placeholder.svg" alt="Profile" />
+                    <AvatarFallback className="bg-walgreens-red text-white text-lg">
+                      {profileData.firstName[0]}{profileData.lastName[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="space-y-2">
+                    <Button variant="outline" size="sm">
+                      <Camera className="w-4 h-4 mr-2" />
+                      Change Photo
+                    </Button>
+                    <p className="text-sm text-gray-500">JPG, PNG, max 2MB</p>
                   </div>
-                  
+                </div>
+
+                <Separator />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Input
+                      id="firstName"
+                      value={profileData.firstName}
+                      onChange={(e) => setProfileData({ ...profileData, firstName: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Input
+                      id="lastName"
+                      value={profileData.lastName}
+                      onChange={(e) => setProfileData({ ...profileData, lastName: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={profileData.email}
+                      onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone</Label>
+                    <Input
+                      id="phone"
+                      value={profileData.phone}
+                      onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-medium mb-3">Work Information</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                      <Input defaultValue="Sarah" />
+                      <Label className="text-sm text-gray-600">Employee ID</Label>
+                      <p className="font-medium">{profileData.employeeId}</p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                      <Input defaultValue="Johnson" />
+                      <Label className="text-sm text-gray-600">Role</Label>
+                      <Badge className="bg-walgreens-blue text-white">{profileData.role}</Badge>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                      <Input defaultValue="sarah.johnson@walgreens.com" type="email" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                      <Input defaultValue="(555) 123-4567" />
+                    <div className="col-span-2">
+                      <Label className="text-sm text-gray-600">Store Location</Label>
+                      <p className="font-medium">{profileData.storeLocation}</p>
                     </div>
                   </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">License Number</label>
-                    <Input defaultValue="PharmD-12345-TX" />
-                  </div>
-                  
+                </div>
+
+                <div className="flex justify-end">
                   <Button className="bg-walgreens-red hover:bg-walgreens-red-dark">
-                    Update Profile
+                    Save Changes
                   </Button>
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
 
+          <TabsContent value="preferences">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <SettingsIcon className="w-5 h-5 mr-2 text-walgreens-red" />
+                  Application Preferences
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label className="flex items-center">
+                      <Palette className="w-4 h-4 mr-2" />
+                      Theme
+                    </Label>
+                    <Select value={preferences.theme} onValueChange={(value) => setPreferences({ ...preferences, theme: value })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="light">Light</SelectItem>
+                        <SelectItem value="dark">Dark</SelectItem>
+                        <SelectItem value="auto">Auto</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="flex items-center">
+                      <Globe className="w-4 h-4 mr-2" />
+                      Language
+                    </Label>
+                    <Select value={preferences.language} onValueChange={(value) => setPreferences({ ...preferences, language: value })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="en">English</SelectItem>
+                        <SelectItem value="es">Spanish</SelectItem>
+                        <SelectItem value="fr">French</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Timezone</Label>
+                    <Select value={preferences.timezone} onValueChange={(value) => setPreferences({ ...preferences, timezone: value })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="EST">Eastern (EST)</SelectItem>
+                        <SelectItem value="CST">Central (CST)</SelectItem>
+                        <SelectItem value="MST">Mountain (MST)</SelectItem>
+                        <SelectItem value="PST">Pacific (PST)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Default View</Label>
+                    <Select value={preferences.defaultView} onValueChange={(value) => setPreferences({ ...preferences, defaultView: value })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="dashboard">Dashboard</SelectItem>
+                        <SelectItem value="prescription-queue">Prescription Queue</SelectItem>
+                        <SelectItem value="patient-lookup">Patient Lookup</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button className="bg-walgreens-red hover:bg-walgreens-red-dark">
+                    Save Preferences
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="notifications">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Bell className="w-5 h-5 mr-2 text-walgreens-red" />
-                  Notification Preferences
+                  Notification Settings
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-6">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-medium">Email Notifications</h4>
-                      <p className="text-sm text-gray-600">Receive notifications via email</p>
+                      <Label className="font-medium">Email Alerts</Label>
+                      <p className="text-sm text-gray-500">Receive important updates via email</p>
                     </div>
-                    <Switch defaultChecked />
+                    <Switch
+                      checked={notifications.emailAlerts}
+                      onCheckedChange={(checked) => setNotifications({ ...notifications, emailAlerts: checked })}
+                    />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-medium">SMS Alerts</h4>
-                      <p className="text-sm text-gray-600">Urgent alerts via text message</p>
+                      <Label className="font-medium">Push Notifications</Label>
+                      <p className="text-sm text-gray-500">Browser notifications for urgent matters</p>
                     </div>
-                    <Switch defaultChecked />
+                    <Switch
+                      checked={notifications.pushNotifications}
+                      onCheckedChange={(checked) => setNotifications({ ...notifications, pushNotifications: checked })}
+                    />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-medium">Desktop Notifications</h4>
-                      <p className="text-sm text-gray-600">Browser notifications for important updates</p>
+                      <Label className="font-medium">Prescription Alerts</Label>
+                      <p className="text-sm text-gray-500">New prescriptions and refill requests</p>
                     </div>
-                    <Switch />
+                    <Switch
+                      checked={notifications.prescriptionAlerts}
+                      onCheckedChange={(checked) => setNotifications({ ...notifications, prescriptionAlerts: checked })}
+                    />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-medium">Prescription Alerts</h4>
-                      <p className="text-sm text-gray-600">Notifications for new prescriptions</p>
+                      <Label className="font-medium">Inventory Alerts</Label>
+                      <p className="text-sm text-gray-500">Low stock and expiration warnings</p>
                     </div>
-                    <Switch defaultChecked />
+                    <Switch
+                      checked={notifications.inventoryAlerts}
+                      onCheckedChange={(checked) => setNotifications({ ...notifications, inventoryAlerts: checked })}
+                    />
                   </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="font-medium">Delivery Updates</Label>
+                      <p className="text-sm text-gray-500">Status updates for prescription deliveries</p>
+                    </div>
+                    <Switch
+                      checked={notifications.deliveryUpdates}
+                      onCheckedChange={(checked) => setNotifications({ ...notifications, deliveryUpdates: checked })}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button className="bg-walgreens-red hover:bg-walgreens-red-dark">
+                    Save Settings
+                  </Button>
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
 
+          <TabsContent value="security">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
@@ -116,98 +318,56 @@ const SettingsPage = () => {
                   Security Settings
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-6">
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-medium mb-2">Change Password</h4>
+                    <Label className="font-medium mb-2 block">Password</Label>
                     <div className="space-y-2">
                       <Input type="password" placeholder="Current password" />
                       <Input type="password" placeholder="New password" />
                       <Input type="password" placeholder="Confirm new password" />
                     </div>
                     <Button variant="outline" className="mt-2">
-                      <Key className="w-4 h-4 mr-2" />
-                      Update Password
+                      Change Password
                     </Button>
                   </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium">Two-Factor Authentication</h4>
-                      <p className="text-sm text-gray-600">Add an extra layer of security</p>
-                    </div>
-                    <Button variant="outline">Enable 2FA</Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
 
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Store Information</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3 text-sm">
-                  <div>
-                    <span className="font-medium">Store #:</span> 4521
-                  </div>
-                  <div>
-                    <span className="font-medium">Location:</span> Main Street Pharmacy
-                  </div>
-                  <div>
-                    <span className="font-medium">Address:</span> 123 Main St, Anytown, TX 75001
-                  </div>
-                  <div>
-                    <span className="font-medium">Manager:</span> David Thompson
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                  <Separator />
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Mail className="w-4 h-4 mr-2" />
-                    Export Data
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Settings className="w-4 h-4 mr-2" />
-                    System Preferences
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Shield className="w-4 h-4 mr-2" />
-                    Privacy Settings
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                  <div>
+                    <Label className="font-medium mb-2 block">Two-Factor Authentication</Label>
+                    <p className="text-sm text-gray-500 mb-4">Add an extra layer of security to your account</p>
+                    <Button variant="outline">
+                      Enable 2FA
+                    </Button>
+                  </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Support</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3 text-sm">
+                  <Separator />
+
                   <div>
-                    <span className="font-medium">Help Desk:</span> (555) 123-HELP
+                    <Label className="font-medium mb-2 block">Data Export</Label>
+                    <p className="text-sm text-gray-500 mb-4">Download your account data</p>
+                    <Button variant="outline">
+                      <Download className="w-4 h-4 mr-2" />
+                      Export Data
+                    </Button>
                   </div>
+
+                  <Separator />
+
                   <div>
-                    <span className="font-medium">Email:</span> support@walgreens.com
+                    <Label className="font-medium mb-2 block text-red-600">Danger Zone</Label>
+                    <p className="text-sm text-gray-500 mb-4">These actions cannot be undone</p>
+                    <Button variant="destructive">
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete Account
+                    </Button>
                   </div>
-                  <Button size="sm" className="w-full bg-walgreens-red hover:bg-walgreens-red-dark mt-3">
-                    Contact Support
-                  </Button>
                 </div>
               </CardContent>
             </Card>
-          </div>
-        </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </Layout>
   );
