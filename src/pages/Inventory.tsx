@@ -1,14 +1,18 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Package, Search, AlertTriangle, TrendingDown, Plus, Filter } from 'lucide-react';
+import { Package, Search, AlertTriangle, TrendingDown } from 'lucide-react';
+import AddItemDialog from '@/components/AddItemDialog';
+import FilterDialog from '@/components/FilterDialog';
+import UpdateStockDialog from '@/components/UpdateStockDialog';
+import ReorderDialog from '@/components/ReorderDialog';
 
 const InventoryPage = () => {
-  const inventory = [
+  const [inventory, setInventory] = useState([
     {
       ndc: '0071-0156-23',
       name: 'Lisinopril 10mg',
@@ -53,7 +57,75 @@ const InventoryPage = () => {
       cost: '$0.25',
       status: 'Expiring Soon'
     }
-  ];
+  ]);
+
+  const [filteredInventory, setFilteredInventory] = useState(inventory);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [updateStockItem, setUpdateStockItem] = useState(null);
+  const [reorderItem, setReorderItem] = useState(null);
+
+  // Filter and search functionality
+  const handleFilterChange = (filters: any) => {
+    let filtered = [...inventory];
+    
+    if (filters.status) {
+      filtered = filtered.filter(item => item.status === filters.status);
+    }
+    
+    if (filters.location) {
+      filtered = filtered.filter(item => item.location.startsWith(filters.location));
+    }
+    
+    if (filters.lowStock) {
+      filtered = filtered.filter(item => item.quantity <= item.minStock);
+    }
+    
+    if (filters.outOfStock) {
+      filtered = filtered.filter(item => item.quantity === 0);
+    }
+    
+    setFilteredInventory(filtered);
+  };
+
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    const filtered = inventory.filter(item =>
+      item.name.toLowerCase().includes(term.toLowerCase()) ||
+      item.brand.toLowerCase().includes(term.toLowerCase()) ||
+      item.ndc.includes(term)
+    );
+    setFilteredInventory(filtered);
+  };
+
+  const handleAddItem = (newItem: any) => {
+    const updatedInventory = [...inventory, newItem];
+    setInventory(updatedInventory);
+    setFilteredInventory(updatedInventory);
+    console.log('Added new item:', newItem);
+  };
+
+  const handleUpdateStock = (itemNdc: string, newQuantity: number, reason: string) => {
+    const updatedInventory = inventory.map(item => {
+      if (item.ndc === itemNdc) {
+        const updatedItem = {
+          ...item,
+          quantity: newQuantity,
+          status: newQuantity > item.minStock ? 'In Stock' : newQuantity > 0 ? 'Low Stock' : 'Out of Stock'
+        };
+        return updatedItem;
+      }
+      return item;
+    });
+    
+    setInventory(updatedInventory);
+    setFilteredInventory(updatedInventory);
+    console.log('Updated stock for', itemNdc, 'to', newQuantity, 'reason:', reason);
+  };
+
+  const handleReorder = (orderData: any) => {
+    console.log('Reorder placed:', orderData);
+    // In a real app, this would send the order to a supplier system
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -78,13 +150,14 @@ const InventoryPage = () => {
   return (
     <Layout title="Inventory Management" subtitle="Monitor stock levels and manage pharmaceutical inventory">
       <div className="space-y-6">
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Total Items</p>
-                  <p className="text-2xl font-bold">1,247</p>
+                  <p className="text-2xl font-bold">{inventory.length}</p>
                 </div>
                 <Package className="w-8 h-8 text-walgreens-blue" />
               </div>
@@ -96,7 +169,9 @@ const InventoryPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Low Stock</p>
-                  <p className="text-2xl font-bold text-orange-600">23</p>
+                  <p className="text-2xl font-bold text-orange-600">
+                    {inventory.filter(item => item.quantity <= item.minStock && item.quantity > 0).length}
+                  </p>
                 </div>
                 <AlertTriangle className="w-8 h-8 text-orange-600" />
               </div>
@@ -108,7 +183,9 @@ const InventoryPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Out of Stock</p>
-                  <p className="text-2xl font-bold text-red-600">8</p>
+                  <p className="text-2xl font-bold text-red-600">
+                    {inventory.filter(item => item.quantity === 0).length}
+                  </p>
                 </div>
                 <AlertTriangle className="w-8 h-8 text-red-600" />
               </div>
@@ -120,7 +197,9 @@ const InventoryPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Expiring Soon</p>
-                  <p className="text-2xl font-bold text-yellow-600">12</p>
+                  <p className="text-2xl font-bold text-yellow-600">
+                    {inventory.filter(item => item.status === 'Expiring Soon').length}
+                  </p>
                 </div>
                 <TrendingDown className="w-8 h-8 text-yellow-600" />
               </div>
@@ -128,6 +207,7 @@ const InventoryPage = () => {
           </Card>
         </div>
 
+        {/* Inventory Table */}
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -138,22 +218,21 @@ const InventoryPage = () => {
               <div className="flex items-center space-x-2">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <Input placeholder="Search medications..." className="pl-10 w-64" />
+                  <Input 
+                    placeholder="Search medications..." 
+                    className="pl-10 w-64"
+                    value={searchTerm}
+                    onChange={(e) => handleSearch(e.target.value)}
+                  />
                 </div>
-                <Button variant="outline" size="sm">
-                  <Filter className="w-4 h-4 mr-2" />
-                  Filter
-                </Button>
-                <Button className="bg-walgreens-red hover:bg-walgreens-red-dark" size="sm">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Item
-                </Button>
+                <FilterDialog onFilterChange={handleFilterChange} />
+                <AddItemDialog onAddItem={handleAddItem} />
               </div>
             </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {inventory.map((item, index) => (
+              {filteredInventory.map((item, index) => (
                 <div key={index} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 grid grid-cols-4 gap-6">
@@ -189,10 +268,18 @@ const InventoryPage = () => {
                     </div>
                     
                     <div className="ml-4 space-y-2">
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => setUpdateStockItem(item)}
+                      >
                         Update Stock
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => setReorderItem(item)}
+                      >
                         Reorder
                       </Button>
                     </div>
@@ -202,6 +289,21 @@ const InventoryPage = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Dialogs */}
+        <UpdateStockDialog
+          item={updateStockItem}
+          open={!!updateStockItem}
+          onOpenChange={(open) => !open && setUpdateStockItem(null)}
+          onUpdateStock={handleUpdateStock}
+        />
+        
+        <ReorderDialog
+          item={reorderItem}
+          open={!!reorderItem}
+          onOpenChange={(open) => !open && setReorderItem(null)}
+          onReorder={handleReorder}
+        />
       </div>
     </Layout>
   );
