@@ -1,10 +1,14 @@
-
 import React from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Truck, MapPin, Clock, Package, Phone } from 'lucide-react';
+import { Truck, MapPin, Clock, Package, Phone, Plus } from 'lucide-react';
+import TrackDeliveryDialog from '@/components/TrackDeliveryDialog';
+import ContactPatientDialog from '@/components/ContactPatientDialog';
+import MarkReadyDialog from '@/components/MarkReadyDialog';
+import AssignDriverDialog from '@/components/AssignDriverDialog';
+import NewDeliveryDialog from '@/components/NewDeliveryDialog';
 
 const DeliveriesPage = () => {
   const deliveries = [
@@ -75,9 +79,33 @@ const DeliveriesPage = () => {
   const activeDeliveries = deliveries.filter(d => d.status !== 'Delivered').length;
   const outForDelivery = deliveries.filter(d => d.status === 'Out for Delivery').length;
 
+  const handleNewDelivery = (deliveryData: any) => {
+    console.log('New delivery scheduled:', deliveryData);
+    // Handle delivery creation
+  };
+
+  const handleContactPatient = (contactData: any) => {
+    console.log('Patient contacted:', contactData);
+    // Handle patient contact
+  };
+
+  const handleMarkReady = (readyData: any) => {
+    console.log('Delivery marked ready:', readyData);
+    // Handle marking delivery ready
+  };
+
+  const handleAssignDriver = (assignmentData: any) => {
+    console.log('Driver assigned:', assignmentData);
+    // Handle driver assignment
+  };
+
   return (
     <Layout title="Delivery Management" subtitle="Track and manage prescription deliveries">
       <div className="space-y-6">
+        <div className="flex justify-end">
+          <NewDeliveryDialog onSubmit={handleNewDelivery} />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
             <CardContent className="p-4">
@@ -190,23 +218,15 @@ const DeliveriesPage = () => {
                     
                     <div className="ml-4 space-y-2">
                       {delivery.status === 'Scheduled' && (
-                        <Button size="sm" className="bg-walgreens-blue hover:bg-walgreens-blue/90">
-                          Assign Driver
-                        </Button>
+                        <AssignDriverDialog delivery={delivery} onAssignDriver={handleAssignDriver} />
                       )}
                       {delivery.status === 'Preparing' && (
-                        <Button size="sm" className="bg-walgreens-red hover:bg-walgreens-red-dark">
-                          Mark Ready
-                        </Button>
+                        <MarkReadyDialog delivery={delivery} onMarkReady={handleMarkReady} />
                       )}
                       {delivery.status === 'Out for Delivery' && (
-                        <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                          Track Delivery
-                        </Button>
+                        <TrackDeliveryDialog delivery={delivery} />
                       )}
-                      <Button size="sm" variant="outline">
-                        Contact Patient
-                      </Button>
+                      <ContactPatientDialog delivery={delivery} onContact={handleContactPatient} />
                     </div>
                   </div>
                 </div>

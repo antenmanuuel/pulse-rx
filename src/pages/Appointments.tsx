@@ -1,10 +1,13 @@
-
 import React from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, User, Phone, Plus } from 'lucide-react';
+import NewAppointmentDialog from '@/components/NewAppointmentDialog';
+import CheckInDialog from '@/components/CheckInDialog';
+import RescheduleDialog from '@/components/RescheduleDialog';
+import ContactDialog from '@/components/ContactDialog';
 
 const AppointmentsPage = () => {
   const appointments = [
@@ -57,6 +60,26 @@ const AppointmentsPage = () => {
       case 'cancelled': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const handleNewAppointment = (appointmentData: any) => {
+    console.log('New appointment scheduled:', appointmentData);
+    // Handle appointment creation
+  };
+
+  const handleCheckIn = (checkInData: any) => {
+    console.log('Patient checked in:', checkInData);
+    // Handle check-in process
+  };
+
+  const handleReschedule = (rescheduleData: any) => {
+    console.log('Appointment rescheduled:', rescheduleData);
+    // Handle rescheduling
+  };
+
+  const handleContact = (contactData: any) => {
+    console.log('Patient contacted:', contactData);
+    // Handle contact logging
   };
 
   return (
@@ -119,10 +142,7 @@ const AppointmentsPage = () => {
                 <Calendar className="w-5 h-5 mr-2 text-walgreens-red" />
                 Today's Schedule - December 21, 2023
               </CardTitle>
-              <Button className="bg-walgreens-red hover:bg-walgreens-red-dark">
-                <Plus className="w-4 h-4 mr-2" />
-                New Appointment
-              </Button>
+              <NewAppointmentDialog onSubmit={handleNewAppointment} />
             </div>
           </CardHeader>
           <CardContent>
@@ -158,15 +178,9 @@ const AppointmentsPage = () => {
                     </div>
                     
                     <div className="ml-4 space-y-2">
-                      <Button size="sm" className="bg-walgreens-red hover:bg-walgreens-red-dark">
-                        Check In
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        Reschedule
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        Contact
-                      </Button>
+                      <CheckInDialog appointment={appointment} onCheckIn={handleCheckIn} />
+                      <RescheduleDialog appointment={appointment} onReschedule={handleReschedule} />
+                      <ContactDialog contact={appointment} onContact={handleContact} />
                     </div>
                   </div>
                 </div>
