@@ -1,13 +1,22 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Clock, User, Pill, AlertTriangle, Search, Filter } from 'lucide-react';
+import PrescriptionFilterDialog from '@/components/PrescriptionFilterDialog';
+import ProcessDialog from '@/components/ProcessDialog';
+import ViewDetailsDialog from '@/components/ViewDetailsDialog';
+import { Clock, User, Pill, AlertTriangle, Search, Plus } from 'lucide-react';
 
 const PrescriptionQueuePage = () => {
+  const navigate = useNavigate();
+  const [selectedPrescription, setSelectedPrescription] = useState(null);
+  const [processDialogOpen, setProcessDialogOpen] = useState(false);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+
   const prescriptions = [
     {
       id: 'RX001234',
@@ -77,6 +86,20 @@ const PrescriptionQueuePage = () => {
     }
   };
 
+  const handleFilterChange = (filters: any) => {
+    console.log('Filters applied:', filters);
+  };
+
+  const handleProcess = (prescription: any) => {
+    setSelectedPrescription(prescription);
+    setProcessDialogOpen(true);
+  };
+
+  const handleViewDetails = (prescription: any) => {
+    setSelectedPrescription(prescription);
+    setDetailsDialogOpen(true);
+  };
+
   return (
     <Layout title="Prescription Queue" subtitle="Manage and process prescription orders">
       <div className="space-y-6">
@@ -92,9 +115,13 @@ const PrescriptionQueuePage = () => {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input placeholder="Search prescriptions..." className="pl-10 w-64" />
                 </div>
-                <Button variant="outline" size="sm">
-                  <Filter className="w-4 h-4 mr-2" />
-                  Filter
+                <PrescriptionFilterDialog onFilterChange={handleFilterChange} />
+                <Button 
+                  className="bg-walgreens-red hover:bg-walgreens-red-dark"
+                  onClick={() => navigate('/new-prescription')}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Prescription
                 </Button>
               </div>
             </div>
@@ -136,10 +163,18 @@ const PrescriptionQueuePage = () => {
                         </div>
                         
                         <div className="flex flex-col space-y-2">
-                          <Button size="sm" className="bg-walgreens-red hover:bg-walgreens-red-dark">
+                          <Button 
+                            size="sm" 
+                            className="bg-walgreens-red hover:bg-walgreens-red-dark"
+                            onClick={() => handleProcess(rx)}
+                          >
                             Process
                           </Button>
-                          <Button size="sm" variant="outline">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleViewDetails(rx)}
+                          >
                             View Details
                           </Button>
                           {rx.priority === 'Urgent' && (
@@ -158,6 +193,18 @@ const PrescriptionQueuePage = () => {
           </CardContent>
         </Card>
       </div>
+
+      <ProcessDialog
+        prescription={selectedPrescription}
+        open={processDialogOpen}
+        onOpenChange={setProcessDialogOpen}
+      />
+
+      <ViewDetailsDialog
+        prescription={selectedPrescription}
+        open={detailsDialogOpen}
+        onOpenChange={setDetailsDialogOpen}
+      />
     </Layout>
   );
 };
