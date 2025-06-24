@@ -2,10 +2,12 @@
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, User, Phone, Mail, MapPin, Calendar, FileText } from 'lucide-react';
+import { Search, User, Phone, Mail, MapPin, Calendar } from 'lucide-react';
+import AdvancedSearchDialog from '@/components/AdvancedSearchDialog';
+import PatientProfileDialog from '@/components/PatientProfileDialog';
+import PatientHistoryDialog from '@/components/PatientHistoryDialog';
 
 const PatientLookupPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -54,6 +56,11 @@ const PatientLookupPage = () => {
     patient.id.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleAdvancedSearch = (criteria: any) => {
+    console.log('Advanced search criteria:', criteria);
+    // Implement advanced search logic here
+  };
+
   return (
     <Layout title="Patient Lookup" subtitle="Search and manage patient information">
       <div className="space-y-6">
@@ -75,9 +82,7 @@ const PatientLookupPage = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <Button className="bg-walgreens-red hover:bg-walgreens-red-dark">
-                Advanced Search
-              </Button>
+              <AdvancedSearchDialog onSearch={handleAdvancedSearch} />
             </div>
 
             <div className="space-y-4">
@@ -131,13 +136,8 @@ const PatientLookupPage = () => {
                     </div>
                     
                     <div className="ml-4 space-y-2">
-                      <Button size="sm" className="bg-walgreens-blue hover:bg-walgreens-blue/90">
-                        View Profile
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        <FileText className="w-4 h-4 mr-1" />
-                        History
-                      </Button>
+                      <PatientProfileDialog patient={patient} />
+                      <PatientHistoryDialog patient={patient} />
                     </div>
                   </div>
                 </div>
