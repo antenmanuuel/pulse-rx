@@ -9,8 +9,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   const handleMessagesClick = () => {
-    // For now, navigate to documentation as a placeholder for messages
-    navigate('/documentation');
+    navigate('/messages');
   };
 
   const handleSettingsClick = () => {

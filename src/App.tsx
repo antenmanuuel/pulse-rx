@@ -16,6 +16,7 @@ import Reports from "./pages/Reports";
 import Documentation from "./pages/Documentation";
 import NewPrescription from "./pages/NewPrescription";
 import Settings from "./pages/Settings";
+import Messages from "./pages/Messages";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/documentation" element={<Documentation />} />
           <Route path="/new-prescription" element={<NewPrescription />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/messages" element={<Messages />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
