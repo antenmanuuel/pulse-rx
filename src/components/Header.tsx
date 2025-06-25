@@ -1,12 +1,25 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, User, MessageCircle, Settings } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Search, Bell, User, MessageCircle, Settings, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useToast } from '@/hooks/use-toast';
 
 const Header = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const { toast } = useToast();
 
   const handleMessagesClick = () => {
     navigate('/messages');
@@ -18,6 +31,15 @@ const Header = () => {
 
   const handleNotificationsClick = () => {
     navigate('/alerts');
+  };
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Signed Out",
+      description: "You have been successfully signed out."
+    });
+    navigate('/landing');
   };
 
   return (
@@ -72,10 +94,29 @@ const Header = () => {
             <Settings className="w-5 h-5" />
           </Button>
           
-          <div className="flex items-center space-x-2 bg-gray-50 px-3 py-2 rounded-lg">
-            <User className="w-4 h-4 text-gray-600" />
-            <span className="text-sm font-medium">Sarah Johnson, PharmD</span>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="flex items-center space-x-2 bg-gray-50 px-3 py-2 rounded-lg hover:bg-gray-100">
+                <User className="w-4 h-4 text-gray-600" />
+                <span className="text-sm font-medium">
+                  {user ? `${user.firstName} ${user.lastName}` : 'User'}
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleSettingsClick}>
+                <Settings className="w-4 h-4 mr-2" />
+                Settings
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>
