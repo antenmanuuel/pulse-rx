@@ -1,59 +1,61 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, Clock, CheckCircle, XCircle, Info } from 'lucide-react';
+import { useAlerts, Alert } from '@/hooks/useAlerts';
+import AlertActionDialog from '@/components/AlertActionDialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const AlertsPage = () => {
-  const alerts = [
-    {
-      id: 'AL001',
-      type: 'critical',
-      title: 'Drug Interaction Alert',
-      description: 'Patient John Smith (RX001234) - Potential interaction between Warfarin and Aspirin',
-      time: '5 minutes ago',
-      status: 'active',
-      action: 'Contact prescriber'
-    },
-    {
-      id: 'AL002',
-      type: 'warning',
-      title: 'Low Stock Alert',
-      description: 'Metformin 500mg - Only 15 units remaining (Below minimum threshold of 50)',
-      time: '15 minutes ago',
-      status: 'active',
-      action: 'Reorder medication'
-    },
-    {
-      id: 'AL003',
-      type: 'info',
-      title: 'Insurance Authorization Required',
-      description: 'Patient Maria Garcia (RX001235) - Prior authorization needed for Humira',
-      time: '30 minutes ago',
-      status: 'pending',
-      action: 'Submit authorization'
-    },
-    {
-      id: 'AL004',
-      type: 'critical',
-      title: 'Allergy Alert',
-      description: 'Patient Robert Davis prescribed Penicillin - Known allergy on file',
-      time: '1 hour ago',
-      status: 'resolved',
-      action: 'Alternative prescribed'
-    },
-    {
-      id: 'AL005',
-      type: 'warning',
-      title: 'Expiring Medication',
-      description: 'Atorvastatin 20mg (Lot: ABC123) expires in 30 days',
-      time: '2 hours ago',
-      status: 'active',
-      action: 'Return to supplier'
+  const { 
+    alerts, 
+    takeAction, 
+    dismissAlert, 
+    getActiveAlerts, 
+    getCriticalAlerts, 
+    getResolvedTodayCount 
+  } = useAlerts();
+  
+  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
+  const [isActionDialogOpen, setIsActionDialogOpen] = useState(false);
+  const [dismissAlertId, setDismissAlertId] = useState<string | null>(null);
+
+  const activeAlerts = getActiveAlerts().length;
+  const criticalAlerts = getCriticalAlerts().length;
+  const resolvedToday = getResolvedTodayCount();
+
+  const handleTakeAction = (alert: Alert) => {
+    setSelectedAlert(alert);
+    setIsActionDialogOpen(true);
+  };
+
+  const handleActionTaken = (alertId: string, notes?: string) => {
+    takeAction(alertId);
+    console.log(`Action taken on alert ${alertId}${notes ? ` with notes: ${notes}` : ''}`);
+  };
+
+  const handleDismissClick = (alertId: string) => {
+    setDismissAlertId(alertId);
+  };
+
+  const handleConfirmDismiss = () => {
+    if (dismissAlertId) {
+      dismissAlert(dismissAlertId);
+      setDismissAlertId(null);
     }
-  ];
+  };
 
   const getAlertIcon = (type: string) => {
     switch (type) {
@@ -90,9 +92,6 @@ const AlertsPage = () => {
     }
   };
 
-  const activeAlerts = alerts.filter(alert => alert.status === 'active').length;
-  const criticalAlerts = alerts.filter(alert => alert.type === 'critical' && alert.status === 'active').length;
-
   return (
     <Layout title="System Alerts" subtitle="Monitor and manage pharmacy alerts and notifications">
       <div className="space-y-6">
@@ -126,7 +125,7 @@ const AlertsPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Resolved Today</p>
-                  <p className="text-2xl font-bold text-green-600">8</p>
+                  <p className="text-2xl font-bold text-green-600">{resolvedToday}</p>
                 </div>
                 <CheckCircle className="w-8 h-8 text-green-600" />
               </div>
@@ -169,10 +168,18 @@ const AlertsPage = () => {
                     <div className="ml-4 space-x-2">
                       {alert.status === 'active' && (
                         <>
-                          <Button size="sm" className="bg-walgreens-red hover:bg-walgreens-red-dark">
+                          <Button 
+                            size="sm" 
+                            className="bg-walgreens-red hover:bg-walgreens-red-dark"
+                            onClick={() => handleTakeAction(alert)}
+                          >
                             Take Action
                           </Button>
-                          <Button size="sm" variant="outline">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleDismissClick(alert.id)}
+                          >
                             Dismiss
                           </Button>
                         </>
@@ -190,6 +197,33 @@ const AlertsPage = () => {
           </CardContent>
         </Card>
       </div>
+
+      <AlertActionDialog
+        alert={selectedAlert}
+        isOpen={isActionDialogOpen}
+        onClose={() => {
+          setIsActionDialogOpen(false);
+          setSelectedAlert(null);
+        }}
+        onTakeAction={handleActionTaken}
+      />
+
+      <AlertDialog open={!!dismissAlertId} onOpenChange={() => setDismissAlertId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Dismiss Alert</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to dismiss this alert? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDismiss}>
+              Dismiss Alert
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Layout>
   );
 };
