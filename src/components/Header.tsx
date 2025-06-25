@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Bell, User, MessageCircle, Settings } from 'lucide-react';
@@ -15,8 +14,7 @@ const Header = () => {
   };
 
   const handleSettingsClick = () => {
-    // For now, navigate to documentation as a placeholder for settings
-    navigate('/documentation');
+    navigate('/settings');
   };
 
   const handleNotificationsClick = () => {
