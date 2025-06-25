@@ -10,10 +10,18 @@ interface ViewDetailsDialogProps {
   prescription: any;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onProcessPrescription?: (prescription: any) => void;
 }
 
-const ViewDetailsDialog = ({ prescription, open, onOpenChange }: ViewDetailsDialogProps) => {
+const ViewDetailsDialog = ({ prescription, open, onOpenChange, onProcessPrescription }: ViewDetailsDialogProps) => {
   if (!prescription) return null;
+
+  const handleProcessPrescription = () => {
+    if (onProcessPrescription) {
+      onProcessPrescription(prescription);
+    }
+    onOpenChange(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -157,7 +165,10 @@ const ViewDetailsDialog = ({ prescription, open, onOpenChange }: ViewDetailsDial
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Close
             </Button>
-            <Button className="bg-walgreens-red hover:bg-walgreens-red-dark">
+            <Button 
+              className="bg-walgreens-red hover:bg-walgreens-red-dark"
+              onClick={handleProcessPrescription}
+            >
               Process Prescription
             </Button>
           </div>

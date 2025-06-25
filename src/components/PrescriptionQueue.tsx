@@ -1,11 +1,14 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Clock, User, Pill, AlertTriangle } from 'lucide-react';
 
 const PrescriptionQueue = () => {
+  const navigate = useNavigate();
+  
   const prescriptions = [
     {
       id: 'RX001234',
@@ -59,6 +62,11 @@ const PrescriptionQueue = () => {
     }
   };
 
+  const handleProcess = (prescriptionId: string) => {
+    console.log('Processing prescription:', prescriptionId);
+    navigate('/prescription-queue');
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -67,7 +75,11 @@ const PrescriptionQueue = () => {
             <Pill className="w-5 h-5 mr-2 text-walgreens-red" />
             Prescription Queue
           </CardTitle>
-          <Button size="sm" className="bg-walgreens-red hover:bg-walgreens-red-dark">
+          <Button 
+            size="sm" 
+            className="bg-walgreens-red hover:bg-walgreens-red-dark"
+            onClick={() => navigate('/prescription-queue')}
+          >
             View All (12)
           </Button>
         </div>
@@ -110,7 +122,11 @@ const PrescriptionQueue = () => {
                 </div>
                 
                 <div className="ml-4 space-y-2">
-                  <Button size="sm" variant="outline">
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => handleProcess(rx.id)}
+                  >
                     Process
                   </Button>
                   {rx.priority === 'Urgent' && (

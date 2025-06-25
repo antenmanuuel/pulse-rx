@@ -100,6 +100,12 @@ const PrescriptionQueuePage = () => {
     setDetailsDialogOpen(true);
   };
 
+  const handleProcessFromDetails = (prescription: any) => {
+    setDetailsDialogOpen(false);
+    setSelectedPrescription(prescription);
+    setProcessDialogOpen(true);
+  };
+
   return (
     <Layout title="Prescription Queue" subtitle="Manage and process prescription orders">
       <div className="space-y-6">
@@ -204,6 +210,7 @@ const PrescriptionQueuePage = () => {
         prescription={selectedPrescription}
         open={detailsDialogOpen}
         onOpenChange={setDetailsDialogOpen}
+        onProcessPrescription={handleProcessFromDetails}
       />
     </Layout>
   );

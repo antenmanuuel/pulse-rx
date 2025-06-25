@@ -12,8 +12,6 @@ import Inventory from "./pages/Inventory";
 import Alerts from "./pages/Alerts";
 import Appointments from "./pages/Appointments";
 import Deliveries from "./pages/Deliveries";
-import Reports from "./pages/Reports";
-import Documentation from "./pages/Documentation";
 import NewPrescription from "./pages/NewPrescription";
 import Settings from "./pages/Settings";
 import Messages from "./pages/Messages";
@@ -35,8 +33,6 @@ const App = () => (
           <Route path="/alerts" element={<Alerts />} />
           <Route path="/appointments" element={<Appointments />} />
           <Route path="/deliveries" element={<Deliveries />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/documentation" element={<Documentation />} />
           <Route path="/new-prescription" element={<NewPrescription />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/messages" element={<Messages />} />

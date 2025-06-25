@@ -6,8 +6,6 @@ import {
   Users, 
   Pill, 
   Package, 
-  BarChart3, 
-  FileText, 
   AlertTriangle,
   Calendar,
   Truck
@@ -26,8 +24,6 @@ const Sidebar = () => {
     { icon: AlertTriangle, label: 'Alerts', path: '/alerts', count: 5 },
     { icon: Calendar, label: 'Appointments', path: '/appointments', count: 8 },
     { icon: Truck, label: 'Deliveries', path: '/deliveries', count: null },
-    { icon: BarChart3, label: 'Reports', path: '/reports', count: null },
-    { icon: FileText, label: 'Documentation', path: '/documentation', count: null },
   ];
 
   return (

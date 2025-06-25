@@ -6,9 +6,7 @@ import { Button } from '@/components/ui/button';
 import { 
   Plus, 
   Search, 
-  FileText, 
   Truck, 
-  BarChart3, 
   AlertCircle,
   Calendar,
   Package
@@ -40,13 +38,6 @@ const QuickActions = () => {
       route: '/inventory'
     },
     {
-      icon: FileText,
-      label: 'Generate Report',
-      description: 'Daily summary',
-      color: 'bg-purple-600 hover:bg-purple-700 text-white',
-      route: '/reports'
-    },
-    {
       icon: Calendar,
       label: 'Schedule',
       description: 'View appointments',
@@ -59,6 +50,13 @@ const QuickActions = () => {
       description: 'Track orders',
       color: 'bg-teal-600 hover:bg-teal-700 text-white',
       route: '/deliveries'
+    },
+    {
+      icon: AlertCircle,
+      label: 'View Alerts',
+      description: 'Check warnings',
+      color: 'bg-red-600 hover:bg-red-700 text-white',
+      route: '/alerts'
     }
   ];
 
