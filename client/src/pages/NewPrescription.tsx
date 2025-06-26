@@ -36,6 +36,17 @@ const NewPrescriptionPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
 
+  // Form state for patient details
+  const [patientForm, setPatientForm] = useState({
+    firstName: "",
+    lastName: "",
+    dob: "",
+    phone: "",
+    address: "",
+    email: "",
+    patientId: "",
+  });
+
   const steps = [
     {
       number: 1,
