@@ -63,6 +63,13 @@ const NewPrescriptionPage = () => {
     },
   ];
 
+  // Handle pre-filled patient data from patient lookup
+  useEffect(() => {
+    if (location.state?.selectedPatient) {
+      setSelectedPatient(location.state.selectedPatient);
+    }
+  }, [location.state]);
+
   const handleSubmit = () => {
     setIsSubmitting(true);
     setTimeout(() => {
