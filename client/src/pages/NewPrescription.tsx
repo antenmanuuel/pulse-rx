@@ -356,6 +356,13 @@ const NewPrescriptionPage = () => {
                         id="email"
                         type="email"
                         placeholder="patient@email.com"
+                        value={patientForm.email}
+                        onChange={(e) =>
+                          setPatientForm((prev) => ({
+                            ...prev,
+                            email: e.target.value,
+                          }))
+                        }
                         className="border-gray-300 focus:border-walgreens-blue focus:ring-walgreens-blue"
                       />
                     </div>
