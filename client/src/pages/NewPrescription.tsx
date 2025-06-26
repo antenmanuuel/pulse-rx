@@ -77,7 +77,30 @@ const NewPrescriptionPage = () => {
   // Handle pre-filled patient data from patient lookup
   useEffect(() => {
     if (location.state?.selectedPatient) {
-      setSelectedPatient(location.state.selectedPatient);
+      const patient = location.state.selectedPatient;
+      setSelectedPatient(patient);
+
+      // Pre-fill the form with patient data
+      const nameParts = patient.name.split(" ");
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || "";
+
+      // Convert date format from MM/DD/YYYY to YYYY-MM-DD
+      const dateParts = patient.dob.split("/");
+      const formattedDate =
+        dateParts.length === 3
+          ? `${dateParts[2]}-${dateParts[0].padStart(2, "0")}-${dateParts[1].padStart(2, "0")}`
+          : "";
+
+      setPatientForm({
+        firstName,
+        lastName,
+        dob: formattedDate,
+        phone: patient.phone,
+        address: patient.address,
+        email: patient.email,
+        patientId: patient.id,
+      });
     }
   }, [location.state]);
 
