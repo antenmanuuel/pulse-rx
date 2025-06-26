@@ -387,7 +387,7 @@ const NewPrescriptionPage = () => {
                               Name:
                             </span>{" "}
                             <span className="font-semibold text-gray-900">
-                              John Smith
+                              {selectedPatient.name}
                             </span>
                           </p>
                           <p className="text-sm">
@@ -395,7 +395,7 @@ const NewPrescriptionPage = () => {
                               DOB:
                             </span>{" "}
                             <span className="font-semibold text-gray-900">
-                              03/15/1965
+                              {selectedPatient.dob}
                             </span>
                           </p>
                           <p className="text-sm flex items-center">
@@ -404,7 +404,7 @@ const NewPrescriptionPage = () => {
                               Phone:
                             </span>
                             <span className="font-semibold text-gray-900 ml-1">
-                              (555) 123-4567
+                              {selectedPatient.phone}
                             </span>
                           </p>
                         </div>
