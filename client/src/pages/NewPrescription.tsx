@@ -295,6 +295,13 @@ const NewPrescriptionPage = () => {
                       <Input
                         id="dob"
                         type="date"
+                        value={patientForm.dob}
+                        onChange={(e) =>
+                          setPatientForm((prev) => ({
+                            ...prev,
+                            dob: e.target.value,
+                          }))
+                        }
                         className="border-gray-300 focus:border-walgreens-blue focus:ring-walgreens-blue"
                       />
                     </div>
