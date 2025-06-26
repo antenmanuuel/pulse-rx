@@ -335,6 +335,13 @@ const NewPrescriptionPage = () => {
                       <Input
                         id="address"
                         placeholder="123 Main St, City, ST 12345"
+                        value={patientForm.address}
+                        onChange={(e) =>
+                          setPatientForm((prev) => ({
+                            ...prev,
+                            address: e.target.value,
+                          }))
+                        }
                         className="border-gray-300 focus:border-walgreens-blue focus:ring-walgreens-blue"
                       />
                     </div>
