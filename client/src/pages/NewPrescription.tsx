@@ -414,15 +414,15 @@ const NewPrescriptionPage = () => {
                                 Insurance:
                               </span>{" "}
                               <span className="font-semibold text-gray-900">
-                                BCBS
+                                {selectedPatient.insurance}
                               </span>
                             </p>
                             <p className="text-sm">
                               <span className="font-medium text-gray-600">
-                                Member ID:
+                                Patient ID:
                               </span>{" "}
                               <span className="font-semibold text-gray-900">
-                                ABC123456789
+                                {selectedPatient.id}
                               </span>
                             </p>
                             <Badge className="bg-green-100 text-green-800 border-green-200">
