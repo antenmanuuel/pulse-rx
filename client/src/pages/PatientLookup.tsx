@@ -26,6 +26,7 @@ import PatientHistoryDialog from "@/components/PatientHistoryDialog";
 
 const PatientLookupPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
 
   const patients = [
     {
