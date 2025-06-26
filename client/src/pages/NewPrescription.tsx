@@ -371,68 +371,69 @@ const NewPrescriptionPage = () => {
 
                 {/* Patient Found Alert - Only show when patient is selected */}
                 {selectedPatient && (
-                <Card className="border-green-200 bg-green-50">
-                  <CardContent className="p-6">
-                    <div className="flex items-center mb-3">
-                      <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-                      <h4 className="font-semibold text-green-900">
-                        Patient Found & Verified
-                      </h4>
-                    </div>
-                    <div className="bg-white rounded-lg p-4 border border-green-200">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <p className="text-sm">
-                            <span className="font-medium text-gray-600">
-                              Name:
-                            </span>{" "}
-                            <span className="font-semibold text-gray-900">
-                              {selectedPatient.name}
-                            </span>
-                          </p>
-                          <p className="text-sm">
-                            <span className="font-medium text-gray-600">
-                              DOB:
-                            </span>{" "}
-                            <span className="font-semibold text-gray-900">
-                              {selectedPatient.dob}
-                            </span>
-                          </p>
-                          <p className="text-sm flex items-center">
-                            <Phone className="w-3 h-3 mr-1 text-gray-500" />
-                            <span className="font-medium text-gray-600">
-                              Phone:
-                            </span>
-                            <span className="font-semibold text-gray-900 ml-1">
-                              {selectedPatient.phone}
-                            </span>
-                          </p>
-                        </div>
-                        <div className="space-y-2">
-                          <p className="text-sm">
-                            <span className="font-medium text-gray-600">
-                              Insurance:
-                            </span>{" "}
-                            <span className="font-semibold text-gray-900">
-                              BCBS
-                            </span>
-                          </p>
-                          <p className="text-sm">
-                            <span className="font-medium text-gray-600">
-                              Member ID:
-                            </span>{" "}
-                            <span className="font-semibold text-gray-900">
-                              ABC123456789
-                            </span>
-                          </p>
-                          <Badge className="bg-green-100 text-green-800 border-green-200">
-                            ✓ Verified & Active
-                          </Badge>
+                  <Card className="border-green-200 bg-green-50">
+                    <CardContent className="p-6">
+                      <div className="flex items-center mb-3">
+                        <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
+                        <h4 className="font-semibold text-green-900">
+                          Patient Found & Verified
+                        </h4>
+                      </div>
+                      <div className="bg-white rounded-lg p-4 border border-green-200">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <p className="text-sm">
+                              <span className="font-medium text-gray-600">
+                                Name:
+                              </span>{" "}
+                              <span className="font-semibold text-gray-900">
+                                {selectedPatient.name}
+                              </span>
+                            </p>
+                            <p className="text-sm">
+                              <span className="font-medium text-gray-600">
+                                DOB:
+                              </span>{" "}
+                              <span className="font-semibold text-gray-900">
+                                {selectedPatient.dob}
+                              </span>
+                            </p>
+                            <p className="text-sm flex items-center">
+                              <Phone className="w-3 h-3 mr-1 text-gray-500" />
+                              <span className="font-medium text-gray-600">
+                                Phone:
+                              </span>
+                              <span className="font-semibold text-gray-900 ml-1">
+                                {selectedPatient.phone}
+                              </span>
+                            </p>
+                          </div>
+                          <div className="space-y-2">
+                            <p className="text-sm">
+                              <span className="font-medium text-gray-600">
+                                Insurance:
+                              </span>{" "}
+                              <span className="font-semibold text-gray-900">
+                                BCBS
+                              </span>
+                            </p>
+                            <p className="text-sm">
+                              <span className="font-medium text-gray-600">
+                                Member ID:
+                              </span>{" "}
+                              <span className="font-semibold text-gray-900">
+                                ABC123456789
+                              </span>
+                            </p>
+                            <Badge className="bg-green-100 text-green-800 border-green-200">
+                              ✓ Verified & Active
+                            </Badge>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             )}
 
