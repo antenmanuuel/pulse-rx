@@ -275,6 +275,13 @@ const NewPrescriptionPage = () => {
                       <Input
                         id="last-name"
                         placeholder="Last name"
+                        value={patientForm.lastName}
+                        onChange={(e) =>
+                          setPatientForm((prev) => ({
+                            ...prev,
+                            lastName: e.target.value,
+                          }))
+                        }
                         className="border-gray-300 focus:border-walgreens-blue focus:ring-walgreens-blue"
                       />
                     </div>
