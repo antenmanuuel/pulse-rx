@@ -368,6 +368,7 @@ const PatientLookupPage = () => {
                             size="sm"
                             variant="outline"
                             className="border-gray-300 hover:border-walgreens-red hover:text-walgreens-red"
+                            onClick={() => handleNewPrescription(patient)}
                           >
                             <Plus className="w-4 h-4 mr-1" />
                             New Rx
