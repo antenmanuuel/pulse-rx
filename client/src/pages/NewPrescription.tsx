@@ -315,6 +315,13 @@ const NewPrescriptionPage = () => {
                       <Input
                         id="phone"
                         placeholder="(555) 123-4567"
+                        value={patientForm.phone}
+                        onChange={(e) =>
+                          setPatientForm((prev) => ({
+                            ...prev,
+                            phone: e.target.value,
+                          }))
+                        }
                         className="border-gray-300 focus:border-walgreens-blue focus:ring-walgreens-blue"
                       />
                     </div>
