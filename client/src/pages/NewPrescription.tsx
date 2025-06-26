@@ -369,7 +369,8 @@ const NewPrescriptionPage = () => {
                   </div>
                 </div>
 
-                {/* Patient Found Alert */}
+                {/* Patient Found Alert - Only show when patient is selected */}
+                {selectedPatient && (
                 <Card className="border-green-200 bg-green-50">
                   <CardContent className="p-6">
                     <div className="flex items-center mb-3">
