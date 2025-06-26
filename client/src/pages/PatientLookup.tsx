@@ -138,6 +138,15 @@ const PatientLookupPage = () => {
     // Implement advanced search logic here
   };
 
+  const handleNewPrescription = (patient: (typeof patients)[0]) => {
+    // Navigate to new prescription page with patient data pre-filled
+    navigate("/new-prescription", {
+      state: {
+        selectedPatient: patient,
+      },
+    });
+  };
+
   return (
     <Layout
       title="Patient Lookup"
