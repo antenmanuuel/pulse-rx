@@ -40,6 +40,7 @@ interface Message {
   time: string;
   unread: boolean;
   priority: 'high' | 'normal' | 'low';
+  archived?: boolean;
 }
 
 interface User {
@@ -61,7 +62,8 @@ const MessagesPage = () => {
       content: 'Can you verify the dosage for John Smith\'s Lisinopril prescription? I want to make sure we have the correct strength.',
       time: '2:30 PM',
       unread: true,
-      priority: 'high'
+      priority: 'high',
+      archived: false
     },
     {
       id: 2,
@@ -72,7 +74,8 @@ const MessagesPage = () => {
       content: 'Low stock alert for Metformin 500mg - please review and reorder. Current count is below minimum threshold.',
       time: '1:45 PM',
       unread: true,
-      priority: 'normal'
+      priority: 'normal',
+      archived: false
     },
     {
       id: 3,
@@ -83,7 +86,8 @@ const MessagesPage = () => {
       content: 'Scheduled maintenance window tonight from 2-4 AM EST. System will be temporarily unavailable.',
       time: '12:15 PM',
       unread: false,
-      priority: 'low'
+      priority: 'low',
+      archived: false
     }
   ]);
 
@@ -107,12 +111,14 @@ const MessagesPage = () => {
   const [isComposeOpen, setIsComposeOpen] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showArchived, setShowArchived] = useState(false);
+  const [isReplyOpen, setIsReplyOpen] = useState(false);
 
   // Enhanced Stats Data
   const messageStats = [
     {
       label: 'Total Messages',
-      value: messages.length,
+      value: messages.filter(m => !m.archived).length,
       icon: MessageCircle,
       color: 'text-blue-600',
       bgColor: 'bg-gradient-to-br from-blue-50 to-blue-100',
@@ -122,7 +128,7 @@ const MessagesPage = () => {
     },
     {
       label: 'Unread',
-      value: messages.filter(m => m.unread).length,
+      value: messages.filter(m => m.unread && !m.archived).length,
       icon: Mail,
       color: 'text-red-600',
       bgColor: 'bg-gradient-to-br from-red-50 to-red-100',
@@ -132,7 +138,7 @@ const MessagesPage = () => {
     },
     {
       label: 'High Priority',
-      value: messages.filter(m => m.priority === 'high').length,
+      value: messages.filter(m => m.priority === 'high' && !m.archived).length,
       icon: AlertCircle,
       color: 'text-orange-600',
       bgColor: 'bg-gradient-to-br from-orange-50 to-orange-100',
@@ -141,11 +147,11 @@ const MessagesPage = () => {
       percentage: 5
     },
     {
-      label: 'Group Messages',
-      value: messages.filter(m => m.isGroup).length,
-      icon: Users,
-      color: 'text-green-600',
-      bgColor: 'bg-gradient-to-br from-green-50 to-green-100',
+      label: 'Archived',
+      value: messages.filter(m => m.archived).length,
+      icon: Archive,
+      color: 'text-gray-600',
+      bgColor: 'bg-gradient-to-br from-gray-50 to-gray-100',
       change: '+1 today',
       trend: 'up',
       percentage: 12
@@ -190,7 +196,8 @@ const MessagesPage = () => {
       content: newMessage.content,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       unread: true,
-      priority: newMessage.priority
+      priority: newMessage.priority,
+      archived: false
     };
 
     setMessages([message, ...messages]);
@@ -224,11 +231,52 @@ const MessagesPage = () => {
     ));
   };
 
-  const filteredMessages = messages.filter(message =>
-    message.sender.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    message.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    message.content.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleArchiveMessage = (messageId: number) => {
+    setMessages(messages.map(m =>
+      m.id === messageId ? { ...m, archived: !m.archived } : m
+    ));
+
+    const message = messages.find(m => m.id === messageId);
+    if (message) {
+      toast({
+        title: message.archived ? "Message Unarchived" : "Message Archived",
+        description: `Message "${message.subject}" has been ${message.archived ? 'restored to inbox' : 'moved to archive'}`
+      });
+    }
+  };
+
+  const handleReplyToMessage = () => {
+    if (selectedMessage) {
+      // Pre-populate the compose form with reply data
+      setNewMessage({
+        recipient: selectedMessage.sender,
+        groupName: selectedMessage.isGroup ? selectedMessage.groupName || '' : '',
+        isGroup: selectedMessage.isGroup,
+        subject: selectedMessage.subject.startsWith('Re:') ? selectedMessage.subject : `Re: ${selectedMessage.subject}`,
+        content: `\n\n--- Original Message ---\nFrom: ${selectedMessage.sender}\nSubject: ${selectedMessage.subject}\nTime: ${selectedMessage.time}\n\n${selectedMessage.content}`,
+        priority: 'normal'
+      });
+
+      // Close message detail dialog and open compose dialog
+      setSelectedMessage(null);
+      setIsComposeOpen(true);
+
+      toast({
+        title: "Reply Started",
+        description: `Replying to "${selectedMessage.subject}"`
+      });
+    }
+  };
+
+  const filteredMessages = messages.filter(message => {
+    const matchesSearch = message.sender.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      message.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      message.content.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesArchiveFilter = showArchived ? message.archived : !message.archived;
+
+    return matchesSearch && matchesArchiveFilter;
+  });
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -278,7 +326,7 @@ const MessagesPage = () => {
                   <div className="flex items-center space-x-1">
                     {getTrendIcon(stat.trend)}
                     <span className={`text-xs font-medium ${stat.trend === 'up' ? 'text-green-600' :
-                        stat.trend === 'down' ? 'text-red-600' : 'text-gray-600'
+                      stat.trend === 'down' ? 'text-red-600' : 'text-gray-600'
                       }`}>
                       {stat.percentage}%
                     </span>
@@ -299,10 +347,10 @@ const MessagesPage = () => {
                 </div>
                 <div>
                   <CardTitle className="text-xl lg:text-2xl font-bold text-gray-900">
-                    Inbox
+                    {showArchived ? 'Archived Messages' : 'Inbox'}
                   </CardTitle>
                   <p className="text-sm lg:text-base text-gray-600">
-                    {filteredMessages.length} messages • {messages.filter(m => m.unread).length} unread
+                    {filteredMessages.length} messages{!showArchived && ` • ${messages.filter(m => m.unread && !m.archived).length} unread`}
                   </p>
                 </div>
               </div>
@@ -319,9 +367,16 @@ const MessagesPage = () => {
                 </div>
 
                 <div className="flex space-x-2">
-                  <Button size="sm" variant="outline" className="border-gray-300 hover:border-gray-400 hover:bg-gray-50">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+                    onClick={() => setShowArchived(!showArchived)}
+                  >
                     <Archive className="w-4 h-4 mr-1" />
-                    <span className="hidden sm:inline">Archive</span>
+                    <span className="hidden sm:inline">
+                      {showArchived ? 'Show Inbox' : 'Show Archived'}
+                    </span>
                   </Button>
 
                   {/* Enhanced Compose Dialog */}
@@ -589,6 +644,17 @@ const MessagesPage = () => {
                           <Button
                             size="sm"
                             variant="outline"
+                            className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleArchiveMessage(message.id);
+                            }}
+                          >
+                            <Archive className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
                             className="border-red-300 text-red-700 hover:bg-red-50"
                             onClick={(e) => {
                               e.stopPropagation();
@@ -683,7 +749,10 @@ const MessagesPage = () => {
                     <Button variant="outline" onClick={() => setSelectedMessage(null)} className="border-gray-300 text-gray-700 hover:bg-gray-50">
                       Close
                     </Button>
-                    <Button className="bg-gradient-to-r from-walgreens-blue to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg">
+                    <Button
+                      className="bg-gradient-to-r from-walgreens-blue to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
+                      onClick={handleReplyToMessage}
+                    >
                       <Reply className="w-4 h-4 mr-2" />
                       Reply
                     </Button>

@@ -142,8 +142,8 @@ export default function MarkReadyDialog({ delivery, onMarkReady }: MarkReadyDial
             <CardContent className="p-6">
               <div className="space-y-4">
                 <div className={`flex items-center space-x-3 p-4 rounded-lg border transition-all ${readyData.qualityCheck
-                    ? 'bg-green-50 border-green-200'
-                    : 'bg-gray-50 border-gray-200'
+                  ? 'bg-green-50 border-green-200'
+                  : 'bg-gray-50 border-gray-200'
                   }`}>
                   <Checkbox
                     id="qualityCheck"
@@ -157,8 +157,8 @@ export default function MarkReadyDialog({ delivery, onMarkReady }: MarkReadyDial
                 </div>
 
                 <div className={`flex items-center space-x-3 p-4 rounded-lg border transition-all ${readyData.packagingComplete
-                    ? 'bg-green-50 border-green-200'
-                    : 'bg-gray-50 border-gray-200'
+                  ? 'bg-green-50 border-green-200'
+                  : 'bg-gray-50 border-gray-200'
                   }`}>
                   <Checkbox
                     id="packagingComplete"
@@ -172,8 +172,8 @@ export default function MarkReadyDialog({ delivery, onMarkReady }: MarkReadyDial
                 </div>
 
                 <div className={`flex items-center space-x-3 p-4 rounded-lg border transition-all ${readyData.labelVerified
-                    ? 'bg-green-50 border-green-200'
-                    : 'bg-gray-50 border-gray-200'
+                  ? 'bg-green-50 border-green-200'
+                  : 'bg-gray-50 border-gray-200'
                   }`}>
                   <Checkbox
                     id="labelVerified"
@@ -187,8 +187,8 @@ export default function MarkReadyDialog({ delivery, onMarkReady }: MarkReadyDial
                 </div>
 
                 <div className={`flex items-center space-x-3 p-4 rounded-lg border transition-all ${readyData.temperatureControlled
-                    ? 'bg-blue-50 border-blue-200'
-                    : 'bg-gray-50 border-gray-200'
+                  ? 'bg-blue-50 border-blue-200'
+                  : 'bg-gray-50 border-gray-200'
                   }`}>
                   <Checkbox
                     id="temperatureControlled"

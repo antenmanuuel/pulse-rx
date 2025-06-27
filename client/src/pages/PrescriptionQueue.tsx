@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 import PrescriptionFilterDialog from '@/components/PrescriptionFilterDialog';
 import ProcessDialog from '@/components/ProcessDialog';
 import ViewDetailsDialog from '@/components/ViewDetailsDialog';
@@ -21,13 +22,54 @@ import {
   Shield
 } from 'lucide-react';
 
+interface Prescription {
+  id: string;
+  patient: string;
+  medication: string;
+  quantity: string;
+  status: string;
+  priority: string;
+  time: string;
+  insurance: string;
+  prescriber: string;
+  dob: string;
+  phone: string;
+  address: string;
+  memberId: string;
+  ndcNumber: string;
+  lotNumber: string;
+  daysSupply: string;
+  refillsRemaining: number;
+  genericAvailable: boolean;
+  expiryDate: string;
+  directions: string;
+  warnings: string;
+  npiNumber: string;
+  deaNumber: string;
+  prescriberPhone: string;
+  prescriberFax: string;
+  medicalSpecialty: string;
+  practiceAddress: string;
+  dosage: string;
+  frequency: string;
+  form: string;
+  strength: string;
+  brandName: string;
+  manufacturer: string;
+  substitutionAllowed: boolean;
+  priorAuthorization: boolean;
+  copay: string;
+  totalCost: string;
+}
+
 const PrescriptionQueuePage = () => {
   const navigate = useNavigate();
-  const [selectedPrescription, setSelectedPrescription] = useState(null);
+  const { toast } = useToast();
+  const [selectedPrescription, setSelectedPrescription] = useState<Prescription | null>(null);
   const [processDialogOpen, setProcessDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
 
-  const prescriptions = [
+  const [prescriptions, setPrescriptions] = useState<Prescription[]>([
     {
       id: 'RX001234',
       patient: 'John Smith',
@@ -38,7 +80,34 @@ const PrescriptionQueuePage = () => {
       time: '2:30 PM',
       insurance: 'BCBS',
       prescriber: 'Dr. Johnson',
-      dob: '03/15/1965'
+      dob: '03/15/1965',
+      phone: '(555) 123-4567',
+      address: '123 Main St, City, ST 12345',
+      memberId: 'ABC123456789',
+      ndcNumber: '12345-678-90',
+      lotNumber: 'AB123CD',
+      daysSupply: '30 days',
+      refillsRemaining: 3,
+      genericAvailable: true,
+      expiryDate: '12/2025',
+      directions: 'Take 1 tablet by mouth daily with food. Take at the same time each day for best results.',
+      warnings: 'May cause dizziness. Do not drive or operate machinery while taking this medication. Avoid alcohol consumption.',
+      npiNumber: '1234567890',
+      deaNumber: 'AB1234567',
+      prescriberPhone: '(555) 987-6543',
+      prescriberFax: '(555) 987-6544',
+      medicalSpecialty: 'Internal Medicine',
+      practiceAddress: '456 Medical Center Dr, Suite 200, City, ST 12345',
+      dosage: '10mg',
+      frequency: 'Once daily',
+      form: 'Tablet',
+      strength: '10mg',
+      brandName: 'Prinivil',
+      manufacturer: 'Merck & Co.',
+      substitutionAllowed: true,
+      priorAuthorization: false,
+      copay: '$10.00',
+      totalCost: '$25.99'
     },
     {
       id: 'RX001235',
@@ -50,7 +119,34 @@ const PrescriptionQueuePage = () => {
       time: '2:45 PM',
       insurance: 'Aetna',
       prescriber: 'Dr. Wilson',
-      dob: '07/22/1978'
+      dob: '07/22/1978',
+      phone: '(555) 987-6543',
+      address: '456 Oak Ave, City, ST 12345',
+      memberId: 'AET987654321',
+      ndcNumber: '54321-876-09',
+      lotNumber: 'CD456EF',
+      daysSupply: '90 days',
+      refillsRemaining: 5,
+      genericAvailable: true,
+      expiryDate: '08/2026',
+      directions: 'Take 1 tablet by mouth twice daily with meals. Take with breakfast and dinner.',
+      warnings: 'May cause stomach upset. Take with food to reduce side effects. Monitor blood sugar levels regularly.',
+      npiNumber: '9876543210',
+      deaNumber: 'CD9876543',
+      prescriberPhone: '(555) 456-7890',
+      prescriberFax: '(555) 456-7891',
+      medicalSpecialty: 'Endocrinology',
+      practiceAddress: '789 Diabetes Center, Suite 300, City, ST 12345',
+      dosage: '500mg',
+      frequency: 'Twice daily',
+      form: 'Tablet',
+      strength: '500mg',
+      brandName: 'Glucophage',
+      manufacturer: 'Bristol-Myers Squibb',
+      substitutionAllowed: true,
+      priorAuthorization: false,
+      copay: '$5.00',
+      totalCost: '$18.50'
     },
     {
       id: 'RX001236',
@@ -62,7 +158,34 @@ const PrescriptionQueuePage = () => {
       time: '3:00 PM',
       insurance: 'Cash',
       prescriber: 'Dr. Brown',
-      dob: '12/08/1945'
+      dob: '12/08/1945',
+      phone: '(555) 456-7890',
+      address: '789 Pine St, City, ST 12345',
+      memberId: 'CASH-PAYMENT',
+      ndcNumber: '67890-123-45',
+      lotNumber: 'EF789GH',
+      daysSupply: '7 days',
+      refillsRemaining: 0,
+      genericAvailable: true,
+      expiryDate: '05/2025',
+      directions: 'Take 1 capsule by mouth every 8 hours for 7 days. Complete entire course even if feeling better.',
+      warnings: 'May cause allergic reactions. Stop immediately and seek medical attention if rash, difficulty breathing, or swelling occurs.',
+      npiNumber: '5432167890',
+      deaNumber: 'EF5432167',
+      prescriberPhone: '(555) 234-5678',
+      prescriberFax: '(555) 234-5679',
+      medicalSpecialty: 'Family Medicine',
+      practiceAddress: '321 Family Care Dr, Suite 100, City, ST 12345',
+      dosage: '500mg',
+      frequency: 'Every 8 hours',
+      form: 'Capsule',
+      strength: '500mg',
+      brandName: 'Amoxil',
+      manufacturer: 'GlaxoSmithKline',
+      substitutionAllowed: true,
+      priorAuthorization: false,
+      copay: '$0.00',
+      totalCost: '$15.75'
     },
     {
       id: 'RX001237',
@@ -74,9 +197,36 @@ const PrescriptionQueuePage = () => {
       time: '3:15 PM',
       insurance: 'Humana',
       prescriber: 'Dr. Taylor',
-      dob: '09/14/1982'
+      dob: '09/14/1982',
+      phone: '(555) 234-5678',
+      address: '321 Elm St, City, ST 12345',
+      memberId: 'HUM345678901',
+      ndcNumber: '09876-543-21',
+      lotNumber: 'GH012IJ',
+      daysSupply: '30 days',
+      refillsRemaining: 5,
+      genericAvailable: true,
+      expiryDate: '03/2026',
+      directions: 'Take 1 tablet by mouth daily at bedtime. Take at the same time each evening.',
+      warnings: 'May cause muscle pain or weakness. Report any unexplained muscle pain immediately. Avoid grapefruit juice.',
+      npiNumber: '6789054321',
+      deaNumber: 'GH6789054',
+      prescriberPhone: '(555) 345-6789',
+      prescriberFax: '(555) 345-6790',
+      medicalSpecialty: 'Cardiology',
+      practiceAddress: '654 Heart Center Blvd, Suite 400, City, ST 12345',
+      dosage: '20mg',
+      frequency: 'Once daily at bedtime',
+      form: 'Tablet',
+      strength: '20mg',
+      brandName: 'Lipitor',
+      manufacturer: 'Pfizer Inc.',
+      substitutionAllowed: true,
+      priorAuthorization: true,
+      copay: '$15.00',
+      totalCost: '$45.25'
     }
-  ];
+  ]);
 
   const queueStats = [
     { label: 'Total Queue', value: prescriptions.length, icon: Activity, color: 'text-blue-600' },
@@ -84,6 +234,26 @@ const PrescriptionQueuePage = () => {
     { label: 'Ready', value: prescriptions.filter(p => p.status === 'Ready for Review').length, icon: TrendingUp, color: 'text-green-600' },
     { label: 'Processing', value: prescriptions.filter(p => p.status === 'In Progress').length, icon: Clock, color: 'text-orange-600' }
   ];
+
+  const handleEditPrescription = (updatedPrescription: Prescription) => {
+    setPrescriptions(prevPrescriptions =>
+      prevPrescriptions.map(prescription =>
+        prescription.id === updatedPrescription.id ? updatedPrescription : prescription
+      )
+    );
+
+    // Update selected prescription if it's the one being edited
+    if (selectedPrescription && selectedPrescription.id === updatedPrescription.id) {
+      setSelectedPrescription(updatedPrescription);
+    }
+
+    toast({
+      title: "Prescription Updated",
+      description: `Prescription ${updatedPrescription.id} has been successfully updated.`,
+    });
+
+    console.log("Prescription updated:", updatedPrescription);
+  };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -111,21 +281,21 @@ const PrescriptionQueuePage = () => {
     }
   };
 
-  const handleFilterChange = (filters: any) => {
+  const handleFilterChange = (filters: Record<string, string | boolean>) => {
     console.log('Filters applied:', filters);
   };
 
-  const handleProcess = (prescription: any) => {
+  const handleProcess = (prescription: Prescription) => {
     setSelectedPrescription(prescription);
     setProcessDialogOpen(true);
   };
 
-  const handleViewDetails = (prescription: any) => {
+  const handleViewDetails = (prescription: Prescription) => {
     setSelectedPrescription(prescription);
     setDetailsDialogOpen(true);
   };
 
-  const handleProcessFromDetails = (prescription: any) => {
+  const handleProcessFromDetails = (prescription: Prescription) => {
     setDetailsDialogOpen(false);
     setSelectedPrescription(prescription);
     setProcessDialogOpen(true);
@@ -298,6 +468,7 @@ const PrescriptionQueuePage = () => {
         open={detailsDialogOpen}
         onOpenChange={setDetailsDialogOpen}
         onProcessPrescription={handleProcessFromDetails}
+        onEditPrescription={handleEditPrescription}
       />
     </Layout>
   );

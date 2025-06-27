@@ -20,7 +20,6 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
-  TrendingUp,
   Download,
   Filter,
   MoreVertical,
@@ -281,16 +280,10 @@ export default function PatientHistoryDialog({ patient }: PatientHistoryDialogPr
           <TabsContent value="prescriptions" className="space-y-4 mt-6">
             <Card className="border border-gray-200">
               <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg font-semibold text-gray-900 flex items-center">
-                    <Pill className="w-5 h-5 mr-2 text-walgreens-blue" />
-                    Prescription History ({prescriptionHistory.length})
-                  </CardTitle>
-                  <Button size="sm" variant="outline">
-                    <TrendingUp className="w-4 h-4 mr-1" />
-                    View Trends
-                  </Button>
-                </div>
+                <CardTitle className="text-lg font-semibold text-gray-900 flex items-center">
+                  <Pill className="w-5 h-5 mr-2 text-walgreens-blue" />
+                  Prescription History ({prescriptionHistory.length})
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -480,7 +473,7 @@ export default function PatientHistoryDialog({ patient }: PatientHistoryDialogPr
         <Separator className="my-6" />
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 pt-4">
+        <div className="flex flex-col sm:flex-row justify-start items-start sm:items-center space-y-4 sm:space-y-0 pt-4">
           <div className="flex space-x-3">
             <Button variant="outline" className="border-gray-300 hover:border-gray-400">
               <Download className="w-4 h-4 mr-2" />
@@ -489,16 +482,6 @@ export default function PatientHistoryDialog({ patient }: PatientHistoryDialogPr
             <Button variant="outline" className="border-gray-300 hover:border-gray-400">
               <Filter className="w-4 h-4 mr-2" />
               Advanced Filters
-            </Button>
-          </div>
-
-          <div className="flex space-x-3">
-            <Button
-              variant="outline"
-              className="border-walgreens-blue text-walgreens-blue hover:bg-walgreens-blue hover:text-white"
-            >
-              <TrendingUp className="w-4 h-4 mr-2" />
-              View Analytics
             </Button>
           </div>
         </div>

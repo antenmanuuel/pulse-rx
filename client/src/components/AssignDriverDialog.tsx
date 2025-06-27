@@ -117,16 +117,16 @@ export default function AssignDriverDialog({ delivery, onAssignDriver }: AssignD
                       key={driver.id}
                       onClick={() => setAssignmentData({ ...assignmentData, driverId: driver.id })}
                       className={`p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${assignmentData.driverId === driver.id
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 bg-white hover:border-gray-300'
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 bg-white hover:border-gray-300'
                         }`}
                     >
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="font-semibold text-gray-900">{driver.name}</h4>
                         <div className="flex items-center space-x-2">
                           <Badge className={`${driver.status === 'Available'
-                              ? 'bg-green-100 text-green-800 border-green-200'
-                              : 'bg-yellow-100 text-yellow-800 border-yellow-200'
+                            ? 'bg-green-100 text-green-800 border-green-200'
+                            : 'bg-yellow-100 text-yellow-800 border-yellow-200'
                             } border`}>
                             {driver.status === 'Available' ? '✅' : '🚛'} {driver.status}
                           </Badge>

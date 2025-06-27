@@ -2,14 +2,17 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   Plus,
   Search,
-  Truck,
   AlertCircle,
-  Calendar,
   Package,
-  Zap
+  ArrowRight,
+  Activity,
+  Clock,
+  Calendar,
+  Truck
 } from 'lucide-react';
 
 const QuickActions = () => {
@@ -19,72 +22,139 @@ const QuickActions = () => {
     {
       icon: Plus,
       label: 'New Prescription',
-      description: 'Enter new Rx',
+      description: 'Add new prescription to queue',
       gradient: 'from-walgreens-red to-red-600',
-      route: '/prescription-queue'
+      route: '/prescription-queue',
+      stats: '12 in queue',
+      urgency: 'normal'
     },
     {
       icon: Search,
       label: 'Patient Lookup',
-      description: 'Find patient info',
+      description: 'Search patient records & history',
       gradient: 'from-walgreens-blue to-blue-600',
-      route: '/patient-lookup'
-    },
-    {
-      icon: Package,
-      label: 'Inventory Check',
-      description: 'Stock levels',
-      gradient: 'from-green-500 to-emerald-600',
-      route: '/inventory'
+      route: '/patient-lookup',
+      stats: '1,247 patients',
+      urgency: 'normal'
     },
     {
       icon: Calendar,
       label: 'Appointments',
-      description: 'View schedule',
-      gradient: 'from-orange-500 to-amber-600',
-      route: '/appointments'
+      description: 'Schedule & manage appointments',
+      gradient: 'from-purple-500 to-violet-600',
+      route: '/appointments',
+      stats: '8 today',
+      urgency: 'normal'
     },
     {
       icon: Truck,
       label: 'Deliveries',
-      description: 'Track orders',
-      gradient: 'from-teal-500 to-cyan-600',
-      route: '/deliveries'
+      description: 'Track & manage deliveries',
+      gradient: 'from-indigo-500 to-blue-600',
+      route: '/deliveries',
+      stats: '5 active',
+      urgency: 'warning'
+    },
+    {
+      icon: Package,
+      label: 'Inventory',
+      description: 'Stock levels & reorder management',
+      gradient: 'from-green-500 to-emerald-600',
+      route: '/inventory',
+      stats: '5 low stock',
+      urgency: 'warning'
     },
     {
       icon: AlertCircle,
-      label: 'View Alerts',
-      description: 'Check warnings',
+      label: 'Alerts',
+      description: 'System alerts & notifications',
       gradient: 'from-red-500 to-pink-600',
-      route: '/alerts'
+      route: '/alerts',
+      stats: '3 active',
+      urgency: 'urgent'
     }
   ];
 
+  const getUrgencyIndicator = (urgency: string) => {
+    switch (urgency) {
+      case 'urgent':
+        return <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>;
+      case 'warning':
+        return <div className="w-2 h-2 bg-orange-500 rounded-full"></div>;
+      default:
+        return <div className="w-2 h-2 bg-green-500 rounded-full"></div>;
+    }
+  };
+
   return (
-    <Card className="border-0 shadow-lg">
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center text-lg font-semibold text-gray-900">
-          <div className="w-8 h-8 bg-gradient-to-br from-walgreens-red to-red-600 rounded-lg flex items-center justify-center mr-3">
-            <Zap className="w-4 h-4 text-white" />
+    <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white overflow-hidden">
+      <CardHeader className="pb-4 bg-gradient-to-r from-gray-50 to-gray-100">
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center text-lg font-bold text-gray-900">
+              <Activity className="w-5 h-5 mr-2 text-walgreens-blue" />
+              Quick Actions
+            </CardTitle>
+            <p className="text-sm text-gray-600">Essential pharmacy functions</p>
           </div>
-          Quick Actions
-        </CardTitle>
+          <Badge variant="outline" className="border-gray-300 text-gray-600">
+            <Clock className="w-3 h-3 mr-1" />
+            Live
+          </Badge>
+        </div>
       </CardHeader>
-      <CardContent className="pt-0">
-        <div className="grid grid-cols-2 gap-3">
+      <CardContent className="p-4">
+        <div className="grid grid-cols-1 gap-3">
           {actions.map((action, index) => (
             <Button
               key={index}
               onClick={() => navigate(action.route)}
-              className={`bg-gradient-to-br ${action.gradient} hover:scale-105 text-white h-20 flex flex-col items-center justify-center space-y-2 transition-all duration-300 shadow-lg hover:shadow-xl border-0 group`}
+              className={`group relative overflow-hidden bg-gradient-to-r ${action.gradient} hover:scale-[1.01] text-white h-auto p-4 flex items-center justify-between transition-all duration-200 shadow-sm hover:shadow-md border-0 rounded-lg`}
             >
-              <action.icon className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
-              <div className="text-center">
-                <div className="font-medium text-sm">{action.label}</div>
-                <div className="text-xs opacity-90">{action.description}</div>
+              {/* Background pattern */}
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+              <div className="flex items-center space-x-3 relative z-10">
+                <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
+                  <action.icon className="w-5 h-5" />
+                </div>
+                <div className="text-left">
+                  <div className="font-semibold text-sm">{action.label}</div>
+                  <div className="text-xs text-white/80">{action.description}</div>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2 relative z-10">
+                <div className="text-right">
+                  <div className="text-xs text-white/90 font-medium">{action.stats}</div>
+                  <div className="flex items-center space-x-1 justify-end">
+                    {getUrgencyIndicator(action.urgency)}
+                    <span className="text-xs text-white/70">
+                      {action.urgency === 'urgent' ? 'Urgent' :
+                        action.urgency === 'warning' ? 'Attention' : 'Normal'}
+                    </span>
+                  </div>
+                </div>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
               </div>
             </Button>
           ))}
+        </div>
+
+        {/* Compact Workflow Summary */}
+        <div className="mt-6 pt-4 border-t border-gray-200">
+          <div className="text-center">
+            <p className="text-sm font-medium text-gray-700 mb-2">System Status</p>
+            <div className="flex items-center justify-center space-x-4">
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-xs text-gray-600">Online</span>
+              </div>
+              <div className="text-xs text-gray-500">
+                Last updated: {new Date().toLocaleTimeString()}
+              </div>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

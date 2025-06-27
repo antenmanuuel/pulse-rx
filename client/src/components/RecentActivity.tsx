@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,157 +10,176 @@ import {
   Package,
   User,
   Clock,
-  ArrowRight
+  ArrowRight,
+  RefreshCw,
+  MoreHorizontal,
+  Truck,
+  Users,
+  Pill
 } from 'lucide-react';
 
 const RecentActivity = () => {
+  const navigate = useNavigate();
+
   const activities = [
     {
       id: 1,
       type: 'prescription',
-      icon: CheckCircle,
-      title: 'Prescription Completed',
-      description: 'RX001230 - Lisinopril for John Smith',
+      icon: Pill,
+      title: 'Prescription Processed',
+      description: 'Lisinopril 10mg for Sarah Johnson completed verification',
       time: '2 minutes ago',
       status: 'completed',
-      bgColor: 'bg-green-100',
-      iconColor: 'text-green-600',
-      dotColor: 'bg-green-500'
+      user: 'Dr. Smith',
+      bgColor: 'bg-gradient-to-br from-green-500 to-green-600',
+      iconColor: 'text-white',
+      dotColor: 'bg-green-400'
     },
     {
       id: 2,
-      type: 'inventory',
-      icon: Package,
-      title: 'Low Stock Alert',
-      description: 'Metformin 500mg - Only 15 units remaining',
+      type: 'delivery',
+      icon: Truck,
+      title: 'Delivery Assigned',
+      description: 'Mike Johnson assigned for delivery to downtown area',
       time: '5 minutes ago',
-      status: 'warning',
-      bgColor: 'bg-orange-100',
-      iconColor: 'text-orange-600',
-      dotColor: 'bg-orange-500'
+      status: 'in-progress',
+      user: 'Pharmacy',
+      bgColor: 'bg-gradient-to-br from-blue-500 to-blue-600',
+      iconColor: 'text-white',
+      dotColor: 'bg-blue-400'
     },
     {
       id: 3,
-      type: 'patient',
-      icon: User,
-      title: 'New Patient Registration',
-      description: 'Sarah Wilson - Profile created',
-      time: '10 minutes ago',
-      status: 'info',
-      bgColor: 'bg-blue-100',
-      iconColor: 'text-blue-600',
-      dotColor: 'bg-blue-500'
+      type: 'alert',
+      icon: AlertTriangle,
+      title: 'Low Stock Alert',
+      description: 'Metformin 500mg below minimum threshold (12 units)',
+      time: '8 minutes ago',
+      status: 'pending',
+      user: 'System',
+      bgColor: 'bg-gradient-to-br from-orange-500 to-orange-600',
+      iconColor: 'text-white',
+      dotColor: 'bg-orange-400'
     },
     {
       id: 4,
-      type: 'alert',
-      icon: AlertTriangle,
-      title: 'Drug Interaction Alert',
-      description: 'RX001233 - Potential interaction detected',
-      time: '15 minutes ago',
-      status: 'alert',
-      bgColor: 'bg-red-100',
-      iconColor: 'text-red-600',
-      dotColor: 'bg-red-500'
+      type: 'appointment',
+      icon: Users,
+      title: 'Patient Check-in',
+      description: 'Michael Brown checked in for medication consultation',
+      time: '12 minutes ago',
+      status: 'completed',
+      user: 'Reception',
+      bgColor: 'bg-gradient-to-br from-purple-500 to-purple-600',
+      iconColor: 'text-white',
+      dotColor: 'bg-purple-400'
     },
     {
       id: 5,
-      type: 'prescription',
-      icon: Clock,
-      title: 'Prescription on Hold',
-      description: 'RX001234 - Insurance authorization pending',
-      time: '20 minutes ago',
-      status: 'pending',
-      bgColor: 'bg-yellow-100',
-      iconColor: 'text-yellow-600',
-      dotColor: 'bg-yellow-500'
+      type: 'inventory',
+      icon: Package,
+      title: 'Stock Updated',
+      description: 'Ibuprofen 200mg inventory updated (+150 units)',
+      time: '15 minutes ago',
+      status: 'completed',
+      user: 'J. Wilson',
+      bgColor: 'bg-gradient-to-br from-indigo-500 to-indigo-600',
+      iconColor: 'text-white',
+      dotColor: 'bg-indigo-400'
     }
   ];
 
   const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">Completed</Badge>;
-      case 'warning':
-        return <Badge variant="secondary" className="bg-orange-100 text-orange-800 border-orange-200">Warning</Badge>;
-      case 'info':
-        return <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200">Info</Badge>;
-      case 'alert':
-        return <Badge variant="secondary" className="bg-red-100 text-red-800 border-red-200">Alert</Badge>;
-      case 'pending':
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200">Pending</Badge>;
-      default:
-        return null;
-    }
+    const statusConfig = {
+      'completed': { bg: 'bg-green-100', text: 'text-green-700', label: 'Done' },
+      'in-progress': { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Active' },
+      'pending': { bg: 'bg-orange-100', text: 'text-orange-700', label: 'Pending' },
+      'failed': { bg: 'bg-red-100', text: 'text-red-700', label: 'Failed' }
+    };
+
+    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+
+    return (
+      <Badge className={`${config.bg} ${config.text} border-0 text-xs px-2 py-0.5`}>
+        {config.label}
+      </Badge>
+    );
+  };
+
+  const handleViewAllActivity = () => {
+    navigate('/alerts');
   };
 
   return (
-    <Card className="border-0 shadow-lg">
-      <CardHeader className="pb-4">
+    <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white">
+      <CardHeader className="pb-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-t-lg">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center text-lg font-semibold text-gray-900">
-            <div className="w-8 h-8 bg-gradient-to-br from-walgreens-blue to-blue-600 rounded-lg flex items-center justify-center mr-3">
-              <Activity className="w-4 h-4 text-white" />
-            </div>
-            Recent Activity
-          </CardTitle>
-          <Button variant="ghost" size="sm" className="text-walgreens-blue hover:text-walgreens-red text-sm">
-            View All
-            <ArrowRight className="w-3 h-3 ml-1" />
+          <div>
+            <CardTitle className="flex items-center text-lg font-bold text-gray-900">
+              <div className="w-10 h-10 bg-gradient-to-br from-walgreens-blue to-blue-600 rounded-xl flex items-center justify-center mr-3 shadow-lg">
+                <Activity className="w-5 h-5 text-white" />
+              </div>
+              Recent Activity
+            </CardTitle>
+            <p className="text-sm text-gray-600">Live updates from your pharmacy</p>
+          </div>
+          <Button variant="ghost" size="sm" className="text-walgreens-blue hover:text-walgreens-red text-xs hover:bg-blue-50 transition-colors duration-200">
+            <RefreshCw className="w-3 h-3 mr-1" />
+            Refresh
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="pt-0">
-        <div className="space-y-4">
-          {activities.map((activity, index) => (
-            <div key={activity.id} className="relative group">
-              {/* Timeline Line */}
-              {index < activities.length - 1 && (
-                <div className="absolute left-6 top-12 w-0.5 h-8 bg-gray-200"></div>
-              )}
-
-              <div className="flex items-start space-x-4 p-3 rounded-xl hover:bg-gray-50 transition-all duration-200 cursor-pointer group-hover:shadow-md">
-                {/* Icon with dot indicator */}
-                <div className="relative">
-                  <div className={`w-12 h-12 ${activity.bgColor} rounded-xl flex items-center justify-center`}>
-                    <activity.icon className={`w-5 h-5 ${activity.iconColor}`} />
+      <CardContent className="p-4">
+        <div className="space-y-3">
+          {activities.map((activity) => (
+            <div
+              key={activity.id}
+              className="group relative bg-gray-50 hover:bg-gray-100 rounded-lg p-3 transition-all duration-200 hover:shadow-sm border border-gray-200"
+            >
+              <div className="flex items-start justify-between space-x-3">
+                <div className="flex items-start space-x-3 flex-1">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${activity.bgColor} shadow-sm`}>
+                    <activity.icon className="w-4 h-4 text-white" />
                   </div>
-                  <div className={`absolute -top-1 -right-1 w-4 h-4 ${activity.dotColor} rounded-full border-2 border-white`}></div>
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex-1">
-                      <h4 className="text-sm font-semibold text-gray-900 mb-1">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <p className="text-sm font-medium text-gray-900 truncate">
                         {activity.title}
-                      </h4>
-                      <p className="text-sm text-gray-600 leading-relaxed">
-                        {activity.description}
                       </p>
+                      {getStatusBadge(activity.status)}
                     </div>
-                    {getStatusBadge(activity.status)}
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs text-gray-500 flex items-center">
-                      <Clock className="w-3 h-3 mr-1" />
-                      {activity.time}
+                    <p className="text-xs text-gray-600 leading-relaxed">
+                      {activity.description}
                     </p>
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="flex items-center space-x-2 text-xs text-gray-500">
+                        <Clock className="w-3 h-3" />
+                        <span>{activity.time}</span>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {activity.user}
+                      </div>
+                    </div>
                   </div>
+                </div>
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <MoreHorizontal className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Summary Footer */}
-        <div className="mt-6 pt-4 border-t border-gray-100">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">Last updated: 30 seconds ago</span>
-            <Button variant="ghost" size="sm" className="text-walgreens-blue hover:text-walgreens-red text-xs">
-              Refresh
-            </Button>
-          </div>
+        {/* View All Link */}
+        <div className="mt-4 pt-3 border-t border-gray-200">
+          <Button
+            variant="ghost"
+            className="w-full justify-center text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 h-8"
+            onClick={handleViewAllActivity}
+          >
+            <Activity className="w-4 h-4 mr-1" />
+            View All Activity & Alerts
+          </Button>
         </div>
       </CardContent>
     </Card>
