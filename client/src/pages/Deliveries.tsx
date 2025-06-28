@@ -3,10 +3,6 @@ import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Separator } from '@/components/ui/separator';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
@@ -16,25 +12,20 @@ import {
   Package,
   Phone,
   Plus,
+  Search,
+  Filter,
+  Eye,
   TrendingUp,
   TrendingDown,
-  CheckCircle,
-  AlertTriangle,
-  Eye,
-  Edit3,
-  Save,
-  X,
-  User,
-  FileText,
-  DollarSign,
-  Navigation,
-  Shield
+  CheckCircle
 } from 'lucide-react';
 import TrackDeliveryDialog from '@/components/TrackDeliveryDialog';
 import ContactPatientDialog from '@/components/ContactPatientDialog';
 import MarkReadyDialog from '@/components/MarkReadyDialog';
 import AssignDriverDialog from '@/components/AssignDriverDialog';
 import NewDeliveryDialog from '@/components/NewDeliveryDialog';
+import DeliveryDetailsDialog from '@/components/DeliveryDetailsDialog';
+import PaginationControls from '@/components/ui/pagination-controls';
 
 interface Delivery {
   id: string;
@@ -183,12 +174,215 @@ const DeliveriesPage = () => {
       trackingNumber: 'TRK001234570',
       driverPhone: 'N/A',
       deliveryMethod: 'Standard Delivery'
+    },
+    {
+      id: 'DEL005',
+      patient: 'Michael Brown',
+      address: '567 Maple Ave, Anytown, ST 12345',
+      phone: '(555) 876-5432',
+      medications: ['Lisinopril 20mg x30', 'Simvastatin 40mg x30'],
+      status: 'Scheduled',
+      driver: 'Unassigned',
+      estimatedTime: '10:30 AM',
+      priority: 'Standard',
+      email: 'michael.brown@email.com',
+      emergencyContact: 'Sarah Brown - (555) 876-5433',
+      deliveryInstructions: 'Leave with front desk if patient not home',
+      prescriptionId: 'RX005-2023',
+      orderDate: '2023-12-02',
+      scheduledDate: '2023-12-03',
+      actualDeliveryTime: null,
+      deliveryWindow: '10:00 AM - 12:00 PM',
+      cost: '$42.50',
+      copay: '$15.00',
+      insurance: 'Medicare',
+      policyNumber: 'MED567890123',
+      pharmacistNotes: 'Patient requested morning delivery',
+      patientSignature: false,
+      deliveryAttempts: 0,
+      trackingNumber: 'TRK001234571',
+      driverPhone: 'N/A',
+      deliveryMethod: 'Standard Delivery'
+    },
+    {
+      id: 'DEL006',
+      patient: 'Sarah Johnson',
+      address: '789 Oak St, Anytown, ST 12345',
+      phone: '(555) 765-4321',
+      medications: ['Escitalopram 10mg x30', 'Alprazolam 0.5mg x30'],
+      status: 'Preparing',
+      driver: 'Unassigned',
+      estimatedTime: '1:30 PM',
+      priority: 'High',
+      email: 'sarah.johnson@email.com',
+      emergencyContact: 'Mark Johnson - (555) 765-4322',
+      deliveryInstructions: 'Call patient 15 minutes before arrival',
+      prescriptionId: 'RX006-2023',
+      orderDate: '2023-12-02',
+      scheduledDate: '2023-12-03',
+      actualDeliveryTime: null,
+      deliveryWindow: '1:00 PM - 3:00 PM',
+      cost: '$55.25',
+      copay: '$20.00',
+      insurance: 'Cigna',
+      policyNumber: 'CIG678901234',
+      pharmacistNotes: 'Patient requested ID verification upon delivery',
+      patientSignature: false,
+      deliveryAttempts: 0,
+      trackingNumber: 'TRK001234572',
+      driverPhone: 'N/A',
+      deliveryMethod: 'Hand-to-Hand Delivery'
+    },
+    {
+      id: 'DEL007',
+      patient: 'Thomas Anderson',
+      address: '789 Maple St, Anytown, ST 12345',
+      phone: '(555) 109-8765',
+      medications: ['Albuterol Inhaler x1', 'Fluticasone Inhaler x1'],
+      status: 'Out for Delivery',
+      driver: 'David Brown',
+      estimatedTime: '3:45 PM',
+      priority: 'Urgent',
+      email: 'thomas.anderson@email.com',
+      emergencyContact: 'Emily Anderson - (555) 109-8766',
+      deliveryInstructions: 'Apartment 2C, knock loudly - patient has hearing impairment',
+      prescriptionId: 'RX007-2023',
+      orderDate: '2023-12-02',
+      scheduledDate: '2023-12-03',
+      actualDeliveryTime: null,
+      deliveryWindow: '3:00 PM - 5:00 PM',
+      cost: '$85.75',
+      copay: '$30.00',
+      insurance: 'Blue Cross',
+      policyNumber: 'BC901234567',
+      pharmacistNotes: 'Patient needs inhaler urgently - expedite delivery',
+      patientSignature: false,
+      deliveryAttempts: 0,
+      trackingNumber: 'TRK001234573',
+      driverPhone: '(555) 222-3333',
+      deliveryMethod: 'Express Delivery'
+    },
+    {
+      id: 'DEL008',
+      patient: 'Emily Thompson',
+      address: '456 Birch St, Anytown, ST 12345',
+      phone: '(555) 987-0123',
+      medications: ['Amoxicillin 500mg x21'],
+      status: 'Delivered',
+      driver: 'Lisa Garcia',
+      estimatedTime: 'Completed at 11:30 AM',
+      priority: 'High',
+      email: 'emily.thompson@email.com',
+      emergencyContact: 'James Thompson - (555) 987-0124',
+      deliveryInstructions: 'Leave with neighbor if not home',
+      prescriptionId: 'RX008-2023',
+      orderDate: '2023-12-02',
+      scheduledDate: '2023-12-03',
+      actualDeliveryTime: '11:30 AM',
+      deliveryWindow: '10:00 AM - 12:00 PM',
+      cost: '$15.99',
+      copay: '$5.00',
+      insurance: 'Aetna',
+      policyNumber: 'AET012345678',
+      pharmacistNotes: 'Antibiotic for acute infection - priority delivery',
+      patientSignature: true,
+      deliveryAttempts: 1,
+      trackingNumber: 'TRK001234574',
+      driverPhone: '(555) 444-5555',
+      deliveryMethod: 'Standard Delivery'
+    },
+    {
+      id: 'DEL009',
+      patient: 'James Wilson',
+      address: '789 Cedar St, Anytown, ST 12345',
+      phone: '(555) 876-0123',
+      medications: ['Lisinopril 10mg x30', 'Hydrochlorothiazide 25mg x30', 'Metoprolol 50mg x60'],
+      status: 'Scheduled',
+      driver: 'Unassigned',
+      estimatedTime: '2:00 PM',
+      priority: 'Standard',
+      email: 'james.wilson@email.com',
+      emergencyContact: 'Linda Wilson - (555) 876-0124',
+      deliveryInstructions: 'Gated community - code #1234',
+      prescriptionId: 'RX009-2023',
+      orderDate: '2023-12-03',
+      scheduledDate: '2023-12-04',
+      actualDeliveryTime: null,
+      deliveryWindow: '1:00 PM - 3:00 PM',
+      cost: '$65.50',
+      copay: '$25.00',
+      insurance: 'Humana',
+      policyNumber: 'HUM123456789',
+      pharmacistNotes: 'Monthly maintenance medications',
+      patientSignature: false,
+      deliveryAttempts: 0,
+      trackingNumber: 'TRK001234575',
+      driverPhone: 'N/A',
+      deliveryMethod: 'Standard Delivery'
+    },
+    {
+      id: 'DEL010',
+      patient: 'Patricia Moore',
+      address: '123 Walnut St, Anytown, ST 12345',
+      phone: '(555) 765-0123',
+      medications: ['Insulin Lispro x3 vials', 'Insulin Syringes x100', 'Glucose Test Strips x100'],
+      status: 'Preparing',
+      driver: 'Unassigned',
+      estimatedTime: '9:30 AM',
+      priority: 'Urgent',
+      email: 'patricia.moore@email.com',
+      emergencyContact: 'Robert Moore - (555) 765-0124',
+      deliveryInstructions: 'Cold chain delivery - hand directly to patient',
+      prescriptionId: 'RX010-2023',
+      orderDate: '2023-12-03',
+      scheduledDate: '2023-12-04',
+      actualDeliveryTime: null,
+      deliveryWindow: '9:00 AM - 11:00 AM',
+      cost: '$175.25',
+      copay: '$50.00',
+      insurance: 'Medicare',
+      policyNumber: 'MED234567890',
+      pharmacistNotes: 'Diabetic supplies - maintain cold chain for insulin',
+      patientSignature: false,
+      deliveryAttempts: 0,
+      trackingNumber: 'TRK001234576',
+      driverPhone: 'N/A',
+      deliveryMethod: 'Cold Chain Delivery'
     }
   ]);
 
   const [detailsDelivery, setDetailsDelivery] = useState<Delivery | null>(null);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [editForm, setEditForm] = useState<Partial<Delivery>>({});
+  const [filteredDeliveries, setFilteredDeliveries] = useState<Delivery[]>(deliveries);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterPriority, setFilterPriority] = useState('all');
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  // Apply filters and search
+  useEffect(() => {
+    const filtered = deliveries.filter(delivery => {
+      // Apply search filter
+      const matchesSearch = !searchTerm ||
+        delivery.patient.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        delivery.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        delivery.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        delivery.phone.includes(searchTerm);
+
+      // Apply status filter
+      const matchesStatus = filterStatus === 'all' || delivery.status === filterStatus;
+
+      // Apply priority filter
+      const matchesPriority = filterPriority === 'all' || delivery.priority === filterPriority;
+
+      return matchesSearch && matchesStatus && matchesPriority;
+    });
+
+    setFilteredDeliveries(filtered);
+    setCurrentPage(1); // Reset to first page when filtering
+  }, [searchTerm, filterStatus, filterPriority, deliveries]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -219,64 +413,100 @@ const DeliveriesPage = () => {
   const activeDeliveries = deliveries.filter(d => d.status !== 'Delivered').length;
   const outForDelivery = deliveries.filter(d => d.status === 'Out for Delivery').length;
 
-  // Handler functions for edit functionality
-  const handleStartEdit = () => {
-    if (detailsDelivery) {
-      setEditForm({ ...detailsDelivery });
-      setIsEditMode(true);
-    }
-  };
-
-  const handleSaveEdit = () => {
-    if (detailsDelivery && editForm) {
-      const updatedDeliveries = deliveries.map(delivery =>
-        delivery.id === detailsDelivery.id ? { ...delivery, ...editForm } as Delivery : delivery
-      );
-      setDeliveries(updatedDeliveries);
-      setDetailsDelivery({ ...detailsDelivery, ...editForm } as Delivery);
-      setIsEditMode(false);
-      setEditForm({});
-
-      console.log('Delivery updated:', editForm);
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setIsEditMode(false);
-    setEditForm({});
-  };
-
-  const handleEditFormChange = (field: string, value: string | boolean | number) => {
-    setEditForm(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
   const handleNewDelivery = (deliveryData: Partial<Delivery>) => {
     console.log('New delivery scheduled:', deliveryData);
-    // Handle delivery creation
+    // In a real app, you would add the new delivery to the state
+    const newDelivery = {
+      ...deliveryData,
+      id: `DEL${Date.now().toString().slice(-6)}`,
+    } as Delivery;
+    
+    setDeliveries([...deliveries, newDelivery]);
   };
 
-  const handleContactPatient = (contactData: { type: string; message: string; patientId: string }) => {
+  const handleContactPatient = (contactData: { deliveryId: string; method: string; message: string }) => {
     console.log('Patient contacted:', contactData);
-    // Handle patient contact
+    // In a real app, you would record the contact attempt
   };
 
-  const handleMarkReady = (readyData: { deliveryId: string; readyTime: string }) => {
+  const handleMarkReady = (readyData: { deliveryId: string; preparedBy: string }) => {
     console.log('Delivery marked ready:', readyData);
-    // Handle marking delivery ready
+    // Update the delivery status
+    const updatedDeliveries = deliveries.map(delivery => 
+      delivery.id === readyData.deliveryId 
+        ? { ...delivery, status: 'Out for Delivery' } 
+        : delivery
+    );
+    setDeliveries(updatedDeliveries);
   };
 
   const handleAssignDriver = (assignmentData: { deliveryId: string; driverId: string; driverName: string }) => {
     console.log('Driver assigned:', assignmentData);
-    // Handle driver assignment
+    // Update the delivery driver
+    const updatedDeliveries = deliveries.map(delivery => 
+      delivery.id === assignmentData.deliveryId 
+        ? { ...delivery, driver: assignmentData.driverName } 
+        : delivery
+    );
+    setDeliveries(updatedDeliveries);
+  };
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredDeliveries.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredDeliveries.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to first page when changing items per page
   };
 
   return (
     <Layout title="Delivery Management" subtitle="Track and manage prescription deliveries">
       <div className="space-y-6">
-        <div className="flex justify-end">
+        <div className="flex justify-between items-center">
+          <div className="flex space-x-4">
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="Scheduled">Scheduled</SelectItem>
+                <SelectItem value="Preparing">Preparing</SelectItem>
+                <SelectItem value="Out for Delivery">Out for Delivery</SelectItem>
+                <SelectItem value="Delivered">Delivered</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Select value={filterPriority} onValueChange={setFilterPriority}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Filter by priority" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Priorities</SelectItem>
+                <SelectItem value="Urgent">Urgent</SelectItem>
+                <SelectItem value="High">High</SelectItem>
+                <SelectItem value="Standard">Standard</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Search deliveries..."
+                className="pl-10 w-64 border-gray-300 focus:border-walgreens-blue focus:ring-walgreens-blue"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+          
           <NewDeliveryDialog onSubmit={handleNewDelivery} />
         </div>
 
@@ -352,13 +582,16 @@ const DeliveriesPage = () => {
                 <CardTitle className="text-2xl font-bold text-gray-900">
                   Today's Deliveries
                 </CardTitle>
-                <p className="text-gray-600">{deliveries.length} deliveries scheduled</p>
+                <p className="text-gray-600">
+                  {filteredDeliveries.length} deliveries scheduled • 
+                  Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredDeliveries.length)} of {filteredDeliveries.length}
+                </p>
               </div>
             </div>
           </CardHeader>
           <CardContent className="p-6">
             <div className="space-y-4">
-              {deliveries.map((delivery) => (
+              {currentItems.map((delivery) => (
                 <div key={delivery.id} className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md transition-all duration-200 hover:border-gray-300">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -447,475 +680,43 @@ const DeliveriesPage = () => {
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Delivery Details Dialog */}
-        <Dialog open={!!detailsDelivery} onOpenChange={() => {
-          setDetailsDelivery(null);
-          setIsEditMode(false);
-          setEditForm({});
-        }}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-gray-900 flex items-center">
-                <Truck className="w-6 h-6 mr-2 text-walgreens-blue" />
-                Delivery Details
-                {detailsDelivery && (
-                  <Badge className={`ml-3 ${getStatusColor(detailsDelivery.status)} border font-medium`}>
-                    {detailsDelivery.status}
-                  </Badge>
-                )}
-              </DialogTitle>
-            </DialogHeader>
-
-            {detailsDelivery && (
-              <div className="space-y-6">
-                {/* Action Buttons */}
-                <div className="flex justify-between items-center">
-                  <div className="text-sm text-gray-600">
-                    Delivery ID: <span className="font-mono font-medium">{detailsDelivery.id}</span>
-                    {detailsDelivery.trackingNumber && (
-                      <span className="ml-4">
-                        Tracking: <span className="font-mono font-medium">{detailsDelivery.trackingNumber}</span>
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex space-x-2">
-                    {!isEditMode ? (
-                      <Button
-                        onClick={handleStartEdit}
-                        className="bg-walgreens-blue hover:bg-blue-700 text-white"
-                      >
-                        <Edit3 className="w-4 h-4 mr-2" />
-                        Edit
-                      </Button>
-                    ) : (
-                      <>
-                        <Button
-                          onClick={handleSaveEdit}
-                          className="bg-green-600 hover:bg-green-700 text-white"
-                        >
-                          <Save className="w-4 h-4 mr-2" />
-                          Save
-                        </Button>
-                        <Button
-                          onClick={handleCancelEdit}
-                          variant="outline"
-                          className="border-gray-300 hover:bg-gray-50"
-                        >
-                          <X className="w-4 h-4 mr-2" />
-                          Cancel
-                        </Button>
-                      </>
-                    )}
-                  </div>
+            {/* Pagination Controls */}
+            {filteredDeliveries.length > 0 && (
+              <div className="mt-6 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-600">Items per page:</span>
+                  <select 
+                    value={itemsPerPage} 
+                    onChange={handleItemsPerPageChange}
+                    className="border border-gray-300 rounded-md text-sm p-1 focus:border-walgreens-blue focus:ring-walgreens-blue"
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                  </select>
                 </div>
-
-                <Separator />
-
-                {/* Patient Information */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <User className="w-5 h-5 mr-2 text-blue-600" />
-                    Patient Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Patient Name</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.patient || ''}
-                          onChange={(e) => handleEditFormChange('patient', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsDelivery.patient}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Phone</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.phone || ''}
-                          onChange={(e) => handleEditFormChange('phone', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsDelivery.phone}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Email</Label>
-                      {isEditMode ? (
-                        <Input
-                          type="email"
-                          value={editForm.email || ''}
-                          onChange={(e) => handleEditFormChange('email', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsDelivery.email}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Emergency Contact</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.emergencyContact || ''}
-                          onChange={(e) => handleEditFormChange('emergencyContact', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsDelivery.emergencyContact}</p>
-                      )}
-                    </div>
-                    <div className="md:col-span-2">
-                      <Label className="text-sm font-medium text-gray-700">Delivery Address</Label>
-                      {isEditMode ? (
-                        <Textarea
-                          value={editForm.address || ''}
-                          onChange={(e) => handleEditFormChange('address', e.target.value)}
-                          className="mt-1"
-                          rows={2}
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsDelivery.address}</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Delivery Information */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <Navigation className="w-5 h-5 mr-2 text-green-600" />
-                    Delivery Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Status</Label>
-                      {isEditMode ? (
-                        <Select
-                          value={editForm.status || ''}
-                          onValueChange={(value) => handleEditFormChange('status', value)}
-                        >
-                          <SelectTrigger className="mt-1">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Scheduled">Scheduled</SelectItem>
-                            <SelectItem value="Preparing">Preparing</SelectItem>
-                            <SelectItem value="Out for Delivery">Out for Delivery</SelectItem>
-                            <SelectItem value="Delivered">Delivered</SelectItem>
-                            <SelectItem value="Failed Delivery">Failed Delivery</SelectItem>
-                            <SelectItem value="Returned">Returned</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsDelivery.status}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Priority</Label>
-                      {isEditMode ? (
-                        <Select
-                          value={editForm.priority || ''}
-                          onValueChange={(value) => handleEditFormChange('priority', value)}
-                        >
-                          <SelectTrigger className="mt-1">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Urgent">Urgent</SelectItem>
-                            <SelectItem value="High">High</SelectItem>
-                            <SelectItem value="Standard">Standard</SelectItem>
-                            <SelectItem value="Low">Low</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsDelivery.priority}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Driver</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.driver || ''}
-                          onChange={(e) => handleEditFormChange('driver', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsDelivery.driver}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Driver Phone</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.driverPhone || ''}
-                          onChange={(e) => handleEditFormChange('driverPhone', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsDelivery.driverPhone}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Estimated Time</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.estimatedTime || ''}
-                          onChange={(e) => handleEditFormChange('estimatedTime', e.target.value)}
-                          className="mt-1"
-                          placeholder="e.g., 2:30 PM"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsDelivery.estimatedTime}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Delivery Window</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.deliveryWindow || ''}
-                          onChange={(e) => handleEditFormChange('deliveryWindow', e.target.value)}
-                          className="mt-1"
-                          placeholder="e.g., 2:00 PM - 4:00 PM"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsDelivery.deliveryWindow}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Scheduled Date</Label>
-                      {isEditMode ? (
-                        <Input
-                          type="date"
-                          value={editForm.scheduledDate || ''}
-                          onChange={(e) => handleEditFormChange('scheduledDate', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsDelivery.scheduledDate}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Delivery Method</Label>
-                      {isEditMode ? (
-                        <Select
-                          value={editForm.deliveryMethod || ''}
-                          onValueChange={(value) => handleEditFormChange('deliveryMethod', value)}
-                        >
-                          <SelectTrigger className="mt-1">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Standard Delivery">Standard Delivery</SelectItem>
-                            <SelectItem value="Cold Chain Delivery">Cold Chain Delivery</SelectItem>
-                            <SelectItem value="Hand-to-Hand Delivery">Hand-to-Hand Delivery</SelectItem>
-                            <SelectItem value="Express Delivery">Express Delivery</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsDelivery.deliveryMethod}</p>
-                      )}
-                    </div>
-                    {detailsDelivery.actualDeliveryTime && (
-                      <div className="md:col-span-2">
-                        <Label className="text-sm font-medium text-gray-700">Actual Delivery Time</Label>
-                        <p className="mt-1 text-green-700 font-medium">
-                          <CheckCircle className="w-4 h-4 inline mr-1" />
-                          Delivered at {detailsDelivery.actualDeliveryTime}
-                        </p>
-                      </div>
-                    )}
-                    <div className="md:col-span-2">
-                      <Label className="text-sm font-medium text-gray-700">Delivery Instructions</Label>
-                      {isEditMode ? (
-                        <Textarea
-                          value={editForm.deliveryInstructions || ''}
-                          onChange={(e) => handleEditFormChange('deliveryInstructions', e.target.value)}
-                          className="mt-1"
-                          rows={2}
-                          placeholder="Special delivery instructions..."
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsDelivery.deliveryInstructions}</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Prescription Information */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <Package className="w-5 h-5 mr-2 text-purple-600" />
-                    Prescription Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Prescription ID</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.prescriptionId || ''}
-                          onChange={(e) => handleEditFormChange('prescriptionId', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900 font-mono">{detailsDelivery.prescriptionId}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Order Date</Label>
-                      {isEditMode ? (
-                        <Input
-                          type="date"
-                          value={editForm.orderDate || ''}
-                          onChange={(e) => handleEditFormChange('orderDate', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsDelivery.orderDate}</p>
-                      )}
-                    </div>
-                    <div className="md:col-span-2">
-                      <Label className="text-sm font-medium text-gray-700">Medications</Label>
-                      <div className="mt-1 bg-gray-50 p-4 rounded-lg">
-                        <ul className="space-y-2">
-                          {detailsDelivery.medications.map((med, index) => (
-                            <li key={index} className="flex items-center text-gray-900">
-                              <span className="w-2 h-2 bg-walgreens-blue rounded-full mr-3"></span>
-                              <span className="font-medium">{med}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="md:col-span-2">
-                      <Label className="text-sm font-medium text-gray-700">Pharmacist Notes</Label>
-                      {isEditMode ? (
-                        <Textarea
-                          value={editForm.pharmacistNotes || ''}
-                          onChange={(e) => handleEditFormChange('pharmacistNotes', e.target.value)}
-                          className="mt-1"
-                          rows={2}
-                          placeholder="Additional pharmacist notes..."
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsDelivery.pharmacistNotes}</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Financial Information */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <DollarSign className="w-5 h-5 mr-2 text-green-600" />
-                    Financial Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Total Cost</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.cost || ''}
-                          onChange={(e) => handleEditFormChange('cost', e.target.value)}
-                          className="mt-1"
-                          placeholder="e.g., $45.99"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900 font-semibold">{detailsDelivery.cost}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Patient Copay</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.copay || ''}
-                          onChange={(e) => handleEditFormChange('copay', e.target.value)}
-                          className="mt-1"
-                          placeholder="e.g., $10.00"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900 font-semibold">{detailsDelivery.copay}</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Insurance Information */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <Shield className="w-5 h-5 mr-2 text-purple-600" />
-                    Insurance Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Insurance Provider</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.insurance || ''}
-                          onChange={(e) => handleEditFormChange('insurance', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsDelivery.insurance}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Policy Number</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.policyNumber || ''}
-                          onChange={(e) => handleEditFormChange('policyNumber', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900 font-mono">{detailsDelivery.policyNumber}</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Delivery Status */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <FileText className="w-5 h-5 mr-2 text-orange-600" />
-                    Delivery Status
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <Label className="text-sm font-medium text-blue-900">Delivery Attempts</Label>
-                      <p className="text-xl font-bold text-blue-700">{detailsDelivery.deliveryAttempts}</p>
-                    </div>
-                    <div className="bg-purple-50 p-4 rounded-lg">
-                      <Label className="text-sm font-medium text-purple-900">Patient Signature</Label>
-                      <p className="text-lg font-semibold text-purple-700">
-                        {detailsDelivery.patientSignature ? '✅ Obtained' : '❌ Required'}
-                      </p>
-                    </div>
-                    <div className="bg-green-50 p-4 rounded-lg">
-                      <Label className="text-sm font-medium text-green-900">Tracking Number</Label>
-                      <p className="text-sm font-mono font-semibold text-green-700">{detailsDelivery.trackingNumber}</p>
-                    </div>
-                  </div>
+                
+                <PaginationControls 
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+                
+                <div className="text-sm text-gray-600">
+                  Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredDeliveries.length)} of {filteredDeliveries.length}
                 </div>
               </div>
             )}
-          </DialogContent>
-        </Dialog>
+          </CardContent>
+        </Card>
+
+        {/* Delivery Details Dialog - Using the new component */}
+        <DeliveryDetailsDialog
+          delivery={detailsDelivery}
+          open={!!detailsDelivery}
+          onOpenChange={(open) => !open && setDetailsDelivery(null)}
+        />
       </div>
     </Layout>
   );
