@@ -11,7 +11,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (firstName: string, lastName: string, email: string, password: string) => Promise<boolean>;
+  register: (firstName: string, lastName: string, email: string, password: string, role?: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
   isAdmin: () => boolean;
@@ -109,7 +109,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (firstName: string, lastName: string, email: string, password: string): Promise<boolean> => {
+  const register = async (firstName: string, lastName: string, email: string, password: string, role: string = 'user'): Promise<boolean> => {
     setIsLoading(true);
     try {
       // Simulate API call
@@ -131,7 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         lastName,
         email,
         password,
-        role: 'user' as const
+        role: role as 'user' | 'admin'
       };
 
       users.push(newUser);
@@ -156,7 +156,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const isAdmin = () => {
-    return user?.email === 'admin@walgreens.com' && user?.role === 'admin';
+    return user?.role === 'admin';
   };
 
   const value = {

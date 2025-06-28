@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Shield, Users, Briefcase, CheckCircle } from 'lucide-react';
 
@@ -18,7 +19,8 @@ const Register = () => {
     lastName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    role: 'user'
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -207,6 +209,24 @@ const Register = () => {
                     placeholder="Enter your Walgreens email"
                     className="h-12 px-4 border-gray-300 focus:border-walgreens-red focus:ring-walgreens-red"
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="role" className="text-gray-700 font-medium">
+                    Role
+                  </Label>
+                  <Select 
+                    value={formData.role} 
+                    onValueChange={(value) => setFormData({...formData, role: value})}
+                  >
+                    <SelectTrigger className="h-12 px-4 border-gray-300 focus:border-walgreens-red focus:ring-walgreens-red">
+                      <SelectValue placeholder="Select your role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="user">Pharmacy Staff</SelectItem>
+                      <SelectItem value="admin">Administrator</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
