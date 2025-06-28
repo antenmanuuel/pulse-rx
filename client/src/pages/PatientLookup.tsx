@@ -4,33 +4,12 @@ import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import PaginationControls from '@/components/ui/pagination-controls';
 import AdvancedSearchDialog from '@/components/AdvancedSearchDialog';
-import PatientProfileDialog from '@/components/PatientProfileDialog';
-import PatientHistoryDialog from '@/components/PatientHistoryDialog';
 import NewPatientDialog from '@/components/NewPatientDialog';
-import {
-  Search,
-  User,
-  Calendar,
-  Phone,
-  Mail,
-  MapPin,
-  Pill,
-  AlertTriangle,
-  Clock,
-  Filter,
-  Plus,
-  FileText,
-  MessageSquare,
-  ArrowRight,
-  Download,
-  UserPlus
-} from 'lucide-react';
+import PatientList from '@/components/PatientList';
 
 interface Patient {
   id: string;
@@ -327,53 +306,51 @@ const PatientLookup = () => {
           <CardHeader className="pb-0">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between space-y-4 lg:space-y-0">
               <CardTitle className="text-2xl font-bold text-gray-900 flex items-center">
-                <User className="w-6 h-6 mr-2 text-walgreens-red" />
-                Patient Directory
-              </CardTitle>
-              <div className="w-full lg:w-auto">
-                <div className="bg-gray-100 p-1 rounded-md inline-flex">
-                  <button
-                    onClick={() => setActiveTab('all')}
-                    className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-                      activeTab === 'all' 
-                        ? 'bg-walgreens-red text-white' 
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    All Patients
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('active')}
-                    className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-                      activeTab === 'active' 
-                        ? 'bg-walgreens-red text-white' 
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    Active
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('inactive')}
-                    className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-                      activeTab === 'inactive' 
-                        ? 'bg-walgreens-red text-white' 
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    Inactive
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('recent')}
-                    className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-                      activeTab === 'recent' 
-                        ? 'bg-walgreens-red text-white' 
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    Recent
-                  </button>
+                <div className="w-full lg:w-auto">
+                  <div className="bg-gray-100 p-1 rounded-md inline-flex">
+                    <button
+                      onClick={() => setActiveTab('all')}
+                      className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
+                        activeTab === 'all' 
+                          ? 'bg-walgreens-red text-white' 
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      All Patients
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('active')}
+                      className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
+                        activeTab === 'active' 
+                          ? 'bg-walgreens-red text-white' 
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      Active
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('inactive')}
+                      className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
+                        activeTab === 'inactive' 
+                          ? 'bg-walgreens-red text-white' 
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      Inactive
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('recent')}
+                      className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
+                        activeTab === 'recent' 
+                          ? 'bg-walgreens-red text-white' 
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      Recent
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </CardTitle>
             </div>
           </CardHeader>
           <CardContent className="p-6">
@@ -411,111 +388,7 @@ const PatientLookup = () => {
           </CardContent>
         </Card>
       </div>
-
-      {selectedPatient && (
-        <>
-          <PatientProfileDialog patient={selectedPatient} />
-          <PatientHistoryDialog patient={selectedPatient} />
-        </>
-      )}
     </Layout>
-  );
-};
-
-// Patient List Component
-interface PatientListProps {
-  patients: Patient[];
-  onViewProfile: (patient: Patient) => void;
-  onCreatePrescription: (patient: Patient) => void;
-}
-
-const PatientList: React.FC<PatientListProps> = ({ patients, onViewProfile, onCreatePrescription }) => {
-  if (patients.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <User className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">No patients found</h3>
-        <p className="text-gray-600 mb-4">Try adjusting your search criteria.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      {patients.map((patient) => (
-        <Card key={patient.id} className="hover:shadow-md transition-all duration-200 border border-gray-200">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex items-start space-x-4">
-                <Avatar className="w-12 h-12">
-                  <AvatarFallback className="bg-walgreens-red text-white">
-                    {patient.name.split(' ').map(n => n[0]).join('')}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <div className="flex items-center space-x-2">
-                    <h3 className="font-semibold text-lg text-gray-900">{patient.name}</h3>
-                    <Badge variant="outline" className="text-xs">
-                      {patient.id}
-                    </Badge>
-                    <Badge className={patient.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
-                      {patient.status}
-                    </Badge>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1 mt-2">
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                      DOB: {patient.dob}
-                    </div>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Phone className="w-4 h-4 mr-2 text-gray-400" />
-                      {patient.phone}
-                    </div>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Mail className="w-4 h-4 mr-2 text-gray-400" />
-                      {patient.email}
-                    </div>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <MapPin className="w-4 h-4 mr-2 text-gray-400" />
-                      {patient.address.split(',')[0]}
-                    </div>
-                  </div>
-                  <div className="mt-2 flex items-center space-x-4">
-                    <div className="flex items-center text-sm">
-                      <Pill className="w-4 h-4 mr-1 text-walgreens-blue" />
-                      <span className="font-medium">{patient.activeRx} active prescriptions</span>
-                    </div>
-                    <div className="flex items-center text-sm">
-                      <Clock className="w-4 h-4 mr-1 text-gray-500" />
-                      <span>Last visit: {patient.lastVisit}</span>
-                    </div>
-                    {patient.allergies.length > 0 && patient.allergies[0] !== 'None known' && (
-                      <div className="flex items-center text-sm text-red-600">
-                        <AlertTriangle className="w-4 h-4 mr-1" />
-                        <span>{patient.allergies.length} allergies</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col space-y-2">
-                <PatientProfileDialog patient={patient} />
-                <PatientHistoryDialog patient={patient} />
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="border-gray-300 hover:border-walgreens-blue hover:text-walgreens-blue"
-                  onClick={() => onCreatePrescription(patient)}
-                >
-                  <Plus className="w-4 h-4 mr-1" />
-                  New Prescription
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
   );
 };
 
