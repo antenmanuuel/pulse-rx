@@ -20,7 +20,8 @@ import {
   Calendar,
   DollarSign,
   Package2,
-  Eye
+  Eye,
+  Clock
 } from 'lucide-react';
 import AddItemDialog from '@/components/AddItemDialog';
 import FilterDialog from '@/components/FilterDialog';
