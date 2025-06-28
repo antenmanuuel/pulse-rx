@@ -12,7 +12,9 @@ import {
   Activity,
   Clock,
   Calendar,
-  Truck
+  Truck,
+  Bug,
+  HelpCircle
 } from 'lucide-react';
 
 const QuickActions = () => {
@@ -22,29 +24,32 @@ const QuickActions = () => {
     {
       icon: Plus,
       label: 'New Prescription',
-      description: 'Add new prescription to queue',
+      description: 'Add prescription to queue',
       gradient: 'from-walgreens-red to-red-600',
-      route: '/prescription-queue',
+      route: '/new-prescription',
       stats: '12 in queue',
-      urgency: 'normal'
+      urgency: 'normal',
+      priority: 1
     },
     {
       icon: Search,
       label: 'Patient Lookup',
-      description: 'Search patient records & history',
+      description: 'Search patient records',
       gradient: 'from-walgreens-blue to-blue-600',
       route: '/patient-lookup',
       stats: '1,247 patients',
-      urgency: 'normal'
+      urgency: 'normal',
+      priority: 2
     },
     {
       icon: Calendar,
       label: 'Appointments',
-      description: 'Schedule & manage appointments',
+      description: 'Schedule & manage visits',
       gradient: 'from-purple-500 to-violet-600',
       route: '/appointments',
       stats: '8 today',
-      urgency: 'normal'
+      urgency: 'normal',
+      priority: 3
     },
     {
       icon: Truck,
@@ -53,25 +58,48 @@ const QuickActions = () => {
       gradient: 'from-indigo-500 to-blue-600',
       route: '/deliveries',
       stats: '5 active',
-      urgency: 'warning'
+      urgency: 'warning',
+      priority: 4
     },
     {
       icon: Package,
       label: 'Inventory',
-      description: 'Stock levels & reorder management',
+      description: 'Check stock levels',
       gradient: 'from-green-500 to-emerald-600',
       route: '/inventory',
       stats: '5 low stock',
-      urgency: 'warning'
+      urgency: 'warning',
+      priority: 5
     },
     {
       icon: AlertCircle,
       label: 'Alerts',
-      description: 'System alerts & notifications',
+      description: 'View urgent notifications',
       gradient: 'from-red-500 to-pink-600',
       route: '/alerts',
       stats: '3 active',
-      urgency: 'urgent'
+      urgency: 'urgent',
+      priority: 6
+    },
+    {
+      icon: Bug,
+      label: 'Report Issue',
+      description: 'Submit bugs & requests',
+      gradient: 'from-orange-500 to-red-500',
+      route: '/issues',
+      stats: 'System: Online',
+      urgency: 'normal',
+      priority: 7
+    },
+    {
+      icon: HelpCircle,
+      label: 'Help Center',
+      description: 'Documentation & guides',
+      gradient: 'from-gray-500 to-slate-600',
+      route: '/help',
+      stats: 'Get support',
+      urgency: 'normal',
+      priority: 8
     }
   ];
 
@@ -103,7 +131,7 @@ const QuickActions = () => {
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="p-4">
+      <CardContent className="p-6">
         <div className="grid grid-cols-1 gap-3">
           {actions.map((action, index) => (
             <Button
@@ -141,19 +169,14 @@ const QuickActions = () => {
           ))}
         </div>
 
-        {/* Compact Workflow Summary */}
-        <div className="mt-6 pt-4 border-t border-gray-200">
-          <div className="text-center">
-            <p className="text-sm font-medium text-gray-700 mb-2">System Status</p>
-            <div className="flex items-center justify-center space-x-4">
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-xs text-gray-600">Online</span>
-              </div>
-              <div className="text-xs text-gray-500">
-                Last updated: {new Date().toLocaleTimeString()}
-              </div>
+        {/* Quick Status */}
+        <div className="mt-4 pt-3 border-t border-gray-200">
+          <div className="flex items-center justify-between text-xs text-gray-500">
+            <div className="flex items-center space-x-1">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>System Online</span>
             </div>
+            <span>Updated {new Date().toLocaleTimeString()}</span>
           </div>
         </div>
       </CardContent>

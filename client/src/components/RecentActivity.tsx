@@ -26,66 +26,37 @@ const RecentActivity = () => {
       id: 1,
       type: 'prescription',
       icon: Pill,
-      title: 'Prescription Processed',
-      description: 'Lisinopril 10mg for Sarah Johnson completed verification',
-      time: '2 minutes ago',
+      title: 'Prescription Ready',
+      description: 'Lisinopril 10mg for Sarah Johnson',
+      time: '2 min ago',
       status: 'completed',
       user: 'Dr. Smith',
-      bgColor: 'bg-gradient-to-br from-green-500 to-green-600',
-      iconColor: 'text-white',
-      dotColor: 'bg-green-400'
+      bgColor: 'bg-green-500',
+      priority: 'normal'
     },
     {
       id: 2,
-      type: 'delivery',
-      icon: Truck,
-      title: 'Delivery Assigned',
-      description: 'Mike Johnson assigned for delivery to downtown area',
-      time: '5 minutes ago',
-      status: 'in-progress',
-      user: 'Pharmacy',
-      bgColor: 'bg-gradient-to-br from-blue-500 to-blue-600',
-      iconColor: 'text-white',
-      dotColor: 'bg-blue-400'
-    },
-    {
-      id: 3,
       type: 'alert',
       icon: AlertTriangle,
       title: 'Low Stock Alert',
-      description: 'Metformin 500mg below minimum threshold (12 units)',
-      time: '8 minutes ago',
+      description: 'Metformin 500mg (12 units left)',
+      time: '8 min ago',
       status: 'pending',
       user: 'System',
-      bgColor: 'bg-gradient-to-br from-orange-500 to-orange-600',
-      iconColor: 'text-white',
-      dotColor: 'bg-orange-400'
+      bgColor: 'bg-orange-500',
+      priority: 'high'
     },
     {
-      id: 4,
-      type: 'appointment',
-      icon: Users,
-      title: 'Patient Check-in',
-      description: 'Michael Brown checked in for medication consultation',
-      time: '12 minutes ago',
-      status: 'completed',
-      user: 'Reception',
-      bgColor: 'bg-gradient-to-br from-purple-500 to-purple-600',
-      iconColor: 'text-white',
-      dotColor: 'bg-purple-400'
-    },
-    {
-      id: 5,
-      type: 'inventory',
-      icon: Package,
-      title: 'Stock Updated',
-      description: 'Ibuprofen 200mg inventory updated (+150 units)',
-      time: '15 minutes ago',
-      status: 'completed',
-      user: 'J. Wilson',
-      bgColor: 'bg-gradient-to-br from-indigo-500 to-indigo-600',
-      iconColor: 'text-white',
-      dotColor: 'bg-indigo-400'
+      id: 3,
+      type: 'delivery',
+      icon: Truck,
+      title: 'Delivery Assigned',
+      description: 'Downtown area delivery to M. Johnson',
+      time: '12 min ago',
+      status: 'in-progress',
+      user: 'Pharmacy',
+      bgColor: 'bg-blue-500',
+      priority: 'normal'
     }
   ];
 
@@ -129,41 +100,36 @@ const RecentActivity = () => {
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="p-4">
-        <div className="space-y-3">
+      <CardContent className="p-6">
+        <div className="space-y-2">
           {activities.map((activity) => (
             <div
               key={activity.id}
-              className="group relative bg-gray-50 hover:bg-gray-100 rounded-lg p-3 transition-all duration-200 hover:shadow-sm border border-gray-200"
+              className="group relative bg-white hover:bg-gray-50 rounded-lg p-3 transition-all duration-200 hover:shadow-sm border border-gray-100 hover:border-gray-200"
             >
-              <div className="flex items-start justify-between space-x-3">
-                <div className="flex items-start space-x-3 flex-1">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${activity.bgColor} shadow-sm`}>
-                    <activity.icon className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        {activity.title}
-                      </p>
-                      {getStatusBadge(activity.status)}
-                    </div>
-                    <p className="text-xs text-gray-600 leading-relaxed">
-                      {activity.description}
-                    </p>
-                    <div className="flex items-center justify-between mt-2">
-                      <div className="flex items-center space-x-2 text-xs text-gray-500">
-                        <Clock className="w-3 h-3" />
-                        <span>{activity.time}</span>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {activity.user}
-                      </div>
-                    </div>
-                  </div>
+              <div className="flex items-center space-x-3">
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${activity.bgColor} shadow-sm`}>
+                  <activity.icon className="w-4 h-4 text-white" />
                 </div>
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <MoreHorizontal className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {activity.title}
+                    </p>
+                    <div className="flex items-center space-x-2">
+                      {getStatusBadge(activity.status)}
+                      {activity.priority === 'high' && (
+                        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-600 truncate mt-0.5">
+                    {activity.description}
+                  </p>
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-xs text-gray-500">{activity.time}</span>
+                    <span className="text-xs text-gray-400">{activity.user}</span>
+                  </div>
                 </div>
               </div>
             </div>

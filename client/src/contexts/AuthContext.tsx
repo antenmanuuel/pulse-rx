@@ -5,6 +5,7 @@ interface User {
   firstName: string;
   lastName: string;
   email: string;
+  role?: 'admin' | 'user';
 }
 
 interface AuthContextType {
@@ -13,6 +14,7 @@ interface AuthContextType {
   register: (firstName: string, lastName: string, email: string, password: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
+  isAdmin: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,39 +32,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Initialize default users if none exist
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    if (users.length === 0) {
-      const defaultUsers = [
-        {
-          id: '1',
-          firstName: 'Sarah',
-          lastName: 'Johnson',
-          email: 'sarah.johnson@walgreens.com',
-          password: 'password123'
-        },
-        {
-          id: '2',
-          firstName: 'Mike',
-          lastName: 'Chen',
-          email: 'mike.chen@walgreens.com',
-          password: 'password123'
-        },
-        {
-          id: '3',
-          firstName: 'Admin',
-          lastName: 'User',
-          email: 'admin@walgreens.com',
-          password: 'admin123'
-        }
-      ];
-      localStorage.setItem('users', JSON.stringify(defaultUsers));
-    }
+    // Force update default users to ensure roles are set correctly
+    const defaultUsers = [
+      {
+        id: '1',
+        firstName: 'Sarah',
+        lastName: 'Johnson',
+        email: 'sarah.johnson@walgreens.com',
+        password: 'password123',
+        role: 'user'
+      },
+      {
+        id: '2',
+        firstName: 'Mike',
+        lastName: 'Chen',
+        email: 'mike.chen@walgreens.com',
+        password: 'password123',
+        role: 'user'
+      },
+      {
+        id: '3',
+        firstName: 'Admin',
+        lastName: 'User',
+        email: 'admin@walgreens.com',
+        password: 'admin123',
+        role: 'admin'
+      }
+    ];
+    localStorage.setItem('users', JSON.stringify(defaultUsers));
 
     // Check if user is logged in on app start
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      try {
+        const parsedUser = JSON.parse(savedUser);
+        // Validate that the user has a role, if not, clear the session
+        if (parsedUser.email === 'admin@walgreens.com' && !parsedUser.role) {
+          // Clear stale admin user without role
+          localStorage.removeItem('user');
+          setUser(null);
+        } else {
+          setUser(parsedUser);
+        }
+      } catch (error) {
+        // Clear corrupted user data
+        localStorage.removeItem('user');
+        setUser(null);
+      }
     }
     setIsLoading(false);
   }, []);
@@ -114,7 +130,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         firstName,
         lastName,
         email,
-        password
+        password,
+        role: 'user' as const
       };
 
       users.push(newUser);
@@ -138,12 +155,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('user');
   };
 
+  const isAdmin = () => {
+    return user?.email === 'admin@walgreens.com' && user?.role === 'admin';
+  };
+
   const value = {
     user,
     login,
     register,
     logout,
-    isLoading
+    isLoading,
+    isAdmin
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

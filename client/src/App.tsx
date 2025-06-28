@@ -4,8 +4,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Landing from "./pages/Landing";
 import Register from "./pages/Register";
@@ -20,9 +20,37 @@ import Deliveries from "./pages/Deliveries";
 import NewPrescription from "./pages/NewPrescription";
 import Settings from "./pages/Settings";
 import Messages from "./pages/Messages";
+import Help from "./pages/Help";
+import Issues from "./pages/Issues";
+import AdminDashboard from "./pages/AdminDashboard";
+import StaffManagement from "./pages/StaffManagement";
+import VendorManagement from "./pages/VendorManagement";
+import AdminRoute from "./components/AdminRoute";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+// Component to handle role-based routing for the home page
+const HomeRoute = () => {
+  const { isAdmin } = useAuth();
+
+  if (isAdmin()) {
+    return <Navigate to="/admin-dashboard" replace />;
+  }
+
+  return <Index />;
+};
+
+// Component to protect regular user routes from admin access
+const UserRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAdmin } = useAuth();
+
+  if (isAdmin()) {
+    return <Navigate to="/admin-dashboard" replace />;
+  }
+
+  return <>{children}</>;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -37,37 +65,49 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/" element={
               <ProtectedRoute>
-                <Index />
+                <HomeRoute />
               </ProtectedRoute>
             } />
             <Route path="/prescription-queue" element={
               <ProtectedRoute>
-                <PrescriptionQueue />
+                <UserRoute>
+                  <PrescriptionQueue />
+                </UserRoute>
               </ProtectedRoute>
             } />
             <Route path="/patient-lookup" element={
               <ProtectedRoute>
-                <PatientLookup />
+                <UserRoute>
+                  <PatientLookup />
+                </UserRoute>
               </ProtectedRoute>
             } />
             <Route path="/inventory" element={
               <ProtectedRoute>
-                <Inventory />
+                <UserRoute>
+                  <Inventory />
+                </UserRoute>
               </ProtectedRoute>
             } />
             <Route path="/alerts" element={
               <ProtectedRoute>
-                <Alerts />
+                <UserRoute>
+                  <Alerts />
+                </UserRoute>
               </ProtectedRoute>
             } />
             <Route path="/appointments" element={
               <ProtectedRoute>
-                <Appointments />
+                <UserRoute>
+                  <Appointments />
+                </UserRoute>
               </ProtectedRoute>
             } />
             <Route path="/deliveries" element={
               <ProtectedRoute>
-                <Deliveries />
+                <UserRoute>
+                  <Deliveries />
+                </UserRoute>
               </ProtectedRoute>
             } />
             <Route path="/new-prescription" element={
@@ -84,6 +124,32 @@ const App = () => (
               <ProtectedRoute>
                 <Messages />
               </ProtectedRoute>
+            } />
+            <Route path="/help" element={
+              <ProtectedRoute>
+                <Help />
+              </ProtectedRoute>
+            } />
+            <Route path="/issues" element={
+              <ProtectedRoute>
+                <Issues />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin-dashboard" element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            } />
+
+            <Route path="/staff-management" element={
+              <AdminRoute>
+                <StaffManagement />
+              </AdminRoute>
+            } />
+            <Route path="/vendor-management" element={
+              <AdminRoute>
+                <VendorManagement />
+              </AdminRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

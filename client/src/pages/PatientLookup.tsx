@@ -420,20 +420,6 @@ const PatientLookupPage = () => {
       color: "text-blue-600",
     },
     {
-      label: "Active Today",
-      value: patients.filter((p) => p.lastVisit === "12/22/2023").length,
-      icon: Activity,
-      color: "text-green-600",
-    },
-    {
-      label: "With Allergies",
-      value: patients.filter(
-        (p) => p.allergies.length > 0 && !p.allergies.includes("None known"),
-      ).length,
-      icon: AlertTriangle,
-      color: "text-red-600",
-    },
-    {
       label: "Search Results",
       value: filteredPatients.length,
       icon: Search,
@@ -488,7 +474,7 @@ const PatientLookupPage = () => {
     >
       <div className="space-y-8">
         {/* Search Statistics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 gap-6">
           {searchStats.map((stat, index) => (
             <Card
               key={index}

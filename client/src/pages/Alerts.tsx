@@ -77,7 +77,7 @@ const AlertsPage = () => {
   const resolvedToday = getResolvedTodayCount();
   const archivedItems = getArchivedAlerts().length;
 
-  // Enhanced Stats Data
+  // Simplified Stats Data
   const alertStats = [
     {
       label: 'Active Alerts',
@@ -88,28 +88,12 @@ const AlertsPage = () => {
       change: activeAlerts > 5 ? 'High volume' : 'Normal levels'
     },
     {
-      label: 'Active Activities',
-      value: activeActivities,
-      icon: Activity,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
-      change: activeActivities > 10 ? 'Busy' : 'Normal activity'
-    },
-    {
       label: 'Critical Items',
       value: criticalAlerts,
       icon: Shield,
       color: 'text-red-600',
       bgColor: 'bg-red-50',
       change: criticalAlerts > 0 ? 'Needs attention' : 'All clear'
-    },
-    {
-      label: 'Resolved Today',
-      value: resolvedToday,
-      icon: CheckCircle,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
-      change: '+3 since morning'
     }
   ];
 
@@ -309,8 +293,8 @@ const AlertsPage = () => {
   return (
     <Layout title="System Alerts & Activity" subtitle="Monitor and manage pharmacy alerts, notifications, and activities">
       <div className="space-y-8">
-        {/* Enhanced Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+        {/* Simplified Stats Cards */}
+        <div className="grid grid-cols-2 gap-4 lg:gap-6">
           {alertStats.map((stat, index) => (
             <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
               <CardContent className="p-6">

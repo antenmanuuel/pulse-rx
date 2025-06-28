@@ -116,11 +116,11 @@ const PrescriptionQueue = () => {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-4">
-        <div className="space-y-3">
+      <CardContent className="p-6">
+        <div className="space-y-4">
           {prescriptions.map((rx) => (
-            <Card key={rx.id} className="group hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5 border border-gray-200 hover:border-gray-300 bg-gradient-to-r from-white to-gray-50">
-              <CardContent className="p-4">
+            <Card key={rx.id} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white">
+              <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center space-x-3">
                     <div className="text-lg">{getPriorityIcon(rx.priority)}</div>

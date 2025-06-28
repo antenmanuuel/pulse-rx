@@ -409,7 +409,7 @@ const AppointmentsPage = () => {
           <NewAppointmentDialog onSubmit={handleNewAppointment} />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 gap-6 max-w-2xl">
           <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-3">
@@ -429,21 +429,6 @@ const AppointmentsPage = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Confirmed</p>
-                  <p className="text-3xl font-bold text-gray-900">{confirmedCount}</p>
-                </div>
-                <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center text-green-600">
-                  <CheckCircle2 className="w-6 h-6" />
-                </div>
-              </div>
-              <p className="text-xs text-gray-500">Ready for check-in</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-3">
-                <div>
                   <p className="text-sm font-medium text-gray-600">Checked In</p>
                   <p className="text-3xl font-bold text-gray-900">{checkedInCount}</p>
                 </div>
@@ -452,21 +437,6 @@ const AppointmentsPage = () => {
                 </div>
               </div>
               <p className="text-xs text-gray-500">In progress</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Available Slots</p>
-                  <p className="text-3xl font-bold text-gray-900">6</p>
-                </div>
-                <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600">
-                  <Plus className="w-6 h-6" />
-                </div>
-              </div>
-              <p className="text-xs text-gray-500">Book more appointments</p>
             </CardContent>
           </Card>
         </div>
