@@ -10,6 +10,7 @@ import PrescriptionFilterDialog from '@/components/PrescriptionFilterDialog';
 import ProcessDialog from '@/components/ProcessDialog';
 import ViewDetailsDialog from '@/components/ViewDetailsDialog';
 import PaginationControls from '@/components/ui/pagination-controls';
+import NewPrescriptionDialog from '@/components/NewPrescriptionDialog';
 import {
   Clock,
   User,
@@ -507,6 +508,26 @@ const PrescriptionQueuePage = () => {
     console.log("Prescription updated:", updatedPrescription);
   };
 
+  const handleNewPrescription = (prescriptionData: any) => {
+    // Create a new prescription with the provided data
+    const newPrescription = {
+      ...prescriptionData,
+      id: prescriptionData.id || `RX${Date.now().toString().slice(-6)}`,
+      status: 'Ready for Review',
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    } as Prescription;
+    
+    // Add the new prescription to the list
+    setPrescriptions([newPrescription, ...prescriptions]);
+    
+    toast({
+      title: "Prescription Created",
+      description: `New prescription for ${newPrescription.patient} has been added to the queue.`,
+    });
+    
+    console.log("New prescription created:", newPrescription);
+  };
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'Urgent': return 'bg-red-100 text-red-800 border-red-200';
@@ -650,13 +671,7 @@ const PrescriptionQueuePage = () => {
                   />
                 </div>
                 <PrescriptionFilterDialog onFilterChange={handleFilterChange} />
-                <Button
-                  className="bg-gradient-to-r from-walgreens-red to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 h-10"
-                  onClick={() => navigate('/new-prescription')}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  New Prescription
-                </Button>
+                <NewPrescriptionDialog onSubmit={handleNewPrescription} />
               </div>
             </div>
           </CardHeader>
