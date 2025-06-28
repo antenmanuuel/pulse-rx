@@ -330,53 +330,58 @@ const PatientLookup = () => {
                 <User className="w-6 h-6 mr-2 text-walgreens-red" />
                 Patient Directory
               </CardTitle>
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full lg:w-auto">
-                <TabsList className="bg-gray-100 p-1">
-                  <TabsTrigger value="all" className="data-[state=active]:bg-walgreens-red data-[state=active]:text-white">
+              <div className="w-full lg:w-auto">
+                <div className="bg-gray-100 p-1 rounded-md inline-flex">
+                  <button
+                    onClick={() => setActiveTab('all')}
+                    className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
+                      activeTab === 'all' 
+                        ? 'bg-walgreens-red text-white' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
                     All Patients
-                  </TabsTrigger>
-                  <TabsTrigger value="active" className="data-[state=active]:bg-walgreens-red data-[state=active]:text-white">
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('active')}
+                    className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
+                      activeTab === 'active' 
+                        ? 'bg-walgreens-red text-white' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
                     Active
-                  </TabsTrigger>
-                  <TabsTrigger value="inactive" className="data-[state=active]:bg-walgreens-red data-[state=active]:text-white">
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('inactive')}
+                    className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
+                      activeTab === 'inactive' 
+                        ? 'bg-walgreens-red text-white' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
                     Inactive
-                  </TabsTrigger>
-                  <TabsTrigger value="recent" className="data-[state=active]:bg-walgreens-red data-[state=active]:text-white">
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('recent')}
+                    className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
+                      activeTab === 'recent' 
+                        ? 'bg-walgreens-red text-white' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
                     Recent
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+                  </button>
+                </div>
+              </div>
             </div>
           </CardHeader>
           <CardContent className="p-6">
-            <TabsContent value="all" className="mt-0">
-              <PatientList 
-                patients={currentItems} 
-                onViewProfile={handleViewProfile} 
-                onCreatePrescription={handleCreatePrescription}
-              />
-            </TabsContent>
-            <TabsContent value="active" className="mt-0">
-              <PatientList 
-                patients={currentItems} 
-                onViewProfile={handleViewProfile} 
-                onCreatePrescription={handleCreatePrescription}
-              />
-            </TabsContent>
-            <TabsContent value="inactive" className="mt-0">
-              <PatientList 
-                patients={currentItems} 
-                onViewProfile={handleViewProfile} 
-                onCreatePrescription={handleCreatePrescription}
-              />
-            </TabsContent>
-            <TabsContent value="recent" className="mt-0">
-              <PatientList 
-                patients={currentItems} 
-                onViewProfile={handleViewProfile} 
-                onCreatePrescription={handleCreatePrescription}
-              />
-            </TabsContent>
+            <PatientList 
+              patients={currentItems} 
+              onViewProfile={handleViewProfile} 
+              onCreatePrescription={handleCreatePrescription}
+            />
 
             {/* Pagination Controls */}
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
