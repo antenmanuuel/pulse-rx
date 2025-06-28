@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import PrescriptionFilterDialog from '@/components/PrescriptionFilterDialog';
 import ProcessDialog from '@/components/ProcessDialog';
 import ViewDetailsDialog from '@/components/ViewDetailsDialog';
+import PaginationControls from '@/components/ui/pagination-controls';
 import {
   Clock,
   User,
@@ -68,6 +69,8 @@ const PrescriptionQueuePage = () => {
   const [selectedPrescription, setSelectedPrescription] = useState<Prescription | null>(null);
   const [processDialogOpen, setProcessDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([
     {
@@ -225,8 +228,257 @@ const PrescriptionQueuePage = () => {
       priorAuthorization: true,
       copay: '$15.00',
       totalCost: '$45.25'
+    },
+    {
+      id: 'RX001238',
+      patient: 'Michael Brown',
+      medication: 'Losartan 50mg',
+      quantity: '30 tablets',
+      status: 'Ready for Review',
+      priority: 'High',
+      time: '3:30 PM',
+      insurance: 'Medicare',
+      prescriber: 'Dr. Johnson',
+      dob: '05/22/1950',
+      phone: '(555) 876-5432',
+      address: '567 Maple Ave, City, ST 12345',
+      memberId: 'MED567890123',
+      ndcNumber: '12345-678-91',
+      lotNumber: 'JK123LM',
+      daysSupply: '30 days',
+      refillsRemaining: 2,
+      genericAvailable: true,
+      expiryDate: '10/2025',
+      directions: 'Take 1 tablet by mouth daily. May be taken with or without food.',
+      warnings: 'May cause dizziness. Monitor blood pressure regularly.',
+      npiNumber: '1234567891',
+      deaNumber: 'JK1234567',
+      prescriberPhone: '(555) 987-6543',
+      prescriberFax: '(555) 987-6544',
+      medicalSpecialty: 'Internal Medicine',
+      practiceAddress: '456 Medical Center Dr, Suite 200, City, ST 12345',
+      dosage: '50mg',
+      frequency: 'Once daily',
+      form: 'Tablet',
+      strength: '50mg',
+      brandName: 'Cozaar',
+      manufacturer: 'Merck & Co.',
+      substitutionAllowed: true,
+      priorAuthorization: false,
+      copay: '$10.00',
+      totalCost: '$25.99'
+    },
+    {
+      id: 'RX001239',
+      patient: 'Sarah Johnson',
+      medication: 'Levothyroxine 75mcg',
+      quantity: '30 tablets',
+      status: 'In Progress',
+      priority: 'Normal',
+      time: '3:45 PM',
+      insurance: 'Cigna',
+      prescriber: 'Dr. Miller',
+      dob: '11/30/1975',
+      phone: '(555) 765-4321',
+      address: '789 Oak St, City, ST 12345',
+      memberId: 'CIG678901234',
+      ndcNumber: '23456-789-01',
+      lotNumber: 'NO456PQ',
+      daysSupply: '30 days',
+      refillsRemaining: 11,
+      genericAvailable: true,
+      expiryDate: '09/2025',
+      directions: 'Take 1 tablet by mouth daily on an empty stomach, 30-60 minutes before breakfast.',
+      warnings: 'Take at the same time each day. Do not take with other medications.',
+      npiNumber: '2345678901',
+      deaNumber: 'NO2345678',
+      prescriberPhone: '(555) 654-3210',
+      prescriberFax: '(555) 654-3211',
+      medicalSpecialty: 'Endocrinology',
+      practiceAddress: '123 Endocrine Center, Suite 300, City, ST 12345',
+      dosage: '75mcg',
+      frequency: 'Once daily',
+      form: 'Tablet',
+      strength: '75mcg',
+      brandName: 'Synthroid',
+      manufacturer: 'AbbVie Inc.',
+      substitutionAllowed: false,
+      priorAuthorization: false,
+      copay: '$15.00',
+      totalCost: '$30.75'
+    },
+    {
+      id: 'RX001240',
+      patient: 'David Wilson',
+      medication: 'Amlodipine 5mg',
+      quantity: '30 tablets',
+      status: 'Verification',
+      priority: 'Normal',
+      time: '4:00 PM',
+      insurance: 'United Healthcare',
+      prescriber: 'Dr. Anderson',
+      dob: '08/15/1968',
+      phone: '(555) 543-2109',
+      address: '456 Pine St, City, ST 12345',
+      memberId: 'UHC789012345',
+      ndcNumber: '34567-890-12',
+      lotNumber: 'RS789TU',
+      daysSupply: '30 days',
+      refillsRemaining: 5,
+      genericAvailable: true,
+      expiryDate: '11/2025',
+      directions: 'Take 1 tablet by mouth daily. May be taken with or without food.',
+      warnings: 'May cause dizziness or swelling of the ankles. Report any severe side effects.',
+      npiNumber: '3456789012',
+      deaNumber: 'RS3456789',
+      prescriberPhone: '(555) 432-1098',
+      prescriberFax: '(555) 432-1099',
+      medicalSpecialty: 'Cardiology',
+      practiceAddress: '789 Heart Center, Suite 400, City, ST 12345',
+      dosage: '5mg',
+      frequency: 'Once daily',
+      form: 'Tablet',
+      strength: '5mg',
+      brandName: 'Norvasc',
+      manufacturer: 'Pfizer Inc.',
+      substitutionAllowed: true,
+      priorAuthorization: false,
+      copay: '$5.00',
+      totalCost: '$15.50'
+    },
+    {
+      id: 'RX001241',
+      patient: 'Lisa Martinez',
+      medication: 'Sertraline 50mg',
+      quantity: '30 tablets',
+      status: 'Ready for Review',
+      priority: 'Normal',
+      time: '4:15 PM',
+      insurance: 'Anthem',
+      prescriber: 'Dr. Thompson',
+      dob: '03/25/1985',
+      phone: '(555) 321-0987',
+      address: '123 Elm St, City, ST 12345',
+      memberId: 'ANT890123456',
+      ndcNumber: '45678-901-23',
+      lotNumber: 'VW012XY',
+      daysSupply: '30 days',
+      refillsRemaining: 3,
+      genericAvailable: true,
+      expiryDate: '07/2025',
+      directions: 'Take 1 tablet by mouth daily. May be taken with or without food.',
+      warnings: 'May cause drowsiness or dizziness. Avoid alcohol.',
+      npiNumber: '4567890123',
+      deaNumber: 'VW4567890',
+      prescriberPhone: '(555) 210-9876',
+      prescriberFax: '(555) 210-9877',
+      medicalSpecialty: 'Psychiatry',
+      practiceAddress: '456 Mental Health Center, Suite 200, City, ST 12345',
+      dosage: '50mg',
+      frequency: 'Once daily',
+      form: 'Tablet',
+      strength: '50mg',
+      brandName: 'Zoloft',
+      manufacturer: 'Pfizer Inc.',
+      substitutionAllowed: true,
+      priorAuthorization: false,
+      copay: '$10.00',
+      totalCost: '$20.25'
+    },
+    {
+      id: 'RX001242',
+      patient: 'Thomas Anderson',
+      medication: 'Albuterol Inhaler',
+      quantity: '1 inhaler (200 doses)',
+      status: 'Pending Insurance',
+      priority: 'Urgent',
+      time: '4:30 PM',
+      insurance: 'Blue Cross',
+      prescriber: 'Dr. Roberts',
+      dob: '06/12/1990',
+      phone: '(555) 109-8765',
+      address: '789 Maple St, City, ST 12345',
+      memberId: 'BC901234567',
+      ndcNumber: '56789-012-34',
+      lotNumber: 'ZA345BC',
+      daysSupply: '30 days',
+      refillsRemaining: 2,
+      genericAvailable: true,
+      expiryDate: '06/2025',
+      directions: 'Inhale 2 puffs by mouth every 4-6 hours as needed for shortness of breath or wheezing.',
+      warnings: 'May cause increased heart rate or tremors. Do not exceed recommended dose.',
+      npiNumber: '5678901234',
+      deaNumber: 'ZA5678901',
+      prescriberPhone: '(555) 098-7654',
+      prescriberFax: '(555) 098-7655',
+      medicalSpecialty: 'Pulmonology',
+      practiceAddress: '123 Respiratory Center, Suite 300, City, ST 12345',
+      dosage: '90mcg/actuation',
+      frequency: 'Every 4-6 hours as needed',
+      form: 'Inhaler',
+      strength: '90mcg/actuation',
+      brandName: 'ProAir HFA',
+      manufacturer: 'Teva Pharmaceuticals',
+      substitutionAllowed: true,
+      priorAuthorization: true,
+      copay: '$25.00',
+      totalCost: '$65.75'
+    },
+    {
+      id: 'RX001243',
+      patient: 'Emily Thompson',
+      medication: 'Escitalopram 10mg',
+      quantity: '30 tablets',
+      status: 'Ready for Review',
+      priority: 'High',
+      time: '4:45 PM',
+      insurance: 'Aetna',
+      prescriber: 'Dr. Garcia',
+      dob: '09/05/1988',
+      phone: '(555) 987-0123',
+      address: '456 Birch St, City, ST 12345',
+      memberId: 'AET012345678',
+      ndcNumber: '67890-123-45',
+      lotNumber: 'DE678FG',
+      daysSupply: '30 days',
+      refillsRemaining: 5,
+      genericAvailable: true,
+      expiryDate: '08/2025',
+      directions: 'Take 1 tablet by mouth daily. May be taken with or without food.',
+      warnings: 'May cause drowsiness or dizziness. Avoid alcohol.',
+      npiNumber: '6789012345',
+      deaNumber: 'DE6789012',
+      prescriberPhone: '(555) 876-5432',
+      prescriberFax: '(555) 876-5433',
+      medicalSpecialty: 'Psychiatry',
+      practiceAddress: '789 Mental Health Center, Suite 400, City, ST 12345',
+      dosage: '10mg',
+      frequency: 'Once daily',
+      form: 'Tablet',
+      strength: '10mg',
+      brandName: 'Lexapro',
+      manufacturer: 'Forest Laboratories',
+      substitutionAllowed: true,
+      priorAuthorization: false,
+      copay: '$15.00',
+      totalCost: '$35.50'
     }
   ]);
+
+  const [filteredPrescriptions, setFilteredPrescriptions] = useState<Prescription[]>(prescriptions);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Apply search filter
+  useEffect(() => {
+    const filtered = prescriptions.filter(rx => 
+      rx.patient.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      rx.medication.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      rx.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      rx.prescriber.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredPrescriptions(filtered);
+    setCurrentPage(1); // Reset to first page when filtering
+  }, [searchTerm, prescriptions]);
 
   const queueStats = [
     { label: 'Total Queue', value: prescriptions.length, icon: Activity, color: 'text-blue-600' },
@@ -283,6 +535,36 @@ const PrescriptionQueuePage = () => {
 
   const handleFilterChange = (filters: Record<string, string | boolean>) => {
     console.log('Filters applied:', filters);
+    // Implement filtering logic here
+    let filtered = [...prescriptions];
+    
+    if (filters.status) {
+      filtered = filtered.filter(rx => rx.status === filters.status);
+    }
+    
+    if (filters.priority) {
+      filtered = filtered.filter(rx => rx.priority === filters.priority);
+    }
+    
+    if (filters.prescriber) {
+      filtered = filtered.filter(rx => rx.prescriber === filters.prescriber);
+    }
+    
+    if (filters.insurance) {
+      filtered = filtered.filter(rx => rx.insurance === filters.insurance);
+    }
+    
+    if (filters.todayOnly) {
+      // This would filter by today's date in a real implementation
+      // For demo purposes, we'll just return all prescriptions
+    }
+    
+    if (filters.urgentOnly) {
+      filtered = filtered.filter(rx => rx.priority === 'Urgent');
+    }
+    
+    setFilteredPrescriptions(filtered);
+    setCurrentPage(1); // Reset to first page when filtering
   };
 
   const handleProcess = (prescription: Prescription) => {
@@ -299,6 +581,21 @@ const PrescriptionQueuePage = () => {
     setDetailsDialogOpen(false);
     setSelectedPrescription(prescription);
     setProcessDialogOpen(true);
+  };
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredPrescriptions.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredPrescriptions.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to first page when changing items per page
   };
 
   return (
@@ -335,7 +632,10 @@ const PrescriptionQueuePage = () => {
                   <CardTitle className="text-2xl font-bold text-gray-900">
                     Active Prescriptions
                   </CardTitle>
-                  <p className="text-gray-600">{prescriptions.length} prescriptions in queue</p>
+                  <p className="text-gray-600">
+                    {filteredPrescriptions.length} prescriptions in queue • 
+                    Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredPrescriptions.length)} of {filteredPrescriptions.length}
+                  </p>
                 </div>
               </div>
 
@@ -345,6 +645,8 @@ const PrescriptionQueuePage = () => {
                   <Input
                     placeholder="Search prescriptions..."
                     className="pl-10 w-full sm:w-64 h-10 border-gray-300 focus:border-walgreens-blue focus:ring-walgreens-blue"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
                 <PrescriptionFilterDialog onFilterChange={handleFilterChange} />
@@ -361,7 +663,7 @@ const PrescriptionQueuePage = () => {
 
           <CardContent className="pt-0">
             <div className="space-y-4">
-              {prescriptions.map((rx) => (
+              {currentItems.map((rx) => (
                 <Card key={rx.id} className="group hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 hover:border-gray-300">
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-4">
@@ -452,6 +754,32 @@ const PrescriptionQueuePage = () => {
                   </CardContent>
                 </Card>
               ))}
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-600">Items per page:</span>
+                <select 
+                  value={itemsPerPage} 
+                  onChange={handleItemsPerPageChange}
+                  className="border border-gray-300 rounded-md text-sm p-1 focus:border-walgreens-blue focus:ring-walgreens-blue"
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                </select>
+              </div>
+              
+              <PaginationControls 
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+              
+              <div className="text-sm text-gray-600">
+                Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredPrescriptions.length)} of {filteredPrescriptions.length}
+              </div>
             </div>
           </CardContent>
         </Card>
