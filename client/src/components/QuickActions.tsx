@@ -14,13 +14,24 @@ import {
   Calendar,
   Truck,
   Bug,
-  HelpCircle
+  HelpCircle,
+  Pill
 } from 'lucide-react';
 
 const QuickActions = () => {
   const navigate = useNavigate();
 
   const actions = [
+    {
+      icon: Pill,
+      label: 'Prescriptions',
+      description: 'Manage and process prescriptions',
+      gradient: 'from-walgreens-red to-red-600',
+      route: '/prescription-queue',
+      stats: '12 in queue',
+      urgency: 'normal',
+      priority: 1
+    },
     {
       icon: Search,
       label: 'Patient Lookup',
@@ -29,7 +40,7 @@ const QuickActions = () => {
       route: '/patient-lookup',
       stats: '1,247 patients',
       urgency: 'normal',
-      priority: 1
+      priority: 2
     },
     {
       icon: Calendar,
@@ -39,7 +50,7 @@ const QuickActions = () => {
       route: '/appointments',
       stats: '8 today',
       urgency: 'normal',
-      priority: 2
+      priority: 3
     },
     {
       icon: Truck,
@@ -49,7 +60,7 @@ const QuickActions = () => {
       route: '/deliveries',
       stats: '5 active',
       urgency: 'warning',
-      priority: 3
+      priority: 4
     },
     {
       icon: Package,
@@ -59,7 +70,7 @@ const QuickActions = () => {
       route: '/inventory',
       stats: '5 low stock',
       urgency: 'warning',
-      priority: 4
+      priority: 5
     },
     {
       icon: AlertTriangle,
@@ -69,7 +80,7 @@ const QuickActions = () => {
       route: '/alerts',
       stats: '3 active',
       urgency: 'urgent',
-      priority: 5
+      priority: 6
     },
     {
       icon: Bug,
@@ -79,7 +90,7 @@ const QuickActions = () => {
       route: '/issues',
       stats: 'System: Online',
       urgency: 'normal',
-      priority: 6
+      priority: 7
     },
     {
       icon: HelpCircle,
@@ -89,7 +100,7 @@ const QuickActions = () => {
       route: '/help',
       stats: 'Get support',
       urgency: 'normal',
-      priority: 7
+      priority: 8
     }
   ];
 
