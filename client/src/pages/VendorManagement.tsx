@@ -1,46 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
+import PaginationControls from '@/components/ui/pagination-controls';
 import AddVendorDialog from '@/components/AddVendorDialog';
 import CreatePODialog from '@/components/CreatePODialog';
 import { useToast } from '@/hooks/use-toast';
 import {
   Building2,
-  Plus,
   Search,
-  Filter,
-  MoreHorizontal,
-  Edit,
-  Trash2,
-  Eye,
+  Star,
+  TrendingUp,
+  DollarSign,
+  Package,
   Phone,
   Mail,
+  Globe,
   MapPin,
-  Truck,
-  DollarSign,
-  TrendingUp,
-  Star,
+  FileText,
+  Clock,
   CheckCircle,
   AlertTriangle,
-  Package,
-  FileText,
-  Calendar,
-  Clock,
+  Plus,
   Download,
   Upload,
-  RefreshCw,
-  ExternalLink,
-  Award,
-  Target
+  Eye,
+  Edit,
+  Trash2,
+  Filter,
+  MoreHorizontal,
+  ShoppingCart
 } from 'lucide-react';
+import { Vendor, vendorData } from '@/data/vendorData';
 
 const VendorManagement = () => {
   const { toast } = useToast();
@@ -48,294 +47,174 @@ const VendorManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [selectedPO, setSelectedPO] = useState<any>(null);
-  const [viewPODialogOpen, setViewPODialogOpen] = useState(false);
-  const [trackPODialogOpen, setTrackPODialogOpen] = useState(false);
-  const [selectedVendor, setSelectedVendor] = useState<any>(null);
-  const [viewVendorDialogOpen, setViewVendorDialogOpen] = useState(false);
+  const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);
+  const [viewDetailsDialogOpen, setViewDetailsDialogOpen] = useState(false);
   const [createPODialogOpen, setCreatePODialogOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editForm, setEditForm] = useState<Partial<Vendor>>({});
 
-  // Vendor data (now as state to allow adding new vendors)
-  const [vendors, setVendors] = useState([
-    {
-      id: 'VEN-001',
-      name: 'McKesson Corporation',
-      category: 'Pharmaceutical Distributor',
-      status: 'active',
-      contact: {
-        email: 'orders@mckesson.com',
-        phone: '1-800-MCKESSON',
-        address: '6555 State Hwy 161, Irving, TX 75039',
-        contactPerson: 'Jennifer Walsh',
-        website: 'www.mckesson.com'
-      },
-      financial: {
-        totalSpent: '$125,450.00',
-        outstandingBalance: '$15,230.00',
-        creditLimit: '$50,000.00',
-        paymentTerms: 'NET 30'
-      },
-      performance: {
-        rating: 4.8,
-        onTimeDelivery: 96,
-        qualityScore: 98,
-        responsiveness: 92
-      },
-      contractInfo: {
-        contractNumber: 'MCK-2024-001',
-        startDate: '2024-01-01',
-        endDate: '2024-12-31',
-        autoRenewal: true
-      },
-      lastOrder: '2024-01-15',
-      products: ['Generic Medications', 'Brand Medications', 'OTC Products', 'Medical Supplies']
-    },
-    {
-      id: 'VEN-002',
-      name: 'AmerisourceBergen',
-      category: 'Pharmaceutical Distributor',
-      status: 'active',
-      contact: {
-        email: 'customerservice@amerisourcebergen.com',
-        phone: '1-800-829-3132',
-        address: '1300 Morris Dr, Chesterbrook, PA 19087',
-        contactPerson: 'Robert Chen',
-        website: 'www.amerisourcebergen.com'
-      },
-      financial: {
-        totalSpent: '$89,320.00',
-        outstandingBalance: '$8,450.00',
-        creditLimit: '$40,000.00',
-        paymentTerms: 'NET 30'
-      },
-      performance: {
-        rating: 4.6,
-        onTimeDelivery: 94,
-        qualityScore: 96,
-        responsiveness: 90
-      },
-      contractInfo: {
-        contractNumber: 'ASB-2024-002',
-        startDate: '2024-01-01',
-        endDate: '2024-12-31',
-        autoRenewal: true
-      },
-      lastOrder: '2024-01-14',
-      products: ['Specialty Medications', 'Vaccines', 'Refrigerated Products']
-    },
-    {
-      id: 'VEN-003',
-      name: 'Local Medical Supply Co.',
-      category: 'Medical Supplies',
-      status: 'active',
-      contact: {
-        email: 'orders@localmedsupply.com',
-        phone: '(555) 123-4567',
-        address: '123 Healthcare Way, Local City, ST 12345',
-        contactPerson: 'Sarah Martinez',
-        website: 'www.localmedsupply.com'
-      },
-      financial: {
-        totalSpent: '$12,850.00',
-        outstandingBalance: '$2,100.00',
-        creditLimit: '$10,000.00',
-        paymentTerms: 'NET 15'
-      },
-      performance: {
-        rating: 4.2,
-        onTimeDelivery: 88,
-        qualityScore: 94,
-        responsiveness: 95
-      },
-      contractInfo: {
-        contractNumber: 'LMS-2024-003',
-        startDate: '2024-02-01',
-        endDate: '2025-01-31',
-        autoRenewal: false
-      },
-      lastOrder: '2024-01-12',
-      products: ['Syringes', 'Vials', 'Pharmacy Bags', 'Labels']
-    },
-    {
-      id: 'VEN-004',
-      name: 'TechFlow Systems',
-      category: 'Technology Services',
-      status: 'pending',
-      contact: {
-        email: 'support@techflow.com',
-        phone: '(555) 987-6543',
-        address: '456 Tech Blvd, Innovation Park, CA 90210',
-        contactPerson: 'David Kim',
-        website: 'www.techflow.com'
-      },
-      financial: {
-        totalSpent: '$5,500.00',
-        outstandingBalance: '$0.00',
-        creditLimit: '$15,000.00',
-        paymentTerms: 'NET 30'
-      },
-      performance: {
-        rating: 4.0,
-        onTimeDelivery: 92,
-        qualityScore: 90,
-        responsiveness: 88
-      },
-      contractInfo: {
-        contractNumber: 'TFS-2024-004',
-        startDate: '2024-03-01',
-        endDate: '2025-02-28',
-        autoRenewal: true
-      },
-      lastOrder: '2024-01-08',
-      products: ['Software Licenses', 'Hardware Maintenance', 'IT Support']
-    }
-  ]);
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(6);
 
-  // Purchase orders data (now as state to allow adding new POs)
-  const [purchaseOrders, setPurchaseOrders] = useState([
-    {
-      id: 'PO-2024-001',
-      vendorId: 'VEN-001',
-      vendorName: 'McKesson Corporation',
-      date: '2024-01-15',
-      status: 'delivered',
-      total: '$8,450.00',
-      items: 15,
-      expectedDelivery: '2024-01-16',
-      actualDelivery: '2024-01-16',
-      priority: 'normal'
-    },
-    {
-      id: 'PO-2024-002',
-      vendorId: 'VEN-002',
-      vendorName: 'AmerisourceBergen',
-      date: '2024-01-14',
-      status: 'in-transit',
-      total: '$6,230.00',
-      items: 8,
-      expectedDelivery: '2024-01-17',
-      actualDelivery: null,
-      priority: 'urgent'
-    },
-    {
-      id: 'PO-2024-003',
-      vendorId: 'VEN-003',
-      vendorName: 'Local Medical Supply Co.',
-      date: '2024-01-12',
-      status: 'pending',
-      total: '$850.00',
-      items: 25,
-      expectedDelivery: '2024-01-18',
-      actualDelivery: null,
-      priority: 'normal'
-    },
-    {
-      id: 'PO-2024-004',
-      vendorId: 'VEN-001',
-      vendorName: 'McKesson Corporation',
-      date: '2024-01-10',
-      status: 'received',
-      total: '$12,340.00',
-      items: 22,
-      expectedDelivery: '2024-01-12',
-      actualDelivery: '2024-01-11',
-      priority: 'high'
-    }
-  ]);
+  // Initialize vendors from the imported data
+  const [vendors, setVendors] = useState<Vendor[]>(vendorData);
+  const [filteredVendors, setFilteredVendors] = useState<Vendor[]>(vendors);
 
-  const categories = ['all', 'Pharmaceutical Distributor', 'Medical Supplies', 'Technology Services', 'Equipment'];
-  const statuses = ['all', 'active', 'pending', 'suspended', 'inactive'];
-  const orderStatuses = ['all', 'pending', 'confirmed', 'in-transit', 'delivered', 'received', 'cancelled'];
+  // Filter vendors based on search term and filters
+  useEffect(() => {
+    const filtered = vendors.filter(vendor => {
+      const matchesSearch =
+        vendor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        vendor.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        vendor.contact.contactPerson.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        vendor.contact.email.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesCategory = filterCategory === 'all' || vendor.category === filterCategory;
+      const matchesStatus = filterStatus === 'all' || vendor.status === filterStatus;
+      
+      return matchesSearch && matchesCategory && matchesStatus;
+    });
+    
+    setFilteredVendors(filtered);
+    setCurrentPage(1); // Reset to first page when filtering
+  }, [searchTerm, filterCategory, filterStatus, vendors]);
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredVendors.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredVendors.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to first page when changing items per page
+  };
+
+  const categories = [
+    'all',
+    'Pharmaceuticals',
+    'Medical Supplies',
+    'Equipment',
+    'Technology',
+    'Cleaning Supplies',
+    'Office Supplies',
+    'Food & Beverages',
+    'Packaging',
+    'Maintenance',
+    'Waste Management',
+    'Security Services',
+    'Other'
+  ];
+
+  const statuses = ['all', 'active', 'inactive', 'pending'];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-50 text-green-700 border-green-200';
-      case 'pending': return 'bg-yellow-50 text-yellow-700 border-yellow-200';
-      case 'suspended': return 'bg-red-50 text-red-700 border-red-200';
-      case 'inactive': return 'bg-gray-50 text-gray-700 border-gray-200';
-      default: return 'bg-gray-50 text-gray-700 border-gray-200';
+      case 'active': return 'bg-green-100 text-green-800 border-green-200';
+      case 'inactive': return 'bg-red-100 text-red-800 border-red-200';
+      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
-  const getOrderStatusColor = (status: string) => {
-    switch (status) {
-      case 'delivered': return 'bg-green-50 text-green-700';
-      case 'in-transit': return 'bg-blue-50 text-blue-700';
-      case 'received': return 'bg-purple-50 text-purple-700';
-      case 'pending': return 'bg-yellow-50 text-yellow-700';
-      case 'cancelled': return 'bg-red-50 text-red-700';
-      default: return 'bg-gray-50 text-gray-700';
-    }
+  const getRatingColor = (rating: number) => {
+    if (rating >= 4.5) return 'text-green-600';
+    if (rating >= 4.0) return 'text-blue-600';
+    if (rating >= 3.5) return 'text-yellow-600';
+    return 'text-red-600';
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'urgent': return 'bg-red-50 text-red-700';
-      case 'high': return 'bg-orange-50 text-orange-700';
-      case 'normal': return 'bg-blue-50 text-blue-700';
-      default: return 'bg-gray-50 text-gray-700';
-    }
+  const handleAddVendor = (newVendor: Vendor) => {
+    setVendors([...vendors, newVendor]);
+    toast({
+      title: "Vendor Added",
+      description: `${newVendor.name} has been added successfully.`
+    });
   };
 
-  const getRatingStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        className={`w-4 h-4 ${i < Math.floor(rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
-      />
-    ));
-  };
-
-  const filteredVendors = vendors.filter(vendor => {
-    const matchesSearch =
-      vendor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      vendor.contact.contactPerson.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      vendor.id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = filterCategory === 'all' || vendor.category === filterCategory;
-    const matchesStatus = filterStatus === 'all' || vendor.status === filterStatus;
-    return matchesSearch && matchesCategory && matchesStatus;
-  });
-
-  const handleAddVendor = (newVendor: any) => {
-    setVendors(prev => [...prev, newVendor]);
-  };
-
-  const handleCreatePO = (newPO: any) => {
-    setPurchaseOrders(prev => [...prev, newPO]);
-  };
-
-  const handleViewPO = (order: any) => {
-    setSelectedPO(order);
-    setViewPODialogOpen(true);
-  };
-
-  const handleTrackPO = (order: any) => {
-    setSelectedPO(order);
-    setTrackPODialogOpen(true);
-  };
-
-  const handleViewVendorDetails = (vendor: any) => {
+  const handleViewDetails = (vendor: Vendor) => {
     setSelectedVendor(vendor);
-    setViewVendorDialogOpen(true);
+    setViewDetailsDialogOpen(true);
   };
 
-  const handleCreatePOForVendor = (vendor: any) => {
+  const handleCreatePO = (vendor: Vendor) => {
     setSelectedVendor(vendor);
     setCreatePODialogOpen(true);
+  };
+
+  const handlePOSubmit = (poData: any) => {
+    console.log('Purchase Order created:', poData);
+    toast({
+      title: "Purchase Order Created",
+      description: `PO ${poData.id} has been created successfully.`
+    });
+    setCreatePODialogOpen(false);
+  };
+
+  const handleStartEdit = () => {
+    if (selectedVendor) {
+      setEditForm({ ...selectedVendor });
+      setIsEditMode(true);
+    }
+  };
+
+  const handleSaveEdit = () => {
+    if (selectedVendor && editForm) {
+      const updatedVendors = vendors.map(vendor =>
+        vendor.id === selectedVendor.id ? { ...vendor, ...editForm } as Vendor : vendor
+      );
+      setVendors(updatedVendors);
+      setSelectedVendor({ ...selectedVendor, ...editForm } as Vendor);
+      setIsEditMode(false);
+      setEditForm({});
+
+      toast({
+        title: "Vendor Updated",
+        description: `${selectedVendor.name} has been updated successfully.`
+      });
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditMode(false);
+    setEditForm({});
+  };
+
+  const handleEditFormChange = (field: string, value: any) => {
+    setEditForm(prev => {
+      const newForm = { ...prev };
+      
+      // Handle nested fields
+      if (field.includes('.')) {
+        const [parent, child] = field.split('.');
+        newForm[parent as keyof typeof newForm] = {
+          ...newForm[parent as keyof typeof newForm],
+          [child]: value
+        };
+      } else {
+        newForm[field as keyof typeof newForm] = value;
+      }
+      
+      return newForm;
+    });
   };
 
   return (
     <Layout title="Vendor Management" subtitle="Manage suppliers, contracts, and purchase orders">
       <div className="max-w-7xl mx-auto space-y-6">
-
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="border border-gray-200">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Active Vendors</p>
-                  <p className="text-2xl font-bold text-gray-900">3</p>
+                  <p className="text-sm text-gray-600">Total Vendors</p>
+                  <p className="text-2xl font-bold text-gray-900">{vendors.length}</p>
                 </div>
                 <Building2 className="w-8 h-8 text-walgreens-red" />
               </div>
@@ -346,10 +225,10 @@ const VendorManagement = () => {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total Spent (YTD)</p>
-                  <p className="text-2xl font-bold text-green-600">$233k</p>
+                  <p className="text-sm text-gray-600">Active Vendors</p>
+                  <p className="text-2xl font-bold text-green-600">{vendors.filter(v => v.status === 'active').length}</p>
                 </div>
-                <DollarSign className="w-8 h-8 text-green-500" />
+                <CheckCircle className="w-8 h-8 text-green-500" />
               </div>
             </CardContent>
           </Card>
@@ -358,10 +237,12 @@ const VendorManagement = () => {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Open Orders</p>
-                  <p className="text-2xl font-bold text-blue-600">2</p>
+                  <p className="text-sm text-gray-600">Total Spent</p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    ${vendors.reduce((sum, v) => sum + v.performance.totalSpent, 0).toLocaleString()}
+                  </p>
                 </div>
-                <Package className="w-8 h-8 text-blue-500" />
+                <DollarSign className="w-8 h-8 text-blue-500" />
               </div>
             </CardContent>
           </Card>
@@ -371,9 +252,11 @@ const VendorManagement = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Avg Rating</p>
-                  <p className="text-2xl font-bold text-yellow-600">4.4</p>
+                  <p className="text-2xl font-bold text-yellow-600">
+                    {(vendors.reduce((sum, v) => sum + v.performance.rating, 0) / vendors.length).toFixed(1)}
+                  </p>
                 </div>
-                <Star className="w-8 h-8 text-yellow-500" />
+                <Star className="w-8 h-8 text-yellow-500 fill-current" />
               </div>
             </CardContent>
           </Card>
@@ -381,7 +264,7 @@ const VendorManagement = () => {
 
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 bg-white border border-gray-200">
+          <TabsList className="grid w-full grid-cols-2 bg-white border border-gray-200">
             <TabsTrigger value="vendors" className="data-[state=active]:bg-walgreens-red data-[state=active]:text-white">
               <Building2 className="w-4 h-4 mr-2" />
               Vendor Directory
@@ -390,13 +273,9 @@ const VendorManagement = () => {
               <Package className="w-4 h-4 mr-2" />
               Purchase Orders
             </TabsTrigger>
-            <TabsTrigger value="performance" className="data-[state=active]:bg-walgreens-red data-[state=active]:text-white">
-              <TrendingUp className="w-4 h-4 mr-2" />
-              Performance
-            </TabsTrigger>
           </TabsList>
 
-          {/* Vendor Directory Tab */}
+          {/* Vendors Tab */}
           <TabsContent value="vendors" className="space-y-6">
             {/* Search and Filters */}
             <Card className="border border-gray-200">
@@ -412,8 +291,8 @@ const VendorManagement = () => {
                     />
                   </div>
                   <Select value={filterCategory} onValueChange={setFilterCategory}>
-                    <SelectTrigger className="w-full md:w-56">
-                      <SelectValue placeholder="Filter by category" />
+                    <SelectTrigger className="w-full md:w-48">
+                      <SelectValue placeholder="Category" />
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map(category => (
@@ -424,8 +303,8 @@ const VendorManagement = () => {
                     </SelectContent>
                   </Select>
                   <Select value={filterStatus} onValueChange={setFilterStatus}>
-                    <SelectTrigger className="w-full md:w-48">
-                      <SelectValue placeholder="Filter by status" />
+                    <SelectTrigger className="w-full md:w-40">
+                      <SelectValue placeholder="Status" />
                     </SelectTrigger>
                     <SelectContent>
                       {statuses.map(status => (
@@ -442,97 +321,95 @@ const VendorManagement = () => {
 
             {/* Vendor Cards */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {filteredVendors.map((vendor) => (
+              {currentItems.map((vendor) => (
                 <Card key={vendor.id} className="border border-gray-200 hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
-                    <div className="space-y-4">
-                      {/* Header */}
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="font-semibold text-gray-900">{vendor.name}</h3>
-                          <p className="text-sm text-gray-600">{vendor.category}</p>
-                          <p className="text-xs text-gray-500">{vendor.id}</p>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Badge className={getStatusColor(vendor.status)}>
-                            {vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1)}
-                          </Badge>
-                        </div>
-                      </div>
+                    <div className="flex items-start space-x-4">
+                      <Avatar className="w-16 h-16">
+                        <AvatarFallback className="bg-walgreens-blue text-white text-lg">
+                          {vendor.name.split(' ').map(n => n[0]).join('')}
+                        </AvatarFallback>
+                      </Avatar>
 
-                      {/* Contact Info */}
-                      <div className="space-y-2 text-sm">
-                        <div className="flex items-center space-x-2">
-                          <Mail className="w-4 h-4 text-gray-400" />
-                          <span className="text-gray-600">{vendor.contact.email}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Phone className="w-4 h-4 text-gray-400" />
-                          <span className="text-gray-600">{vendor.contact.phone}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <MapPin className="w-4 h-4 text-gray-400" />
-                          <span className="text-gray-600">{vendor.contact.address}</span>
-                        </div>
-                      </div>
-
-                      {/* Performance Metrics */}
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <div className="flex items-center space-x-1">
-                            {getRatingStars(vendor.performance.rating)}
-                            <span className="text-gray-600 ml-1">{vendor.performance.rating}</span>
+                      <div className="flex-1 space-y-3">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <h3 className="font-semibold text-gray-900">{vendor.name}</h3>
+                            <p className="text-sm text-gray-600">{vendor.category}</p>
+                            <p className="text-xs text-gray-500">{vendor.id}</p>
                           </div>
-                          <p className="text-xs text-gray-500">Overall Rating</p>
+                          <div className="flex items-center space-x-2">
+                            <Badge className={getStatusColor(vendor.status)}>
+                              {vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1)}
+                            </Badge>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium text-green-600">{vendor.performance.onTimeDelivery}%</p>
-                          <p className="text-xs text-gray-500">On-Time Delivery</p>
-                        </div>
-                      </div>
 
-                      {/* Financial Info */}
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <p className="font-medium text-gray-900">{vendor.financial.totalSpent}</p>
-                          <p className="text-xs text-gray-500">Total Spent</p>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center space-x-2">
+                            <Mail className="w-4 h-4 text-gray-400" />
+                            <span className="text-gray-600">{vendor.contact.email}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Phone className="w-4 h-4 text-gray-400" />
+                            <span className="text-gray-600">{vendor.contact.phone}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <MapPin className="w-4 h-4 text-gray-400" />
+                            <span className="text-gray-600">{vendor.address.city}, {vendor.address.state}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                            <span className={`font-medium ${getRatingColor(vendor.performance.rating)}`}>
+                              Rating: {vendor.performance.rating}/5
+                            </span>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium text-orange-600">{vendor.financial.outstandingBalance}</p>
-                          <p className="text-xs text-gray-500">Outstanding</p>
+
+                        <div className="flex items-center space-x-2 pt-2">
+                          <Button variant="outline" size="sm" onClick={() => handleViewDetails(vendor)}>
+                            <Eye className="w-4 h-4 mr-1" />
+                            View Details
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={() => handleCreatePO(vendor)}>
+                            <ShoppingCart className="w-4 h-4 mr-1" />
+                            Create PO
+                          </Button>
                         </div>
-                      </div>
-
-                      {/* Products */}
-                      <div className="flex flex-wrap gap-1">
-                        {vendor.products.slice(0, 3).map((product, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
-                            {product}
-                          </Badge>
-                        ))}
-                        {vendor.products.length > 3 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{vendor.products.length - 3} more
-                          </Badge>
-                        )}
-                      </div>
-
-                      {/* Actions */}
-                      <div className="flex items-center space-x-2 pt-2">
-                        <Button variant="outline" size="sm" onClick={() => handleViewVendorDetails(vendor)}>
-                          <Eye className="w-4 h-4 mr-1" />
-                          View Details
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={() => handleCreatePOForVendor(vendor)}>
-                          <FileText className="w-4 h-4 mr-1" />
-                          Create PO
-                        </Button>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
+
+            {/* Pagination Controls */}
+            {filteredVendors.length > 0 && (
+              <div className="mt-6 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-600">Items per page:</span>
+                  <select 
+                    value={itemsPerPage} 
+                    onChange={handleItemsPerPageChange}
+                    className="border border-gray-300 rounded-md text-sm p-1 focus:border-walgreens-blue focus:ring-walgreens-blue"
+                  >
+                    <option value={6}>6</option>
+                    <option value={12}>12</option>
+                    <option value={24}>24</option>
+                  </select>
+                </div>
+                
+                <PaginationControls 
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+                
+                <div className="text-sm text-gray-600">
+                  Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredVendors.length)} of {filteredVendors.length}
+                </div>
+              </div>
+            )}
           </TabsContent>
 
           {/* Purchase Orders Tab */}
@@ -549,547 +426,335 @@ const VendorManagement = () => {
                       <Download className="w-4 h-4 mr-2" />
                       Export
                     </Button>
-                    <CreatePODialog onCreatePO={handleCreatePO} vendors={vendors} />
+                    <CreatePODialog 
+                      onCreatePO={handlePOSubmit} 
+                      vendors={vendors.filter(v => v.status === 'active')}
+                    />
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {purchaseOrders.map((order) => (
-                    <Card key={order.id} className="border border-gray-200">
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-3">
-                              <h4 className="font-medium text-gray-900">{order.id}</h4>
-                              <Badge className={getOrderStatusColor(order.status)}>
-                                {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                              </Badge>
-                              <Badge className={getPriorityColor(order.priority)}>
-                                {order.priority.charAt(0).toUpperCase() + order.priority.slice(1)}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-gray-600">{order.vendorName}</p>
-                            <div className="flex items-center space-x-4 text-sm text-gray-500">
-                              <span>Date: {order.date}</span>
-                              <span>Items: {order.items}</span>
-                              <span>Expected: {order.expectedDelivery}</span>
-                              {order.actualDelivery && (
-                                <span>Delivered: {order.actualDelivery}</span>
-                              )}
-                            </div>
-                          </div>
-                          <div className="text-right space-y-2">
-                            <p className="text-lg font-bold text-gray-900">{order.total}</p>
-                            <div className="flex items-center space-x-2">
-                              <Button variant="outline" size="sm" onClick={() => handleViewPO(order)}>
-                                <Eye className="w-4 h-4 mr-1" />
-                                View
-                              </Button>
-                              <Button variant="outline" size="sm" onClick={() => handleTrackPO(order)}>
-                                <Truck className="w-4 h-4 mr-1" />
-                                Track
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                <div className="text-center py-12">
+                  <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No purchase orders yet</h3>
+                  <p className="text-gray-600 mb-6">Create your first purchase order to get started</p>
+                  <CreatePODialog 
+                    onCreatePO={handlePOSubmit} 
+                    vendors={vendors.filter(v => v.status === 'active')}
+                  />
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
-
-          {/* Performance Tab */}
-          <TabsContent value="performance" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {filteredVendors.map((vendor) => (
-                <Card key={vendor.id} className="border border-gray-200">
-                  <CardContent className="p-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-gray-900">{vendor.name}</h3>
-                        <div className="flex items-center space-x-1">
-                          {getRatingStars(vendor.performance.rating)}
-                          <span className="text-gray-600 ml-1">{vendor.performance.rating}</span>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-3">
-                          <div>
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-sm text-gray-600">On-Time Delivery</span>
-                              <span className="text-sm font-medium">{vendor.performance.onTimeDelivery}%</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div
-                                className="bg-green-500 h-2 rounded-full"
-                                style={{ width: `${vendor.performance.onTimeDelivery}%` }}
-                              ></div>
-                            </div>
-                          </div>
-
-                          <div>
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-sm text-gray-600">Quality Score</span>
-                              <span className="text-sm font-medium">{vendor.performance.qualityScore}%</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div
-                                className="bg-blue-500 h-2 rounded-full"
-                                style={{ width: `${vendor.performance.qualityScore}%` }}
-                              ></div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="space-y-3">
-                          <div>
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-sm text-gray-600">Responsiveness</span>
-                              <span className="text-sm font-medium">{vendor.performance.responsiveness}%</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div
-                                className="bg-purple-500 h-2 rounded-full"
-                                style={{ width: `${vendor.performance.responsiveness}%` }}
-                              ></div>
-                            </div>
-                          </div>
-
-                          <div className="space-y-1">
-                            <p className="text-sm text-gray-600">Last Order</p>
-                            <p className="text-sm font-medium">{vendor.lastOrder}</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="pt-3 border-t border-gray-100">
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <p className="text-gray-600">Total Orders</p>
-                            <p className="font-medium">24</p>
-                          </div>
-                          <div>
-                            <p className="text-gray-600">Avg Order Value</p>
-                            <p className="font-medium">$5,227</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
         </Tabs>
 
-        {/* View Purchase Order Dialog */}
-        <Dialog open={viewPODialogOpen} onOpenChange={setViewPODialogOpen}>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Purchase Order Details</DialogTitle>
-              <DialogDescription>
-                View complete purchase order information and order items
-              </DialogDescription>
-            </DialogHeader>
-            {selectedPO && (
-              <div className="space-y-6">
-                {/* PO Header */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-gray-50 rounded-lg">
-                  <div className="space-y-2">
-                    <h3 className="font-medium text-gray-900">Order Information</h3>
-                    <div className="space-y-1 text-sm">
-                      <p><span className="font-medium">PO Number:</span> {selectedPO.id}</p>
-                      <p><span className="font-medium">Order Date:</span> {selectedPO.date}</p>
-                      <p><span className="font-medium">Expected Delivery:</span> {selectedPO.expectedDelivery}</p>
-                      {selectedPO.actualDelivery && (
-                        <p><span className="font-medium">Actual Delivery:</span> {selectedPO.actualDelivery}</p>
+        {/* Vendor Details Dialog */}
+        <Dialog open={viewDetailsDialogOpen} onOpenChange={setViewDetailsDialogOpen}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            {selectedVendor && (
+              <>
+                <DialogHeader className="pb-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-walgreens-blue to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <Building2 className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <DialogTitle className="text-2xl font-bold text-gray-900">
+                          {selectedVendor.name}
+                        </DialogTitle>
+                        <p className="text-gray-600 mt-1">{selectedVendor.category} • {selectedVendor.id}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <Badge className={getStatusColor(selectedVendor.status)}>
+                        {selectedVendor.status.charAt(0).toUpperCase() + selectedVendor.status.slice(1)}
+                      </Badge>
+                    </div>
+                  </div>
+                </DialogHeader>
+
+                <div className="space-y-6">
+                  {/* Action Buttons */}
+                  <div className="flex justify-end items-center">
+                    <div className="flex space-x-2">
+                      {!isEditMode ? (
+                        <>
+                          <Button
+                            onClick={handleStartEdit}
+                            className="bg-walgreens-blue hover:bg-blue-700 text-white"
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              setViewDetailsDialogOpen(false);
+                              handleCreatePO(selectedVendor);
+                            }}
+                            className="bg-walgreens-red hover:bg-red-700 text-white"
+                          >
+                            <ShoppingCart className="w-4 h-4 mr-2" />
+                            Create PO
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            onClick={handleSaveEdit}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            Save
+                          </Button>
+                          <Button
+                            onClick={handleCancelEdit}
+                            variant="outline"
+                            className="border-gray-300 hover:bg-gray-50"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Cancel
+                          </Button>
+                        </>
                       )}
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <h3 className="font-medium text-gray-900">Vendor Information</h3>
-                    <div className="space-y-1 text-sm">
-                      <p><span className="font-medium">Vendor:</span> {selectedPO.vendorName}</p>
-                      <p><span className="font-medium">Total Amount:</span> {selectedPO.total}</p>
-                      <p><span className="font-medium">Items Count:</span> {selectedPO.items}</p>
-                      <div className="flex items-center space-x-2">
-                        <span className="font-medium">Status:</span>
-                        <Badge className={getOrderStatusColor(selectedPO.status)}>
-                          {selectedPO.status.charAt(0).toUpperCase() + selectedPO.status.slice(1)}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                </div>
 
-                {/* Mock Order Items */}
-                <div className="space-y-4">
-                  <h3 className="font-medium text-gray-900">Order Items</h3>
-                  <div className="border border-gray-200 rounded-lg overflow-hidden">
-                    <table className="w-full">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit Price</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        <tr>
-                          <td className="px-4 py-3 text-sm text-gray-900">Amoxicillin 500mg Capsules</td>
-                          <td className="px-4 py-3 text-sm text-gray-600">100 bottles</td>
-                          <td className="px-4 py-3 text-sm text-gray-600">$12.50</td>
-                          <td className="px-4 py-3 text-sm text-gray-900">$1,250.00</td>
-                        </tr>
-                        <tr>
-                          <td className="px-4 py-3 text-sm text-gray-900">Lisinopril 10mg Tablets</td>
-                          <td className="px-4 py-3 text-sm text-gray-600">50 bottles</td>
-                          <td className="px-4 py-3 text-sm text-gray-600">$8.25</td>
-                          <td className="px-4 py-3 text-sm text-gray-900">$412.50</td>
-                        </tr>
-                        <tr>
-                          <td className="px-4 py-3 text-sm text-gray-900">Metformin 500mg Tablets</td>
-                          <td className="px-4 py-3 text-sm text-gray-600">75 bottles</td>
-                          <td className="px-4 py-3 text-sm text-gray-600">$6.80</td>
-                          <td className="px-4 py-3 text-sm text-gray-900">$510.00</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                  <Separator />
 
-                {/* Actions */}
-                <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setViewPODialogOpen(false)}>
-                    Close
-                  </Button>
-                  <Button onClick={() => {
-                    toast({
-                      title: "Download Started",
-                      description: `Purchase Order ${selectedPO.id} is being downloaded.`
-                    });
-                  }}>
-                    <Download className="w-4 h-4 mr-2" />
-                    Download PDF
-                  </Button>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
-
-        {/* Track Purchase Order Dialog */}
-        <Dialog open={trackPODialogOpen} onOpenChange={setTrackPODialogOpen}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Track Purchase Order</DialogTitle>
-              <DialogDescription>
-                Real-time tracking information for your purchase order
-              </DialogDescription>
-            </DialogHeader>
-            {selectedPO && (
-              <div className="space-y-6">
-                {/* Tracking Header */}
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium text-gray-900">{selectedPO.id}</h3>
-                      <p className="text-sm text-gray-600">{selectedPO.vendorName}</p>
-                    </div>
-                    <Badge className={getOrderStatusColor(selectedPO.status)}>
-                      {selectedPO.status.charAt(0).toUpperCase() + selectedPO.status.slice(1)}
-                    </Badge>
-                  </div>
-                </div>
-
-                {/* Tracking Timeline */}
-                <div className="space-y-4">
-                  <h3 className="font-medium text-gray-900">Delivery Timeline</h3>
-                  <div className="space-y-4">
-                    {/* Order Placed */}
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                        <CheckCircle className="w-4 h-4 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">Order Placed</p>
-                        <p className="text-xs text-gray-500">{selectedPO.date} at 9:00 AM</p>
-                        <p className="text-xs text-gray-600">Purchase order submitted to vendor</p>
-                      </div>
-                    </div>
-
-                    {/* Order Confirmed */}
-                    <div className="flex items-start space-x-3">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center ${selectedPO.status !== 'pending' ? 'bg-green-500' : 'bg-gray-300'
-                        }`}>
-                        <CheckCircle className="w-4 h-4 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">Order Confirmed</p>
-                        {selectedPO.status !== 'pending' ? (
-                          <>
-                            <p className="text-xs text-gray-500">{selectedPO.date} at 2:30 PM</p>
-                            <p className="text-xs text-gray-600">Vendor confirmed order and began processing</p>
-                          </>
-                        ) : (
-                          <p className="text-xs text-gray-500">Pending vendor confirmation</p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* In Transit */}
-                    <div className="flex items-start space-x-3">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center ${selectedPO.status === 'in-transit' || selectedPO.status === 'delivered' || selectedPO.status === 'received'
-                        ? 'bg-blue-500' : 'bg-gray-300'
-                        }`}>
-                        <Truck className="w-4 h-4 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">In Transit</p>
-                        {(selectedPO.status === 'in-transit' || selectedPO.status === 'delivered' || selectedPO.status === 'received') ? (
-                          <>
-                            <p className="text-xs text-gray-500">Yesterday at 8:00 AM</p>
-                            <p className="text-xs text-gray-600">Package picked up and en route to pharmacy</p>
-                            <p className="text-xs text-blue-600 font-medium">Tracking #: TRK-{selectedPO.id.slice(-3)}789</p>
-                          </>
-                        ) : (
-                          <p className="text-xs text-gray-500">Awaiting shipment</p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Delivered */}
-                    <div className="flex items-start space-x-3">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center ${selectedPO.status === 'delivered' || selectedPO.status === 'received' ? 'bg-green-500' : 'bg-gray-300'
-                        }`}>
-                        <CheckCircle className="w-4 h-4 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">Delivered</p>
-                        {(selectedPO.status === 'delivered' || selectedPO.status === 'received') ? (
-                          <>
-                            <p className="text-xs text-gray-500">{selectedPO.actualDelivery || selectedPO.expectedDelivery} at 10:30 AM</p>
-                            <p className="text-xs text-gray-600">Package delivered to pharmacy loading dock</p>
-                          </>
-                        ) : (
-                          <p className="text-xs text-gray-500">Expected: {selectedPO.expectedDelivery}</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Additional Info */}
-                {selectedPO.status === 'in-transit' && (
-                  <div className="p-4 bg-blue-50 rounded-lg">
-                    <div className="flex items-center space-x-2">
-                      <Truck className="w-5 h-5 text-blue-600" />
+                  {/* Contact Information */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                      <Phone className="w-5 h-5 mr-2 text-blue-600" />
+                      Contact Information
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <p className="text-sm font-medium text-blue-900">Out for Delivery</p>
-                        <p className="text-xs text-blue-700">Estimated arrival: {selectedPO.expectedDelivery} between 9:00 AM - 12:00 PM</p>
+                        <Label className="text-sm font-medium text-gray-700">Contact Person</Label>
+                        {isEditMode ? (
+                          <Input
+                            value={editForm.contact?.contactPerson || ''}
+                            onChange={(e) => handleEditFormChange('contact.contactPerson', e.target.value)}
+                            className="mt-1"
+                          />
+                        ) : (
+                          <p className="mt-1 text-gray-900">{selectedVendor.contact.contactPerson}</p>
+                        )}
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">Email</Label>
+                        {isEditMode ? (
+                          <Input
+                            type="email"
+                            value={editForm.contact?.email || ''}
+                            onChange={(e) => handleEditFormChange('contact.email', e.target.value)}
+                            className="mt-1"
+                          />
+                        ) : (
+                          <p className="mt-1 text-gray-900">{selectedVendor.contact.email}</p>
+                        )}
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">Phone</Label>
+                        {isEditMode ? (
+                          <Input
+                            value={editForm.contact?.phone || ''}
+                            onChange={(e) => handleEditFormChange('contact.phone', e.target.value)}
+                            className="mt-1"
+                          />
+                        ) : (
+                          <p className="mt-1 text-gray-900">{selectedVendor.contact.phone}</p>
+                        )}
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">Website</Label>
+                        {isEditMode ? (
+                          <Input
+                            value={editForm.contact?.website || ''}
+                            onChange={(e) => handleEditFormChange('contact.website', e.target.value)}
+                            className="mt-1"
+                          />
+                        ) : (
+                          <p className="mt-1 text-gray-900">{selectedVendor.contact.website}</p>
+                        )}
                       </div>
                     </div>
                   </div>
-                )}
 
-                {/* Actions */}
-                <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setTrackPODialogOpen(false)}>
-                    Close
-                  </Button>
-                  <Button variant="outline" onClick={() => {
-                    toast({
-                      title: "Vendor Contacted",
-                      description: `Message sent to ${selectedPO.vendorName} regarding order status.`
-                    });
-                  }}>
-                    <Phone className="w-4 h-4 mr-2" />
-                    Contact Vendor
-                  </Button>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
+                  <Separator />
 
-        {/* View Vendor Details Dialog */}
-        <Dialog open={viewVendorDialogOpen} onOpenChange={setViewVendorDialogOpen}>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Vendor Details</DialogTitle>
-              <DialogDescription>
-                Complete vendor information and performance metrics
-              </DialogDescription>
-            </DialogHeader>
-            {selectedVendor && (
-              <div className="space-y-6">
-                {/* Vendor Header */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-gray-50 rounded-lg">
-                  <div className="space-y-2">
-                    <h3 className="font-medium text-gray-900">Company Information</h3>
-                    <div className="space-y-1 text-sm">
-                      <p><span className="font-medium">Name:</span> {selectedVendor.name}</p>
-                      <p><span className="font-medium">Category:</span> {selectedVendor.category}</p>
-                      <p><span className="font-medium">ID:</span> {selectedVendor.id}</p>
-                      <div className="flex items-center space-x-2">
-                        <span className="font-medium">Status:</span>
-                        <Badge className={getStatusColor(selectedVendor.status)}>
-                          {selectedVendor.status.charAt(0).toUpperCase() + selectedVendor.status.slice(1)}
-                        </Badge>
+                  {/* Address Information */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                      <MapPin className="w-5 h-5 mr-2 text-red-600" />
+                      Address Information
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="md:col-span-2">
+                        <Label className="text-sm font-medium text-gray-700">Street Address</Label>
+                        {isEditMode ? (
+                          <Input
+                            value={editForm.address?.street || ''}
+                            onChange={(e) => handleEditFormChange('address.street', e.target.value)}
+                            className="mt-1"
+                          />
+                        ) : (
+                          <p className="mt-1 text-gray-900">{selectedVendor.address.street}</p>
+                        )}
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">City</Label>
+                        {isEditMode ? (
+                          <Input
+                            value={editForm.address?.city || ''}
+                            onChange={(e) => handleEditFormChange('address.city', e.target.value)}
+                            className="mt-1"
+                          />
+                        ) : (
+                          <p className="mt-1 text-gray-900">{selectedVendor.address.city}</p>
+                        )}
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">State</Label>
+                        {isEditMode ? (
+                          <Input
+                            value={editForm.address?.state || ''}
+                            onChange={(e) => handleEditFormChange('address.state', e.target.value)}
+                            className="mt-1"
+                          />
+                        ) : (
+                          <p className="mt-1 text-gray-900">{selectedVendor.address.state}</p>
+                        )}
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">ZIP Code</Label>
+                        {isEditMode ? (
+                          <Input
+                            value={editForm.address?.zipCode || ''}
+                            onChange={(e) => handleEditFormChange('address.zipCode', e.target.value)}
+                            className="mt-1"
+                          />
+                        ) : (
+                          <p className="mt-1 text-gray-900">{selectedVendor.address.zipCode}</p>
+                        )}
                       </div>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <h3 className="font-medium text-gray-900">Contact Information</h3>
-                    <div className="space-y-1 text-sm">
-                      <p><span className="font-medium">Contact Person:</span> {selectedVendor.contact.contactPerson}</p>
-                      <p><span className="font-medium">Email:</span> {selectedVendor.contact.email}</p>
-                      <p><span className="font-medium">Phone:</span> {selectedVendor.contact.phone}</p>
-                      <p><span className="font-medium">Website:</span> {selectedVendor.contact.website}</p>
+
+                  <Separator />
+
+                  {/* Business Information */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                      <FileText className="w-5 h-5 mr-2 text-purple-600" />
+                      Business Information
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">Tax ID</Label>
+                        {isEditMode ? (
+                          <Input
+                            value={editForm.business?.taxId || ''}
+                            onChange={(e) => handleEditFormChange('business.taxId', e.target.value)}
+                            className="mt-1"
+                          />
+                        ) : (
+                          <p className="mt-1 text-gray-900">{selectedVendor.business.taxId}</p>
+                        )}
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">Payment Terms</Label>
+                        {isEditMode ? (
+                          <Input
+                            value={editForm.business?.paymentTerms || ''}
+                            onChange={(e) => handleEditFormChange('business.paymentTerms', e.target.value)}
+                            className="mt-1"
+                          />
+                        ) : (
+                          <p className="mt-1 text-gray-900">{selectedVendor.business.paymentTerms}</p>
+                        )}
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">Credit Limit</Label>
+                        {isEditMode ? (
+                          <Input
+                            type="number"
+                            value={editForm.business?.creditLimit || ''}
+                            onChange={(e) => handleEditFormChange('business.creditLimit', parseFloat(e.target.value))}
+                            className="mt-1"
+                          />
+                        ) : (
+                          <p className="mt-1 text-gray-900">${selectedVendor.business.creditLimit.toLocaleString()}</p>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Performance Metrics */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card className="border border-gray-200">
-                    <CardHeader>
-                      <CardTitle className="text-lg">Performance Metrics</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Overall Rating</span>
-                        <div className="flex items-center space-x-1">
-                          {getRatingStars(selectedVendor.performance.rating)}
-                          <span className="text-sm font-medium ml-1">{selectedVendor.performance.rating}</span>
+                  <Separator />
+
+                  {/* Performance Metrics */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                      <TrendingUp className="w-5 h-5 mr-2 text-green-600" />
+                      Performance Metrics
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div className="bg-blue-50 p-4 rounded-lg">
+                        <Label className="text-sm font-medium text-blue-900">Rating</Label>
+                        <div className="flex items-center mt-1">
+                          <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                          <p className="text-xl font-bold text-blue-700 ml-1">{selectedVendor.performance.rating}/5</p>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">On-Time Delivery</span>
-                        <span className="text-sm font-medium text-green-600">{selectedVendor.performance.onTimeDelivery}%</span>
+                      <div className="bg-green-50 p-4 rounded-lg">
+                        <Label className="text-sm font-medium text-green-900">On-Time Delivery</Label>
+                        <p className="text-xl font-bold text-green-700 mt-1">{selectedVendor.performance.onTimeDelivery}%</p>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Quality Score</span>
-                        <span className="text-sm font-medium text-blue-600">{selectedVendor.performance.qualityScore}%</span>
+                      <div className="bg-purple-50 p-4 rounded-lg">
+                        <Label className="text-sm font-medium text-purple-900">Total Orders</Label>
+                        <p className="text-xl font-bold text-purple-700 mt-1">{selectedVendor.performance.totalOrders}</p>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Responsiveness</span>
-                        <span className="text-sm font-medium text-purple-600">{selectedVendor.performance.responsiveness}%</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="border border-gray-200">
-                    <CardHeader>
-                      <CardTitle className="text-lg">Financial Information</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Total Spent</span>
-                        <span className="text-sm font-medium text-gray-900">{selectedVendor.financial.totalSpent}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Outstanding Balance</span>
-                        <span className="text-sm font-medium text-orange-600">{selectedVendor.financial.outstandingBalance}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Credit Limit</span>
-                        <span className="text-sm font-medium text-gray-900">{selectedVendor.financial.creditLimit}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Payment Terms</span>
-                        <span className="text-sm font-medium text-gray-900">{selectedVendor.financial.paymentTerms}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Contract Information */}
-                <Card className="border border-gray-200">
-                  <CardHeader>
-                    <CardTitle className="text-lg">Contract Information</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="font-medium text-gray-900">Contract Number:</span>
-                        <span className="ml-2 text-gray-600">{selectedVendor.contractInfo.contractNumber}</span>
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-900">Start Date:</span>
-                        <span className="ml-2 text-gray-600">{selectedVendor.contractInfo.startDate}</span>
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-900">End Date:</span>
-                        <span className="ml-2 text-gray-600">{selectedVendor.contractInfo.endDate}</span>
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-900">Auto Renewal:</span>
-                        <span className="ml-2 text-gray-600">{selectedVendor.contractInfo.autoRenewal ? 'Yes' : 'No'}</span>
+                      <div className="bg-orange-50 p-4 rounded-lg">
+                        <Label className="text-sm font-medium text-orange-900">Total Spent</Label>
+                        <p className="text-xl font-bold text-orange-700 mt-1">${selectedVendor.performance.totalSpent.toLocaleString()}</p>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
 
-                {/* Products/Services */}
-                <Card className="border border-gray-200">
-                  <CardHeader>
-                    <CardTitle className="text-lg">Products & Services</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedVendor.products.map((product: string, index: number) => (
-                        <Badge key={index} variant="outline" className="text-sm">
-                          {product}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                  <Separator />
 
-                {/* Actions */}
-                <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setViewVendorDialogOpen(false)}>
-                    Close
-                  </Button>
-                  <Button variant="outline" onClick={() => {
-                    setViewVendorDialogOpen(false);
-                    handleCreatePOForVendor(selectedVendor);
-                  }}>
-                    <FileText className="w-4 h-4 mr-2" />
-                    Create Purchase Order
-                  </Button>
-                  <Button onClick={() => {
-                    toast({
-                      title: "Contact Initiated",
-                      description: `Contacting ${selectedVendor.contact.contactPerson} at ${selectedVendor.name}.`
-                    });
-                  }}>
-                    <Phone className="w-4 h-4 mr-2" />
-                    Contact Vendor
-                  </Button>
+                  {/* Notes */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                      <FileText className="w-5 h-5 mr-2 text-gray-600" />
+                      Notes
+                    </h3>
+                    {isEditMode ? (
+                      <Textarea
+                        value={editForm.notes || ''}
+                        onChange={(e) => handleEditFormChange('notes', e.target.value)}
+                        className="mt-1"
+                        rows={4}
+                      />
+                    ) : (
+                      <p className="mt-1 text-gray-900 bg-gray-50 p-4 rounded-lg">{selectedVendor.notes}</p>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </>
             )}
           </DialogContent>
         </Dialog>
 
-        {/* Create PO for Specific Vendor Dialog */}
+        {/* Create PO Dialog */}
         <CreatePODialog
           open={createPODialogOpen}
           onOpenChange={setCreatePODialogOpen}
-          hideStandardTrigger={true}
-          onCreatePO={(po) => {
-            handleCreatePO(po);
-            setCreatePODialogOpen(false);
-          }}
-          vendors={vendors}
+          onCreatePO={handlePOSubmit}
+          vendors={vendors.filter(v => v.status === 'active')}
           preSelectedVendor={selectedVendor?.name}
+          hideStandardTrigger={true}
         />
       </div>
     </Layout>
