@@ -37,7 +37,8 @@ import {
   ArrowUpDown,
   Download,
   Truck,
-  BarChart3
+  BarChart3,
+  User
 } from 'lucide-react';
 import { Vendor, vendorData } from '@/data/vendorData';
 import { PurchaseOrder, purchaseOrderData } from '@/data/purchaseOrderData';
