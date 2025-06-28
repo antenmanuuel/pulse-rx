@@ -24,10 +24,7 @@ import {
   AlertTriangle,
   Save,
   Lock,
-  Smartphone,
-  Users,
-  Building2,
-  Database
+  Smartphone
 } from 'lucide-react';
 
 const SettingsPage = () => {
@@ -48,10 +45,7 @@ const SettingsPage = () => {
     pushNotifications: true,
     prescriptionAlerts: true,
     inventoryAlerts: false,
-    deliveryUpdates: true,
-    staffUpdates: false,
-    vendorUpdates: false,
-    systemAlerts: true
+    deliveryUpdates: true
   });
 
   const [preferences, setPreferences] = useState({
@@ -306,8 +300,7 @@ const SettingsPage = () => {
               <p className="text-sm text-gray-600">Configure how you receive alerts and updates</p>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
-              {/* Common notifications for all users */}
-              <div className={`flex items-center justify-between py-3 border-b border-gray-100`}>
+              <div className="flex items-center justify-between py-3 border-b border-gray-100">
                 <div className="flex items-center space-x-3">
                   <span className="text-lg">📧</span>
                   <div>
@@ -322,7 +315,7 @@ const SettingsPage = () => {
                 />
               </div>
               
-              <div className={`flex items-center justify-between py-3 border-b border-gray-100`}>
+              <div className="flex items-center justify-between py-3 border-b border-gray-100">
                 <div className="flex items-center space-x-3">
                   <span className="text-lg">🔔</span>
                   <div>
@@ -337,105 +330,50 @@ const SettingsPage = () => {
                 />
               </div>
 
-              {/* Role-specific notifications */}
-              {!isAdmin() && (
-                <>
-                  <div className={`flex items-center justify-between py-3 border-b border-gray-100`}>
-                    <div className="flex items-center space-x-3">
-                      <span className="text-lg">💊</span>
-                      <div>
-                        <Label className="font-medium text-gray-900">Prescription Alerts</Label>
-                        <p className="text-sm text-gray-600">New prescriptions and refill requests</p>
-                      </div>
-                    </div>
-                    <Switch
-                      checked={notifications.prescriptionAlerts}
-                      onCheckedChange={(checked) => setNotifications({ ...notifications, prescriptionAlerts: checked })}
-                      className="data-[state=checked]:bg-walgreens-red"
-                    />
+              <div className="flex items-center justify-between py-3 border-b border-gray-100">
+                <div className="flex items-center space-x-3">
+                  <span className="text-lg">💊</span>
+                  <div>
+                    <Label className="font-medium text-gray-900">Prescription Alerts</Label>
+                    <p className="text-sm text-gray-600">New prescriptions and refill requests</p>
                   </div>
-                  
-                  <div className={`flex items-center justify-between py-3 border-b border-gray-100`}>
-                    <div className="flex items-center space-x-3">
-                      <span className="text-lg">📦</span>
-                      <div>
-                        <Label className="font-medium text-gray-900">Inventory Alerts</Label>
-                        <p className="text-sm text-gray-600">Low stock and expiration warnings</p>
-                      </div>
-                    </div>
-                    <Switch
-                      checked={notifications.inventoryAlerts}
-                      onCheckedChange={(checked) => setNotifications({ ...notifications, inventoryAlerts: checked })}
-                      className="data-[state=checked]:bg-walgreens-red"
-                    />
+                </div>
+                <Switch
+                  checked={notifications.prescriptionAlerts}
+                  onCheckedChange={(checked) => setNotifications({ ...notifications, prescriptionAlerts: checked })}
+                  className="data-[state=checked]:bg-walgreens-red"
+                />
+              </div>
+              
+              <div className="flex items-center justify-between py-3 border-b border-gray-100">
+                <div className="flex items-center space-x-3">
+                  <span className="text-lg">📦</span>
+                  <div>
+                    <Label className="font-medium text-gray-900">Inventory Alerts</Label>
+                    <p className="text-sm text-gray-600">Low stock and expiration warnings</p>
                   </div>
-                  
-                  <div className={`flex items-center justify-between py-3`}>
-                    <div className="flex items-center space-x-3">
-                      <span className="text-lg">🚛</span>
-                      <div>
-                        <Label className="font-medium text-gray-900">Delivery Updates</Label>
-                        <p className="text-sm text-gray-600">Status updates for prescription deliveries</p>
-                      </div>
-                    </div>
-                    <Switch
-                      checked={notifications.deliveryUpdates}
-                      onCheckedChange={(checked) => setNotifications({ ...notifications, deliveryUpdates: checked })}
-                      className="data-[state=checked]:bg-walgreens-red"
-                    />
+                </div>
+                <Switch
+                  checked={notifications.inventoryAlerts}
+                  onCheckedChange={(checked) => setNotifications({ ...notifications, inventoryAlerts: checked })}
+                  className="data-[state=checked]:bg-walgreens-red"
+                />
+              </div>
+              
+              <div className="flex items-center justify-between py-3">
+                <div className="flex items-center space-x-3">
+                  <span className="text-lg">🚛</span>
+                  <div>
+                    <Label className="font-medium text-gray-900">Delivery Updates</Label>
+                    <p className="text-sm text-gray-600">Status updates for prescription deliveries</p>
                   </div>
-                </>
-              )}
-
-              {/* Admin-specific notifications */}
-              {isAdmin() && (
-                <>
-                  <div className={`flex items-center justify-between py-3 border-b border-gray-100`}>
-                    <div className="flex items-center space-x-3">
-                      <span className="text-lg">👥</span>
-                      <div>
-                        <Label className="font-medium text-gray-900">Staff Updates</Label>
-                        <p className="text-sm text-gray-600">Staff activity and performance alerts</p>
-                      </div>
-                    </div>
-                    <Switch
-                      checked={notifications.staffUpdates}
-                      onCheckedChange={(checked) => setNotifications({ ...notifications, staffUpdates: checked })}
-                      className="data-[state=checked]:bg-walgreens-red"
-                    />
-                  </div>
-                  
-                  <div className={`flex items-center justify-between py-3 border-b border-gray-100`}>
-                    <div className="flex items-center space-x-3">
-                      <span className="text-lg">🏢</span>
-                      <div>
-                        <Label className="font-medium text-gray-900">Vendor Updates</Label>
-                        <p className="text-sm text-gray-600">Vendor performance and contract alerts</p>
-                      </div>
-                    </div>
-                    <Switch
-                      checked={notifications.vendorUpdates}
-                      onCheckedChange={(checked) => setNotifications({ ...notifications, vendorUpdates: checked })}
-                      className="data-[state=checked]:bg-walgreens-red"
-                    />
-                  </div>
-                  
-                  <div className={`flex items-center justify-between py-3`}>
-                    <div className="flex items-center space-x-3">
-                      <span className="text-lg">⚙️</span>
-                      <div>
-                        <Label className="font-medium text-gray-900">System Alerts</Label>
-                        <p className="text-sm text-gray-600">System performance and maintenance notifications</p>
-                      </div>
-                    </div>
-                    <Switch
-                      checked={notifications.systemAlerts}
-                      onCheckedChange={(checked) => setNotifications({ ...notifications, systemAlerts: checked })}
-                      className="data-[state=checked]:bg-walgreens-red"
-                    />
-                  </div>
-                </>
-              )}
+                </div>
+                <Switch
+                  checked={notifications.deliveryUpdates}
+                  onCheckedChange={(checked) => setNotifications({ ...notifications, deliveryUpdates: checked })}
+                  className="data-[state=checked]:bg-walgreens-red"
+                />
+              </div>
               
               <div className="flex justify-end pt-6 border-t border-gray-100">
                 <Button className="bg-walgreens-red hover:bg-red-600">
@@ -511,58 +449,6 @@ const SettingsPage = () => {
                   </Button>
                 </div>
               </div>
-
-              {/* Admin-specific security settings */}
-              {isAdmin() && (
-                <div className="space-y-4 pt-4 border-t border-gray-100">
-                  <h3 className="font-medium text-gray-900">Administrator Controls</h3>
-                  
-                  <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
-                        <Users className="w-5 h-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900">User Access Management</h4>
-                        <p className="text-sm text-gray-600">Manage user permissions and access levels</p>
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm">
-                      Manage Access
-                    </Button>
-                  </div>
-                  
-                  <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-purple-50 rounded-full flex items-center justify-center">
-                        <Building2 className="w-5 h-5 text-purple-600" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900">Organization Settings</h4>
-                        <p className="text-sm text-gray-600">Configure organization-wide settings</p>
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm">
-                      Configure
-                    </Button>
-                  </div>
-                  
-                  <div className="flex items-center justify-between py-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center">
-                        <Database className="w-5 h-5 text-green-600" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900">System Backup</h4>
-                        <p className="text-sm text-gray-600">Configure automated backups and data retention</p>
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm">
-                      Manage Backups
-                    </Button>
-                  </div>
-                </div>
-              )}
 
               {/* Data Management */}
               <div className="space-y-4 pt-4 border-t border-gray-100">
