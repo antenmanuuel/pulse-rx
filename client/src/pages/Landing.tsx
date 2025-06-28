@@ -72,11 +72,11 @@ const Landing = () => {
           <div className="flex justify-between items-center py-4 lg:py-6">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-gradient-to-br from-walgreens-red to-red-600 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-xl">IC+</span>
+                <span className="text-white font-bold text-sm">P</span>
               </div>
               <div>
-                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">IC+ System</h1>
-                <p className="text-sm text-gray-500 hidden sm:block">Internal Pharmacy Management</p>
+                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Pulse RX</h1>
+                <p className="text-sm text-gray-500 hidden sm:block">Modern Pharmacy Management</p>
               </div>
             </div>
 
@@ -111,19 +111,19 @@ const Landing = () => {
           <div className="text-center max-w-4xl mx-auto">
             <div className="mb-8">
               <span className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-medium mb-6">
-                🏥 Walgreens Internal System
+                🏥 Modern Pharmacy System
               </span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-gray-900 mb-8 leading-tight">
-              IC+ System
+              Pulse RX
               <span className="block bg-gradient-to-r from-walgreens-red to-red-600 bg-clip-text text-transparent">
                 Pharmacy Management
               </span>
             </h1>
 
             <p className="text-xl lg:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-              The comprehensive internal platform for Walgreens pharmacy operations.
+              The comprehensive platform for modern pharmacy operations.
               Streamline workflows, enhance patient care, and optimize daily operations.
             </p>
 
@@ -169,10 +169,10 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Designed for Walgreens Teams
+              Designed for Pharmacy Teams
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Purpose-built tools to support our pharmacy professionals
+              Purpose-built tools to support pharmacy professionals
             </p>
           </div>
 
@@ -228,7 +228,7 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-              Supporting Walgreens Operations
+              Supporting Pharmacy Operations
             </h2>
             <p className="text-xl text-blue-100">
               System performance and usage across our network
@@ -264,7 +264,7 @@ const Landing = () => {
               Ready to Get Started?
             </h2>
             <p className="text-xl text-gray-600 mb-8">
-              Access the IC+ System to begin managing your pharmacy operations
+              Access the Pulse RX System to begin managing your pharmacy operations
               or register for a new account if you're a new team member.
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
@@ -294,11 +294,11 @@ const Landing = () => {
           <div className="flex flex-col lg:flex-row justify-between items-center">
             <div className="flex items-center space-x-4 mb-8 lg:mb-0">
               <div className="w-12 h-12 bg-gradient-to-br from-walgreens-red to-red-600 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-xl">IC+</span>
+                <span className="text-white font-bold text-xl">P</span>
               </div>
               <div>
-                <span className="text-2xl font-bold">IC+ System</span>
-                <p className="text-gray-400">Walgreens Internal Platform</p>
+                <span className="text-2xl font-bold">Pulse RX</span>
+                <p className="text-gray-400">Modern Pharmacy Platform</p>
               </div>
             </div>
 
@@ -310,7 +310,7 @@ const Landing = () => {
           </div>
 
           <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 Walgreens IC+ System. Internal Use Only. | Secure • Reliable • Compliant</p>
+            <p>&copy; 2024 Pulse RX System. All rights reserved. | Secure • Reliable • Compliant</p>
           </div>
         </div>
       </footer>

@@ -109,7 +109,7 @@ const Header = () => {
                 <span className="text-white font-bold text-sm">P</span>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">PulseRx</h1>
+                <h1 className="text-xl font-bold text-gray-900">Pulse RX</h1>
               </div>
             </div>
 

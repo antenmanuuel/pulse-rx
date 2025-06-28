@@ -55,13 +55,14 @@ const Register = () => {
       formData.firstName,
       formData.lastName,
       formData.email,
-      formData.password
+      formData.password,
+      formData.role
     );
 
     if (success) {
       toast({
         title: "Registration Successful",
-        description: "Welcome to IC+ System!"
+        description: "Welcome to Pulse RX!"
       });
       navigate('/');
     } else {
@@ -87,11 +88,11 @@ const Register = () => {
           <div className="mb-8">
             <div className="flex items-center space-x-4 mb-6">
               <div className="w-16 h-16 bg-gradient-to-br from-walgreens-blue to-blue-600 rounded-2xl flex items-center justify-center shadow-2xl">
-                <span className="text-white font-bold text-2xl">IC+</span>
+                <span className="text-white font-bold text-2xl">P</span>
               </div>
               <div>
-                <h1 className="text-3xl font-bold">IC+ System</h1>
-                <p className="text-red-100">Walgreens Internal Platform</p>
+                <h1 className="text-3xl font-bold">Pulse RX</h1>
+                <p className="text-red-100">Modern Pharmacy Platform</p>
               </div>
             </div>
           </div>
@@ -103,7 +104,7 @@ const Register = () => {
             </h2>
             <p className="text-xl text-red-100 leading-relaxed">
               Create your employee account to access comprehensive pharmacy management tools
-              and join thousands of Walgreens professionals using IC+ System daily.
+              and join thousands of pharmacy professionals using Pulse RX daily.
             </p>
           </div>
 
@@ -131,11 +132,11 @@ const Register = () => {
           <div className="lg:hidden mb-8 text-center">
             <div className="flex items-center justify-center space-x-3 mb-4">
               <div className="w-12 h-12 bg-gradient-to-br from-walgreens-red to-red-600 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-lg">IC+</span>
+                <span className="text-white font-bold text-lg">P</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">IC+ System</h1>
-                <p className="text-sm text-gray-500">Walgreens Internal Platform</p>
+                <h1 className="text-2xl font-bold text-gray-900">Pulse RX</h1>
+                <p className="text-sm text-gray-500">Modern Pharmacy Platform</p>
               </div>
             </div>
           </div>
@@ -156,7 +157,7 @@ const Register = () => {
                 Create Account
               </CardTitle>
               <p className="text-gray-600 text-lg">
-                Register for IC+ System employee access
+                Register for Pulse RX employee access
               </p>
             </CardHeader>
 
@@ -206,7 +207,7 @@ const Register = () => {
                     required
                     value={formData.email}
                     onChange={handleInputChange}
-                    placeholder="Enter your Walgreens email"
+                    placeholder="Enter your email"
                     className="h-12 px-4 border-gray-300 focus:border-walgreens-red focus:ring-walgreens-red"
                   />
                 </div>
@@ -295,7 +296,7 @@ const Register = () => {
                     to="/login"
                     className="inline-flex items-center justify-center w-full h-12 px-6 border-2 border-gray-300 hover:border-walgreens-red text-gray-700 hover:text-walgreens-red font-medium rounded-lg transition-all duration-300 hover:bg-red-50"
                   >
-                    Sign In to IC+ System
+                    Sign In to Pulse RX
                   </Link>
                 </div>
               </div>
@@ -309,7 +310,7 @@ const Register = () => {
               <div className="text-sm">
                 <p className="font-medium text-green-900 mb-1">Security & Compliance</p>
                 <p className="text-green-700">
-                  All accounts are subject to Walgreens security policies and HIPAA compliance requirements.
+                  All accounts are subject to security policies and HIPAA compliance requirements.
                 </p>
               </div>
             </div>

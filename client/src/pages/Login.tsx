@@ -33,7 +33,7 @@ const Login = () => {
     if (success) {
       toast({
         title: "Login Successful",
-        description: "Welcome back to IC+ System!"
+        description: "Welcome back to Pulse RX!"
       });
       navigate('/');
     } else {
@@ -59,11 +59,11 @@ const Login = () => {
           <div className="mb-8">
             <div className="flex items-center space-x-4 mb-6">
               <div className="w-16 h-16 bg-gradient-to-br from-walgreens-red to-red-600 rounded-2xl flex items-center justify-center shadow-2xl">
-                <span className="text-white font-bold text-2xl">IC+</span>
+                <span className="text-white font-bold text-2xl">P</span>
               </div>
               <div>
-                <h1 className="text-3xl font-bold">IC+ System</h1>
-                <p className="text-blue-100">Walgreens Internal Platform</p>
+                <h1 className="text-3xl font-bold">Pulse RX</h1>
+                <p className="text-blue-100">Modern Pharmacy Platform</p>
               </div>
             </div>
           </div>
@@ -75,7 +75,7 @@ const Login = () => {
             </h2>
             <p className="text-xl text-blue-100 leading-relaxed">
               Streamlined operations, enhanced patient care, and comprehensive pharmacy management
-              all in one secure platform designed for Walgreens professionals.
+              all in one secure platform designed for pharmacy professionals.
             </p>
           </div>
 
@@ -103,11 +103,11 @@ const Login = () => {
           <div className="lg:hidden mb-8 text-center">
             <div className="flex items-center justify-center space-x-3 mb-4">
               <div className="w-12 h-12 bg-gradient-to-br from-walgreens-red to-red-600 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-lg">IC+</span>
+                <span className="text-white font-bold text-lg">P</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">IC+ System</h1>
-                <p className="text-sm text-gray-500">Walgreens Internal Platform</p>
+                <h1 className="text-2xl font-bold text-gray-900">Pulse RX</h1>
+                <p className="text-sm text-gray-500">Modern Pharmacy Platform</p>
               </div>
             </div>
           </div>
@@ -128,7 +128,7 @@ const Login = () => {
                 Welcome Back
               </CardTitle>
               <p className="text-gray-600 text-lg">
-                Sign in to access your IC+ System account
+                Sign in to access your Pulse RX account
               </p>
             </CardHeader>
 
@@ -145,7 +145,7 @@ const Login = () => {
                     required
                     value={formData.email}
                     onChange={handleInputChange}
-                    placeholder="Enter your Walgreens email"
+                    placeholder="Enter your email"
                     className="h-12 px-4 border-gray-300 focus:border-walgreens-blue focus:ring-walgreens-blue"
                   />
                 </div>
@@ -190,7 +190,7 @@ const Login = () => {
                       Signing In...
                     </div>
                   ) : (
-                    'Sign In to IC+ System'
+                    'Sign In to Pulse RX'
                   )}
                 </Button>
               </form>
@@ -198,7 +198,7 @@ const Login = () => {
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <div className="text-center">
                   <p className="text-gray-600 mb-4">
-                    New to IC+ System?
+                    New to Pulse RX?
                   </p>
                   <Link
                     to="/register"
