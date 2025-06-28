@@ -33,19 +33,15 @@ import {
   Activity,
   Bell,
   Calendar as CalendarIcon,
-  Eye,
-  Edit3,
-  Save,
-  X,
-  Mail,
-  Shield,
-  CreditCard
+  Eye
 } from 'lucide-react';
 import NewAppointmentDialog from '@/components/NewAppointmentDialog';
 import CheckInDialog from '@/components/CheckInDialog';
 import RescheduleDialog from '@/components/RescheduleDialog';
 import ContactDialog from '@/components/ContactDialog';
 import FilterDialog from '@/components/FilterDialog';
+import AppointmentDetailsDialog from '@/components/AppointmentDetailsDialog';
+import PaginationControls from '@/components/ui/pagination-controls';
 
 interface Appointment {
   id: string;
@@ -205,6 +201,136 @@ const AppointmentsPage = () => {
       reasonForVisit: 'COVID-19 booster vaccination',
       copay: '$0.00',
       appointmentType: 'vaccination'
+    },
+    {
+      id: 'APT006',
+      patient: 'Michael Brown',
+      service: 'Health Screening',
+      time: '9:30 AM',
+      duration: '30 min',
+      status: 'confirmed',
+      phone: '(555) 876-5432',
+      notes: 'Annual wellness check',
+      age: 65,
+      email: 'michael.brown@email.com',
+      arrivalTime: null,
+      serviceIcon: '🏥',
+      priority: 'normal',
+      address: '567 Maple Ave, City, ST 12345',
+      emergencyContact: 'Sarah Brown - (555) 876-5433',
+      insurance: 'Medicare',
+      policyNumber: 'MED567890123',
+      dateOfBirth: '1958-05-22',
+      allergies: 'Penicillin',
+      medications: 'Lisinopril 20mg, Simvastatin 40mg',
+      lastVisit: '2023-05-15',
+      reasonForVisit: 'Annual wellness screening',
+      copay: '$0.00',
+      appointmentType: 'screening'
+    },
+    {
+      id: 'APT007',
+      patient: 'Sarah Johnson',
+      service: 'Medication Consultation',
+      time: '11:00 AM',
+      duration: '15 min',
+      status: 'pending',
+      phone: '(555) 765-4321',
+      notes: 'Review new anxiety medication',
+      age: 42,
+      email: 'sarah.johnson@email.com',
+      arrivalTime: null,
+      serviceIcon: '💊',
+      priority: 'high',
+      address: '789 Oak St, City, ST 12345',
+      emergencyContact: 'Mark Johnson - (555) 765-4322',
+      insurance: 'Cigna',
+      policyNumber: 'CIG678901234',
+      dateOfBirth: '1981-11-30',
+      allergies: 'None known',
+      medications: 'Escitalopram 10mg',
+      lastVisit: '2023-12-15',
+      reasonForVisit: 'Anxiety medication review',
+      copay: '$25.00',
+      appointmentType: 'consultation'
+    },
+    {
+      id: 'APT008',
+      patient: 'Thomas Anderson',
+      service: 'Asthma Check',
+      time: '1:30 PM',
+      duration: '20 min',
+      status: 'confirmed',
+      phone: '(555) 109-8765',
+      notes: 'Seasonal asthma follow-up',
+      age: 33,
+      email: 'thomas.anderson@email.com',
+      arrivalTime: null,
+      serviceIcon: '🫁',
+      priority: 'normal',
+      address: '789 Maple St, City, ST 12345',
+      emergencyContact: 'Emily Anderson - (555) 109-8766',
+      insurance: 'Blue Cross',
+      policyNumber: 'BC901234567',
+      dateOfBirth: '1990-06-12',
+      allergies: 'Pollen, Dust',
+      medications: 'Albuterol inhaler, Fluticasone inhaler',
+      lastVisit: '2023-12-28',
+      reasonForVisit: 'Seasonal asthma follow-up and medication review',
+      copay: '$20.00',
+      appointmentType: 'follow-up'
+    },
+    {
+      id: 'APT009',
+      patient: 'Emily Thompson',
+      service: 'Flu Vaccination',
+      time: '4:00 PM',
+      duration: '10 min',
+      status: 'confirmed',
+      phone: '(555) 987-0123',
+      notes: 'Annual flu shot',
+      age: 36,
+      email: 'emily.thompson@email.com',
+      arrivalTime: null,
+      serviceIcon: '💉',
+      priority: 'normal',
+      address: '456 Birch St, City, ST 12345',
+      emergencyContact: 'James Thompson - (555) 987-0124',
+      insurance: 'Aetna',
+      policyNumber: 'AET012345678',
+      dateOfBirth: '1988-09-05',
+      allergies: 'None known',
+      medications: 'None',
+      lastVisit: '2024-01-14',
+      reasonForVisit: 'Annual flu vaccination',
+      copay: '$0.00',
+      appointmentType: 'vaccination'
+    },
+    {
+      id: 'APT010',
+      patient: 'James Wilson',
+      service: 'Blood Pressure Check',
+      time: '10:00 AM',
+      duration: '10 min',
+      status: 'completed',
+      phone: '(555) 876-0123',
+      notes: 'Monthly BP check - completed',
+      age: 52,
+      email: 'james.wilson@email.com',
+      arrivalTime: '9:55 AM',
+      serviceIcon: '🩺',
+      priority: 'normal',
+      address: '789 Cedar St, City, ST 12345',
+      emergencyContact: 'Linda Wilson - (555) 876-0124',
+      insurance: 'Humana',
+      policyNumber: 'HUM123456789',
+      dateOfBirth: '1972-04-18',
+      allergies: 'Penicillin',
+      medications: 'Lisinopril 10mg, Hydrochlorothiazide 25mg',
+      lastVisit: '2023-12-10',
+      reasonForVisit: 'Monthly blood pressure monitoring',
+      copay: '$15.00',
+      appointmentType: 'screening'
     }
   ]);
 
@@ -219,8 +345,11 @@ const AppointmentsPage = () => {
     showCompleted: false
   });
   const [detailsAppointment, setDetailsAppointment] = useState<Appointment | null>(null);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [editForm, setEditForm] = useState<Partial<Appointment>>({});
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   // Function to get time range for appointment
   const getTimeRange = (time: string) => {
@@ -266,6 +395,7 @@ const AppointmentsPage = () => {
     });
 
     setFilteredAppointments(filtered);
+    setCurrentPage(1); // Reset to first page when filtering
   };
 
   // Effect to apply filters when search term or filters change
@@ -330,22 +460,48 @@ const AppointmentsPage = () => {
 
   const handleNewAppointment = (appointmentData: Partial<Appointment>) => {
     console.log('New appointment created:', appointmentData);
-    // Handle appointment creation
+    // In a real app, you would add the new appointment to the state
+    const newAppointment = {
+      ...appointmentData,
+      id: `APT${Date.now().toString().slice(-6)}`,
+    } as Appointment;
+    
+    setAppointments([...appointments, newAppointment]);
   };
 
   const handleCheckIn = (checkInData: { appointmentId: string; arrivalTime: string }) => {
     console.log('Patient checked in:', checkInData);
-    // Handle check-in
+    // Update the appointment status
+    const updatedAppointments = appointments.map(appointment => 
+      appointment.id === checkInData.appointmentId 
+        ? { ...appointment, status: 'checked-in', arrivalTime: checkInData.arrivalTime } 
+        : appointment
+    );
+    setAppointments(updatedAppointments);
   };
 
   const handleReschedule = (rescheduleData: { appointmentId: string; newTime: string; newDate: string }) => {
     console.log('Appointment rescheduled:', rescheduleData);
-    // Handle reschedule
+    // Update the appointment time
+    const updatedAppointments = appointments.map(appointment => 
+      appointment.id === rescheduleData.appointmentId 
+        ? { ...appointment, time: rescheduleData.newTime } 
+        : appointment
+    );
+    setAppointments(updatedAppointments);
   };
 
-  const handleContact = (contactData: { type: string; message: string; patientId: string }) => {
+  const handleContact = (contactData: { contactId: string; method: string; message: string }) => {
     console.log('Patient contacted:', contactData);
-    // Handle contact
+    // In a real app, you would record the contact attempt
+  };
+
+  const handleEditAppointment = (updatedAppointment: Appointment) => {
+    const updatedAppointments = appointments.map(appointment =>
+      appointment.id === updatedAppointment.id ? updatedAppointment : appointment
+    );
+    setAppointments(updatedAppointments);
+    setDetailsAppointment(updatedAppointment);
   };
 
   const getCurrentDate = () => {
@@ -367,39 +523,19 @@ const AppointmentsPage = () => {
     typeof value === 'boolean' ? value : value !== ''
   );
 
-  // Handler functions for edit functionality
-  const handleStartEdit = () => {
-    if (detailsAppointment) {
-      setEditForm({ ...detailsAppointment });
-      setIsEditMode(true);
-    }
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredAppointments.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
   };
 
-  const handleSaveEdit = () => {
-    if (detailsAppointment && editForm) {
-      const updatedAppointments = appointments.map(appointment =>
-        appointment.id === detailsAppointment.id ? { ...appointment, ...editForm } as Appointment : appointment
-      );
-      setAppointments(updatedAppointments);
-      setFilteredAppointments(updatedAppointments);
-      setDetailsAppointment({ ...detailsAppointment, ...editForm } as Appointment);
-      setIsEditMode(false);
-      setEditForm({});
-
-      console.log('Appointment updated:', editForm);
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setIsEditMode(false);
-    setEditForm({});
-  };
-
-  const handleEditFormChange = (field: string, value: string) => {
-    setEditForm(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to first page when changing items per page
   };
 
   return (
@@ -451,7 +587,10 @@ const AppointmentsPage = () => {
                 <CardTitle className="text-2xl font-bold text-gray-900">
                   Today's Schedule
                 </CardTitle>
-                <p className="text-gray-600">{getCurrentDate()}</p>
+                <p className="text-gray-600">
+                  {getCurrentDate()} • 
+                  Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredAppointments.length)} of {filteredAppointments.length}
+                </p>
               </div>
             </div>
           </CardHeader>
@@ -519,7 +658,7 @@ const AppointmentsPage = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {filteredAppointments.map((appointment) => (
+                {currentItems.map((appointment) => (
                   <div key={appointment.id} className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md transition-all duration-200 hover:border-gray-300">
                     <div className="flex items-start justify-between">
                       <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -611,7 +750,10 @@ const AppointmentsPage = () => {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => setDetailsAppointment(appointment)}
+                              onClick={() => {
+                                setDetailsAppointment(appointment);
+                                setDetailsDialogOpen(true);
+                              }}
                               className="border-blue-300 hover:border-blue-400 hover:bg-blue-50 text-blue-600"
                             >
                               <Eye className="w-4 h-4 mr-1" />
@@ -632,433 +774,44 @@ const AppointmentsPage = () => {
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
 
-        {/* Appointment Details Dialog */}
-        <Dialog open={!!detailsAppointment} onOpenChange={() => {
-          setDetailsAppointment(null);
-          setIsEditMode(false);
-          setEditForm({});
-        }}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-gray-900 flex items-center">
-                <CalendarCheck className="w-6 h-6 mr-2 text-walgreens-blue" />
-                Appointment Details
-                {detailsAppointment && (
-                  <Badge className={`ml-3 ${getStatusColor(detailsAppointment.status)} border font-medium`}>
-                    {getStatusIcon(detailsAppointment.status)}
-                    <span className="ml-1 capitalize">{detailsAppointment.status.replace('-', ' ')}</span>
-                  </Badge>
-                )}
-              </DialogTitle>
-            </DialogHeader>
-
-            {detailsAppointment && (
-              <div className="space-y-6">
-                {/* Action Buttons */}
-                <div className="flex justify-between items-center">
-                  <div className="text-sm text-gray-600">
-                    Appointment ID: <span className="font-mono font-medium">{detailsAppointment.id}</span>
-                  </div>
-                  <div className="flex space-x-2">
-                    {!isEditMode ? (
-                      <Button
-                        onClick={handleStartEdit}
-                        className="bg-walgreens-blue hover:bg-blue-700 text-white"
-                      >
-                        <Edit3 className="w-4 h-4 mr-2" />
-                        Edit
-                      </Button>
-                    ) : (
-                      <>
-                        <Button
-                          onClick={handleSaveEdit}
-                          className="bg-green-600 hover:bg-green-700 text-white"
-                        >
-                          <Save className="w-4 h-4 mr-2" />
-                          Save
-                        </Button>
-                        <Button
-                          onClick={handleCancelEdit}
-                          variant="outline"
-                          className="border-gray-300 hover:bg-gray-50"
-                        >
-                          <X className="w-4 h-4 mr-2" />
-                          Cancel
-                        </Button>
-                      </>
-                    )}
-                  </div>
+            {/* Pagination Controls */}
+            {filteredAppointments.length > 0 && (
+              <div className="mt-6 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-600">Items per page:</span>
+                  <select 
+                    value={itemsPerPage} 
+                    onChange={handleItemsPerPageChange}
+                    className="border border-gray-300 rounded-md text-sm p-1 focus:border-walgreens-blue focus:ring-walgreens-blue"
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                  </select>
                 </div>
-
-                <Separator />
-
-                {/* Patient Information */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <User className="w-5 h-5 mr-2 text-blue-600" />
-                    Patient Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Patient Name</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.patient || ''}
-                          onChange={(e) => handleEditFormChange('patient', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsAppointment.patient}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Age</Label>
-                      {isEditMode ? (
-                        <Input
-                          type="number"
-                          value={editForm.age || ''}
-                          onChange={(e) => handleEditFormChange('age', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsAppointment.age} years old</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Date of Birth</Label>
-                      {isEditMode ? (
-                        <Input
-                          type="date"
-                          value={editForm.dateOfBirth || ''}
-                          onChange={(e) => handleEditFormChange('dateOfBirth', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsAppointment.dateOfBirth}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Phone</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.phone || ''}
-                          onChange={(e) => handleEditFormChange('phone', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsAppointment.phone}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Email</Label>
-                      {isEditMode ? (
-                        <Input
-                          type="email"
-                          value={editForm.email || ''}
-                          onChange={(e) => handleEditFormChange('email', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsAppointment.email}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Address</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.address || ''}
-                          onChange={(e) => handleEditFormChange('address', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsAppointment.address}</p>
-                      )}
-                    </div>
-                    <div className="md:col-span-2">
-                      <Label className="text-sm font-medium text-gray-700">Emergency Contact</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.emergencyContact || ''}
-                          onChange={(e) => handleEditFormChange('emergencyContact', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsAppointment.emergencyContact}</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Appointment Details */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <CalendarIcon className="w-5 h-5 mr-2 text-green-600" />
-                    Appointment Details
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Service</Label>
-                      {isEditMode ? (
-                        <Select
-                          value={editForm.service || ''}
-                          onValueChange={(value) => handleEditFormChange('service', value)}
-                        >
-                          <SelectTrigger className="mt-1">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Medication Consultation">Medication Consultation</SelectItem>
-                            <SelectItem value="Flu Vaccination">Flu Vaccination</SelectItem>
-                            <SelectItem value="COVID Vaccination">COVID Vaccination</SelectItem>
-                            <SelectItem value="Blood Pressure Check">Blood Pressure Check</SelectItem>
-                            <SelectItem value="Medication Synchronization">Medication Synchronization</SelectItem>
-                            <SelectItem value="Health Screening">Health Screening</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <p className="mt-1 text-gray-900 flex items-center">
-                          <span className="text-xl mr-2">{detailsAppointment.serviceIcon}</span>
-                          {detailsAppointment.service}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Appointment Type</Label>
-                      {isEditMode ? (
-                        <Select
-                          value={editForm.appointmentType || ''}
-                          onValueChange={(value) => handleEditFormChange('appointmentType', value)}
-                        >
-                          <SelectTrigger className="mt-1">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="consultation">Consultation</SelectItem>
-                            <SelectItem value="vaccination">Vaccination</SelectItem>
-                            <SelectItem value="screening">Screening</SelectItem>
-                            <SelectItem value="follow-up">Follow-up</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <p className="mt-1 text-gray-900 capitalize">{detailsAppointment.appointmentType}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Time</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.time || ''}
-                          onChange={(e) => handleEditFormChange('time', e.target.value)}
-                          className="mt-1"
-                          placeholder="e.g., 9:00 AM"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsAppointment.time}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Duration</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.duration || ''}
-                          onChange={(e) => handleEditFormChange('duration', e.target.value)}
-                          className="mt-1"
-                          placeholder="e.g., 15 min"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsAppointment.duration}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Status</Label>
-                      {isEditMode ? (
-                        <Select
-                          value={editForm.status || ''}
-                          onValueChange={(value) => handleEditFormChange('status', value)}
-                        >
-                          <SelectTrigger className="mt-1">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="confirmed">Confirmed</SelectItem>
-                            <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="checked-in">Checked In</SelectItem>
-                            <SelectItem value="completed">Completed</SelectItem>
-                            <SelectItem value="cancelled">Cancelled</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <p className="mt-1 text-gray-900 capitalize">{detailsAppointment.status.replace('-', ' ')}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Priority</Label>
-                      {isEditMode ? (
-                        <Select
-                          value={editForm.priority || ''}
-                          onValueChange={(value) => handleEditFormChange('priority', value)}
-                        >
-                          <SelectTrigger className="mt-1">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="high">High</SelectItem>
-                            <SelectItem value="normal">Normal</SelectItem>
-                            <SelectItem value="low">Low</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <p className="mt-1 text-gray-900 capitalize">{detailsAppointment.priority}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Copay</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.copay || ''}
-                          onChange={(e) => handleEditFormChange('copay', e.target.value)}
-                          className="mt-1"
-                          placeholder="e.g., $25.00"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsAppointment.copay}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Last Visit</Label>
-                      {isEditMode ? (
-                        <Input
-                          type="date"
-                          value={editForm.lastVisit || ''}
-                          onChange={(e) => handleEditFormChange('lastVisit', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsAppointment.lastVisit}</p>
-                      )}
-                    </div>
-                    {detailsAppointment.arrivalTime && (
-                      <div className="md:col-span-2">
-                        <Label className="text-sm font-medium text-gray-700">Arrival Time</Label>
-                        <p className="mt-1 text-green-700 font-medium">
-                          <CheckCircle2 className="w-4 h-4 inline mr-1" />
-                          Arrived at {detailsAppointment.arrivalTime}
-                        </p>
-                      </div>
-                    )}
-                    <div className="md:col-span-2">
-                      <Label className="text-sm font-medium text-gray-700">Reason for Visit</Label>
-                      {isEditMode ? (
-                        <Textarea
-                          value={editForm.reasonForVisit || ''}
-                          onChange={(e) => handleEditFormChange('reasonForVisit', e.target.value)}
-                          className="mt-1"
-                          rows={2}
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsAppointment.reasonForVisit}</p>
-                      )}
-                    </div>
-                    <div className="md:col-span-2">
-                      <Label className="text-sm font-medium text-gray-700">Notes</Label>
-                      {isEditMode ? (
-                        <Textarea
-                          value={editForm.notes || ''}
-                          onChange={(e) => handleEditFormChange('notes', e.target.value)}
-                          className="mt-1"
-                          rows={2}
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsAppointment.notes}</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Insurance Information */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <Shield className="w-5 h-5 mr-2 text-purple-600" />
-                    Insurance Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Insurance Provider</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.insurance || ''}
-                          onChange={(e) => handleEditFormChange('insurance', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsAppointment.insurance}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Policy Number</Label>
-                      {isEditMode ? (
-                        <Input
-                          value={editForm.policyNumber || ''}
-                          onChange={(e) => handleEditFormChange('policyNumber', e.target.value)}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900 font-mono">{detailsAppointment.policyNumber}</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Medical Information */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <Activity className="w-5 h-5 mr-2 text-red-600" />
-                    Medical Information
-                  </h3>
-                  <div className="space-y-4">
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Allergies</Label>
-                      {isEditMode ? (
-                        <Textarea
-                          value={editForm.allergies || ''}
-                          onChange={(e) => handleEditFormChange('allergies', e.target.value)}
-                          className="mt-1"
-                          rows={2}
-                          placeholder="List any known allergies..."
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsAppointment.allergies}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Current Medications</Label>
-                      {isEditMode ? (
-                        <Textarea
-                          value={editForm.medications || ''}
-                          onChange={(e) => handleEditFormChange('medications', e.target.value)}
-                          className="mt-1"
-                          rows={3}
-                          placeholder="List current medications and dosages..."
-                        />
-                      ) : (
-                        <p className="mt-1 text-gray-900">{detailsAppointment.medications}</p>
-                      )}
-                    </div>
-                  </div>
+                
+                <PaginationControls 
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+                
+                <div className="text-sm text-gray-600">
+                  Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredAppointments.length)} of {filteredAppointments.length}
                 </div>
               </div>
             )}
-          </DialogContent>
-        </Dialog>
+          </CardContent>
+        </Card>
+
+        {/* Appointment Details Dialog - Using the new component */}
+        <AppointmentDetailsDialog
+          appointment={detailsAppointment}
+          open={detailsDialogOpen}
+          onOpenChange={setDetailsDialogOpen}
+          onEditAppointment={handleEditAppointment}
+        />
       </div>
     </Layout>
   );
