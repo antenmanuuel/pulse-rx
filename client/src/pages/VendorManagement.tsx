@@ -14,6 +14,7 @@ import AddVendorDialog from '@/components/AddVendorDialog';
 import CreatePODialog from '@/components/CreatePODialog';
 import PurchaseOrderDetailsDialog from '@/components/PurchaseOrderDetailsDialog';
 import PurchaseOrderTable from '@/components/PurchaseOrderTable';
+import VendorDetailsDialog from '@/components/VendorDetailsDialog';
 import { useToast } from '@/hooks/use-toast';
 import {
   Building2,
@@ -254,6 +255,11 @@ const VendorManagement = () => {
       style: 'currency',
       currency: 'USD'
     }).format(amount);
+  };
+
+  const handleCreatePOFromVendor = (vendor: Vendor) => {
+    setSelectedVendor(vendor);
+    setCreatePODialogOpen(true);
   };
 
   return (
@@ -575,173 +581,14 @@ const VendorManagement = () => {
         </Tabs>
 
         {/* View Vendor Details Dialog */}
-        <Dialog open={viewDetailsDialogOpen} onOpenChange={setViewDetailsDialogOpen}>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Vendor Details</DialogTitle>
-            </DialogHeader>
-            {selectedVendor && (
-              <div className="space-y-6">
-                {/* Header with Basic Info */}
-                <div className="flex items-center space-x-6 p-4 bg-gray-50 rounded-lg">
-                  <div className="w-16 h-16 bg-gradient-to-br from-walgreens-blue to-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg">
-                    <Building2 className="w-8 h-8" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-gray-900">
-                      {selectedVendor.name}
-                    </h3>
-                    <p className="text-lg text-gray-600">{selectedVendor.category}</p>
-                    <div className="flex items-center space-x-3 mt-2">
-                      <Badge className={getStatusColor(selectedVendor.status)}>
-                        {selectedVendor.status.charAt(0).toUpperCase() + selectedVendor.status.slice(1)}
-                      </Badge>
-                      <span className="text-sm text-gray-500">ID: {selectedVendor.id}</span>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="flex items-center space-x-1">
-                      <Star className="w-5 h-5 text-yellow-500 fill-current" />
-                      <span className="text-lg font-semibold text-gray-900">
-                        {selectedVendor.performance.rating}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600">Vendor Rating</p>
-                  </div>
-                </div>
-
-                {/* Information Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Contact Information */}
-                  <Card className="border border-gray-200">
-                    <CardHeader>
-                      <CardTitle className="text-lg">Contact Information</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div className="flex items-center space-x-3">
-                        <User className="w-4 h-4 text-gray-400" />
-                        <div>
-                          <p className="text-sm text-gray-600">Contact Person</p>
-                          <p className="font-medium">{selectedVendor.contact.contactPerson}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Mail className="w-4 h-4 text-gray-400" />
-                        <div>
-                          <p className="text-sm text-gray-600">Email</p>
-                          <p className="font-medium">{selectedVendor.contact.email}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Phone className="w-4 h-4 text-gray-400" />
-                        <div>
-                          <p className="text-sm text-gray-600">Phone</p>
-                          <p className="font-medium">{selectedVendor.contact.phone}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-3">
-                        <MapPin className="w-4 h-4 text-gray-400 mt-1" />
-                        <div>
-                          <p className="text-sm text-gray-600">Address</p>
-                          <p className="font-medium">
-                            {selectedVendor.address.street}, {selectedVendor.address.city}, {selectedVendor.address.state} {selectedVendor.address.zipCode}
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Business Information */}
-                  <Card className="border border-gray-200">
-                    <CardHeader>
-                      <CardTitle className="text-lg">Business Information</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div className="flex items-center space-x-3">
-                        <FileText className="w-4 h-4 text-gray-400" />
-                        <div>
-                          <p className="text-sm text-gray-600">Tax ID</p>
-                          <p className="font-medium">{selectedVendor.business.taxId}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Calendar className="w-4 h-4 text-gray-400" />
-                        <div>
-                          <p className="text-sm text-gray-600">Payment Terms</p>
-                          <p className="font-medium">{selectedVendor.business.paymentTerms}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <DollarSign className="w-4 h-4 text-gray-400" />
-                        <div>
-                          <p className="text-sm text-gray-600">Credit Limit</p>
-                          <p className="font-medium">{formatCurrency(selectedVendor.business.creditLimit)}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Performance Metrics */}
-                <Card className="border border-gray-200">
-                  <CardHeader>
-                    <CardTitle className="text-lg">Performance Metrics</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="p-4 bg-blue-50 rounded-lg">
-                        <p className="text-sm text-blue-600 font-medium">Rating</p>
-                        <p className="text-2xl font-bold text-blue-900">{selectedVendor.performance.rating}/5</p>
-                      </div>
-                      <div className="p-4 bg-green-50 rounded-lg">
-                        <p className="text-sm text-green-600 font-medium">On-Time Delivery</p>
-                        <p className="text-2xl font-bold text-green-900">{selectedVendor.performance.onTimeDelivery}%</p>
-                      </div>
-                      <div className="p-4 bg-purple-50 rounded-lg">
-                        <p className="text-sm text-purple-600 font-medium">Total Orders</p>
-                        <p className="text-2xl font-bold text-purple-900">{selectedVendor.performance.totalOrders}</p>
-                      </div>
-                      <div className="p-4 bg-orange-50 rounded-lg">
-                        <p className="text-sm text-orange-600 font-medium">Total Spent</p>
-                        <p className="text-2xl font-bold text-orange-900">{formatCurrency(selectedVendor.performance.totalSpent)}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Notes */}
-                {selectedVendor.notes && (
-                  <Card className="border border-gray-200">
-                    <CardHeader>
-                      <CardTitle className="text-lg">Notes</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-800">{selectedVendor.notes}</p>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Actions */}
-                <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setViewDetailsDialogOpen(false)}>
-                    Close
-                  </Button>
-                  <Button 
-                    onClick={() => {
-                      setViewDetailsDialogOpen(false);
-                      setSelectedVendor(selectedVendor);
-                      setCreatePODialogOpen(true);
-                    }} 
-                    className="bg-walgreens-red hover:bg-red-600"
-                  >
-                    <FileText className="w-4 h-4 mr-2" />
-                    Create Purchase Order
-                  </Button>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
+        <VendorDetailsDialog
+          vendor={selectedVendor}
+          open={viewDetailsDialogOpen}
+          onOpenChange={setViewDetailsDialogOpen}
+          onCreatePO={handleCreatePOFromVendor}
+          formatCurrency={formatCurrency}
+          getStatusColor={getStatusColor}
+        />
 
         {/* Create PO Dialog */}
         <CreatePODialog 
