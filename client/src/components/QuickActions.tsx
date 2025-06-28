@@ -5,9 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import NewPrescriptionDialog from '@/components/NewPrescriptionDialog';
 import {
-  Plus,
   Search,
-  AlertCircle,
+  AlertTriangle,
   Package,
   ArrowRight,
   Activity,
@@ -63,7 +62,7 @@ const QuickActions = () => {
       priority: 4
     },
     {
-      icon: AlertCircle,
+      icon: AlertTriangle,
       label: 'Alerts',
       description: 'View urgent notifications',
       gradient: 'from-red-500 to-pink-600',
