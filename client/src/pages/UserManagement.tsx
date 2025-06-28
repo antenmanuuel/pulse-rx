@@ -12,6 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import PaginationControls from '@/components/ui/pagination-controls';
+import { staffData, StaffMember } from '@/data/staffData';
 import {
   Users,
   Search,
@@ -29,19 +30,14 @@ import {
   AlertTriangle,
   Lock,
   Unlock,
-  MoreHorizontal,
-  Filter
+  Save
 } from 'lucide-react';
 
-interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: 'admin' | 'user';
-  status: 'active' | 'inactive';
+// Extend StaffMember with user-specific properties
+interface UserWithAccess extends StaffMember {
+  userRole: 'admin' | 'user';
+  status: 'active' | 'inactive' | 'on-leave' | 'terminated';
   lastLogin: string;
-  createdAt: string;
   permissions: string[];
 }
 
@@ -50,7 +46,7 @@ const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserWithAccess | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
@@ -63,7 +59,7 @@ const UserManagement = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'user',
+    userRole: 'user',
     status: 'active',
     permissions: [] as string[]
   });
@@ -72,86 +68,47 @@ const UserManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  // Mock user data
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: '1',
-      firstName: 'Sarah',
-      lastName: 'Johnson',
-      email: 'sarah.johnson@walgreens.com',
-      role: 'user',
-      status: 'active',
-      lastLogin: '2024-01-16 09:30 AM',
-      createdAt: '2020-01-15',
-      permissions: ['prescription_view', 'prescription_edit', 'patient_view', 'inventory_view']
-    },
-    {
-      id: '2',
-      firstName: 'Mike',
-      lastName: 'Chen',
-      email: 'mike.chen@walgreens.com',
-      role: 'user',
-      status: 'active',
-      lastLogin: '2024-01-16 08:15 AM',
-      createdAt: '2021-03-22',
-      permissions: ['prescription_view', 'patient_view', 'inventory_view']
-    },
-    {
-      id: '3',
-      firstName: 'Admin',
-      lastName: 'User',
-      email: 'admin@walgreens.com',
-      role: 'admin',
-      status: 'active',
-      lastLogin: '2024-01-16 10:45 AM',
-      createdAt: '2019-11-05',
-      permissions: ['all']
-    },
-    {
-      id: '4',
-      firstName: 'Emily',
-      lastName: 'Rodriguez',
-      email: 'emily.rodriguez@walgreens.com',
-      role: 'user',
-      status: 'inactive',
-      lastLogin: '2023-12-15 04:45 PM',
-      createdAt: '2023-09-01',
-      permissions: ['prescription_view', 'patient_view']
-    },
-    {
-      id: '5',
-      firstName: 'James',
-      lastName: 'Wilson',
-      email: 'james.wilson@walgreens.com',
-      role: 'admin',
-      status: 'active',
-      lastLogin: '2024-01-10 06:20 PM',
-      createdAt: '2019-05-10',
-      permissions: ['all']
-    },
-    {
-      id: '6',
-      firstName: 'Jessica',
-      lastName: 'Martinez',
-      email: 'jessica.martinez@walgreens.com',
-      role: 'user',
-      status: 'active',
-      lastLogin: '2024-01-16 10:45 AM',
-      createdAt: '2020-06-15',
-      permissions: ['prescription_view', 'prescription_edit', 'patient_view', 'patient_edit', 'inventory_view']
-    },
-    {
-      id: '7',
-      firstName: 'David',
-      lastName: 'Thompson',
-      email: 'david.thompson@walgreens.com',
-      role: 'user',
-      status: 'inactive',
-      lastLogin: '2023-11-20 09:15 AM',
-      createdAt: '2022-02-10',
-      permissions: ['prescription_view', 'patient_view']
+  // Convert staff data to user data
+  const [users, setUsers] = useState<UserWithAccess[]>([]);
+
+  // Initialize users from staff data
+  useEffect(() => {
+    const initialUsers: UserWithAccess[] = staffData.map(staff => ({
+      ...staff,
+      userRole: staff.role === 'Store Manager' || staff.role === 'Assistant Manager' ? 'admin' : 'user',
+      status: staff.status as 'active' | 'inactive' | 'on-leave' | 'terminated',
+      lastLogin: staff.lastLogin || 'Never',
+      permissions: staff.role === 'Store Manager' || staff.role === 'Assistant Manager' 
+        ? ['all'] 
+        : ['prescription_view', 'patient_view', 'inventory_view']
+    }));
+    
+    // Add admin user if not present
+    if (!initialUsers.some(user => user.email === 'admin@walgreens.com')) {
+      initialUsers.push({
+        id: 'EMP-ADMIN',
+        firstName: 'Admin',
+        lastName: 'User',
+        email: 'admin@walgreens.com',
+        phone: '(555) 000-0000',
+        role: 'Administrator',
+        userRole: 'admin',
+        status: 'active',
+        department: 'Management',
+        hireDate: '2019-01-01',
+        lastLogin: '2024-01-16 10:45 AM',
+        certifications: ['System Administration'],
+        performance: 100,
+        address: 'Corporate HQ',
+        emergencyContact: 'IT Department',
+        schedule: 'Full-time',
+        avatar: null,
+        permissions: ['all']
+      });
     }
-  ]);
+    
+    setUsers(initialUsers);
+  }, []);
 
   // Available permissions
   const availablePermissions = [
@@ -178,7 +135,7 @@ const UserManagement = () => {
       user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = filterRole === 'all' || user.role === filterRole;
+    const matchesRole = filterRole === 'all' || user.userRole === filterRole;
     const matchesStatus = filterStatus === 'all' || user.status === filterStatus;
     return matchesSearch && matchesRole && matchesStatus;
   });
@@ -202,6 +159,8 @@ const UserManagement = () => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800 border-green-200';
       case 'inactive': return 'bg-red-100 text-red-800 border-red-200';
+      case 'on-leave': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'terminated': return 'bg-red-100 text-red-800 border-red-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
@@ -222,14 +181,14 @@ const UserManagement = () => {
       email: '',
       password: '',
       confirmPassword: '',
-      role: 'user',
+      userRole: 'user',
       status: 'active',
       permissions: []
     });
     setIsAddUserDialogOpen(true);
   };
 
-  const handleEditUser = (user: User) => {
+  const handleEditUser = (user: UserWithAccess) => {
     setSelectedUser(user);
     setUserForm({
       firstName: user.firstName,
@@ -237,27 +196,27 @@ const UserManagement = () => {
       email: user.email,
       password: '',
       confirmPassword: '',
-      role: user.role,
+      userRole: user.userRole,
       status: user.status,
       permissions: user.permissions
     });
     setIsEditDialogOpen(true);
   };
 
-  const handleViewUser = (user: User) => {
+  const handleViewUser = (user: UserWithAccess) => {
     setSelectedUser(user);
     setIsViewDialogOpen(true);
   };
 
-  const handleDeleteUser = (user: User) => {
+  const handleDeleteUser = (user: UserWithAccess) => {
     setSelectedUser(user);
     setIsDeleteDialogOpen(true);
   };
 
-  const handleToggleUserStatus = (user: User) => {
+  const handleToggleUserStatus = (user: UserWithAccess) => {
     const newStatus = user.status === 'active' ? 'inactive' : 'active';
     const updatedUsers = users.map(u => 
-      u.id === user.id ? { ...u, status: newStatus as 'active' | 'inactive' } : u
+      u.id === user.id ? { ...u, status: newStatus as 'active' | 'inactive' | 'on-leave' | 'terminated' } : u
     );
     setUsers(updatedUsers);
     
@@ -299,14 +258,14 @@ const UserManagement = () => {
     if (role === 'admin') {
       setUserForm({
         ...userForm,
-        role: role as 'admin' | 'user',
+        userRole: role as 'admin' | 'user',
         permissions: ['all']
       });
     } else {
       // If changing from admin to user, reset permissions
       setUserForm({
         ...userForm,
-        role: role as 'admin' | 'user',
+        userRole: role as 'admin' | 'user',
         permissions: userForm.permissions.includes('all') ? [] : userForm.permissions
       });
     }
@@ -334,16 +293,35 @@ const UserManagement = () => {
       return;
     }
     
+    // Check if email already exists
+    if (users.some(user => user.email.toLowerCase() === userForm.email.toLowerCase())) {
+      toast({
+        title: "Email Already Exists",
+        description: "A user with this email already exists.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     // Create new user
-    const newUser: User = {
-      id: `U${Date.now().toString().slice(-6)}`,
+    const newUser: UserWithAccess = {
+      id: `EMP-${Date.now().toString().slice(-6)}`,
       firstName: userForm.firstName,
       lastName: userForm.lastName,
       email: userForm.email,
-      role: userForm.role,
-      status: userForm.status as 'active' | 'inactive',
+      phone: '(555) 000-0000', // Default phone
+      role: userForm.userRole === 'admin' ? 'Administrator' : 'Staff Member',
+      userRole: userForm.userRole,
+      status: userForm.status as 'active' | 'inactive' | 'on-leave' | 'terminated',
+      department: 'Pharmacy',
+      hireDate: new Date().toISOString().split('T')[0],
       lastLogin: 'Never',
-      createdAt: new Date().toISOString().split('T')[0],
+      certifications: [],
+      performance: 0,
+      address: '',
+      emergencyContact: '',
+      schedule: 'Full-time',
+      avatar: null,
       permissions: userForm.permissions
     };
     
@@ -380,6 +358,19 @@ const UserManagement = () => {
       return;
     }
     
+    // Check if email already exists (excluding the current user)
+    if (users.some(user => 
+      user.email.toLowerCase() === userForm.email.toLowerCase() && 
+      user.id !== selectedUser.id
+    )) {
+      toast({
+        title: "Email Already Exists",
+        description: "A user with this email already exists.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     // Update user
     const updatedUsers = users.map(user => 
       user.id === selectedUser.id 
@@ -388,8 +379,9 @@ const UserManagement = () => {
             firstName: userForm.firstName,
             lastName: userForm.lastName,
             email: userForm.email,
-            role: userForm.role,
-            status: userForm.status as 'active' | 'inactive',
+            userRole: userForm.userRole,
+            role: userForm.userRole === 'admin' ? 'Administrator' : user.role,
+            status: userForm.status as 'active' | 'inactive' | 'on-leave' | 'terminated',
             permissions: userForm.permissions
           }
         : user
@@ -438,7 +430,7 @@ const UserManagement = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Inactive Users</p>
-                  <p className="text-2xl font-bold text-red-600">{users.filter(u => u.status === 'inactive').length}</p>
+                  <p className="text-2xl font-bold text-red-600">{users.filter(u => u.status !== 'active').length}</p>
                 </div>
                 <XCircle className="w-8 h-8 text-red-500" />
               </div>
@@ -450,7 +442,7 @@ const UserManagement = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Administrators</p>
-                  <p className="text-2xl font-bold text-purple-600">{users.filter(u => u.role === 'admin').length}</p>
+                  <p className="text-2xl font-bold text-purple-600">{users.filter(u => u.userRole === 'admin').length}</p>
                 </div>
                 <Shield className="w-8 h-8 text-purple-500" />
               </div>
@@ -489,6 +481,8 @@ const UserManagement = () => {
                   <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="active">Active</SelectItem>
                   <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="on-leave">On Leave</SelectItem>
+                  <SelectItem value="terminated">Terminated</SelectItem>
                 </SelectContent>
               </Select>
               <Button className="bg-walgreens-red hover:bg-red-600" onClick={handleAddUser}>
@@ -538,8 +532,8 @@ const UserManagement = () => {
                       </td>
                       <td className="p-3 text-gray-800">{user.email}</td>
                       <td className="p-3">
-                        <Badge className={getRoleColor(user.role)}>
-                          {user.role === 'admin' ? 'Administrator' : 'Regular User'}
+                        <Badge className={getRoleColor(user.userRole)}>
+                          {user.userRole === 'admin' ? 'Administrator' : 'Regular User'}
                         </Badge>
                       </td>
                       <td className="p-3">
@@ -660,8 +654,8 @@ const UserManagement = () => {
                       {selectedUser.firstName} {selectedUser.lastName}
                     </h3>
                     <div className="flex items-center space-x-2 mt-1">
-                      <Badge className={getRoleColor(selectedUser.role)}>
-                        {selectedUser.role === 'admin' ? 'Administrator' : 'Regular User'}
+                      <Badge className={getRoleColor(selectedUser.userRole)}>
+                        {selectedUser.userRole === 'admin' ? 'Administrator' : 'Regular User'}
                       </Badge>
                       <Badge className={getStatusColor(selectedUser.status)}>
                         {selectedUser.status.charAt(0).toUpperCase() + selectedUser.status.slice(1)}
@@ -692,8 +686,8 @@ const UserManagement = () => {
                     <div className="flex items-center space-x-3">
                       <Calendar className="w-5 h-5 text-gray-400" />
                       <div>
-                        <p className="text-sm text-gray-600">Created On</p>
-                        <p className="font-medium text-gray-900">{selectedUser.createdAt}</p>
+                        <p className="text-sm text-gray-600">Hire Date</p>
+                        <p className="font-medium text-gray-900">{selectedUser.hireDate}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
@@ -701,6 +695,25 @@ const UserManagement = () => {
                       <div>
                         <p className="text-sm text-gray-600">Last Login</p>
                         <p className="font-medium text-gray-900">{selectedUser.lastLogin}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Job Information */}
+                <div className="space-y-3">
+                  <h4 className="font-medium text-gray-900">Job Information</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center space-x-3">
+                      <div>
+                        <p className="text-sm text-gray-600">Role</p>
+                        <p className="font-medium text-gray-900">{selectedUser.role}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div>
+                        <p className="text-sm text-gray-600">Department</p>
+                        <p className="font-medium text-gray-900">{selectedUser.department}</p>
                       </div>
                     </div>
                   </div>
@@ -807,7 +820,7 @@ const UserManagement = () => {
                   <div className="space-y-2">
                     <Label htmlFor="role">Role</Label>
                     <Select 
-                      value={userForm.role} 
+                      value={userForm.userRole} 
                       onValueChange={(value) => handleRoleChange(value)}
                     >
                       <SelectTrigger>
@@ -870,7 +883,7 @@ const UserManagement = () => {
               </div>
 
               {/* Permissions */}
-              {userForm.role !== 'admin' && (
+              {userForm.userRole !== 'admin' && (
                 <div className="space-y-4">
                   <h3 className="font-medium text-gray-900">Permissions</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -895,7 +908,7 @@ const UserManagement = () => {
                 </div>
               )}
 
-              {userForm.role === 'admin' && (
+              {userForm.userRole === 'admin' && (
                 <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
                   <div className="flex items-center space-x-2">
                     <Shield className="w-5 h-5 text-purple-600" />
@@ -972,7 +985,7 @@ const UserManagement = () => {
                     <div className="space-y-2">
                       <Label htmlFor="role">Role</Label>
                       <Select 
-                        value={userForm.role} 
+                        value={userForm.userRole} 
                         onValueChange={(value) => handleRoleChange(value)}
                       >
                         <SelectTrigger>
@@ -1038,11 +1051,31 @@ const UserManagement = () => {
                       />
                       <Label htmlFor="statusInactive" className="cursor-pointer">Inactive</Label>
                     </div>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        id="statusOnLeave"
+                        checked={userForm.status === 'on-leave'}
+                        onChange={() => setUserForm({ ...userForm, status: 'on-leave' })}
+                        className="h-4 w-4 text-walgreens-red focus:ring-walgreens-red"
+                      />
+                      <Label htmlFor="statusOnLeave" className="cursor-pointer">On Leave</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        id="statusTerminated"
+                        checked={userForm.status === 'terminated'}
+                        onChange={() => setUserForm({ ...userForm, status: 'terminated' })}
+                        className="h-4 w-4 text-walgreens-red focus:ring-walgreens-red"
+                      />
+                      <Label htmlFor="statusTerminated" className="cursor-pointer">Terminated</Label>
+                    </div>
                   </div>
                 </div>
 
                 {/* Permissions */}
-                {userForm.role !== 'admin' && (
+                {userForm.userRole !== 'admin' && (
                   <div className="space-y-4">
                     <h3 className="font-medium text-gray-900">Permissions</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -1067,7 +1100,7 @@ const UserManagement = () => {
                   </div>
                 )}
 
-                {userForm.role === 'admin' && (
+                {userForm.userRole === 'admin' && (
                   <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
                     <div className="flex items-center space-x-2">
                       <Shield className="w-5 h-5 text-purple-600" />
