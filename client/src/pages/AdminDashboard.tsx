@@ -33,7 +33,8 @@ import {
     ExternalLink,
     RefreshCw,
     Download,
-    Bell
+    Bell,
+    UserCog
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -199,7 +200,9 @@ const AdminDashboard = () => {
         navigate('/vendor-management');
     };
 
-
+    const handleNavigateToUsers = () => {
+        navigate('/user-management');
+    };
 
     const handleAlertAction = (alertId: number) => {
         switch (alertId) {
@@ -252,6 +255,10 @@ const AdminDashboard = () => {
                     <Button onClick={handleNavigateToVendors} className="bg-blue-600 hover:bg-blue-700">
                         <Building2 className="w-4 h-4 mr-2" />
                         Manage Vendors
+                    </Button>
+                    <Button onClick={handleNavigateToUsers} className="bg-purple-600 hover:bg-purple-700">
+                        <UserCog className="w-4 h-4 mr-2" />
+                        Manage Users
                     </Button>
                     <Button
                         onClick={() => toast({
@@ -624,4 +631,4 @@ const AdminDashboard = () => {
     );
 };
 
-export default AdminDashboard; 
+export default AdminDashboard;
