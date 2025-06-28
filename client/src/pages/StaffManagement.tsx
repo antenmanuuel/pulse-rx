@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import AddStaffDialog from '@/components/AddStaffDialog';
 import EditStaffForm from '@/components/EditStaffForm';
 import AddShiftDialog from '@/components/AddShiftDialog';
 import AddTrainingDialog from '@/components/AddTrainingDialog';
+import PaginationControls from '@/components/ui/pagination-controls';
 import { useToast } from '@/hooks/use-toast';
 import {
   Users,
@@ -42,6 +43,7 @@ import {
   Upload,
   Activity
 } from 'lucide-react';
+import { StaffMember, staffData, ScheduleEntry, scheduleData, TrainingRecord, trainingData } from '@/data/staffData';
 
 const StaffManagement = () => {
   const { toast } = useToast();
@@ -49,168 +51,46 @@ const StaffManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [selectedStaff, setSelectedStaff] = useState<any>(null);
+  const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null);
   const [viewDetailsDialogOpen, setViewDetailsDialogOpen] = useState(false);
   const [editStaffDialogOpen, setEditStaffDialogOpen] = useState(false);
   const [addShiftDialogOpen, setAddShiftDialogOpen] = useState(false);
   const [addTrainingDialogOpen, setAddTrainingDialogOpen] = useState(false);
 
   // Staff data (now as state to allow adding new staff)
-  const [staffMembers, setStaffMembers] = useState([
-    {
-      id: 'EMP-001',
-      firstName: 'Dr. Sarah',
-      lastName: 'Johnson',
-      email: 'sarah.johnson@pulserx.com',
-      phone: '(555) 123-4567',
-      role: 'Pharmacist',
-      status: 'active',
-      department: 'Clinical',
-      hireDate: '2020-01-15',
-      lastLogin: '2024-01-16 09:30 AM',
-      certifications: ['PharmD', 'Immunization Certified', 'MTM Certified'],
-      performance: 95,
-      address: '123 Main St, City, State 12345',
-      emergencyContact: 'John Johnson - (555) 987-6543',
-      schedule: 'Full-time',
-      avatar: null
-    },
-    {
-      id: 'EMP-002',
-      firstName: 'Mike',
-      lastName: 'Chen',
-      email: 'mike.chen@pulserx.com',
-      phone: '(555) 234-5678',
-      role: 'Pharmacy Technician',
-      status: 'active',
-      department: 'Operations',
-      hireDate: '2021-03-22',
-      lastLogin: '2024-01-16 08:15 AM',
-      certifications: ['CPhT', 'Sterile Compounding'],
-      performance: 88,
-      address: '456 Oak Ave, City, State 12345',
-      emergencyContact: 'Lisa Chen - (555) 876-5432',
-      schedule: 'Full-time',
-      avatar: null
-    },
-    {
-      id: 'EMP-003',
-      firstName: 'Emily',
-      lastName: 'Rodriguez',
-      email: 'emily.rodriguez@pulserx.com',
-      phone: '(555) 345-6789',
-      role: 'Pharmacy Intern',
-      status: 'active',
-      department: 'Clinical',
-      hireDate: '2023-09-01',
-      lastLogin: '2024-01-15 04:45 PM',
-      certifications: ['PharmD Student', 'CPR Certified'],
-      performance: 92,
-      address: '789 Pine St, City, State 12345',
-      emergencyContact: 'Maria Rodriguez - (555) 765-4321',
-      schedule: 'Part-time',
-      avatar: null
-    },
-    {
-      id: 'EMP-004',
-      firstName: 'James',
-      lastName: 'Wilson',
-      email: 'james.wilson@pulserx.com',
-      phone: '(555) 456-7890',
-      role: 'Store Manager',
-      status: 'on-leave',
-      department: 'Management',
-      hireDate: '2019-05-10',
-      lastLogin: '2024-01-10 06:20 PM',
-      certifications: ['Pharmacy Management', 'Leadership Certified'],
-      performance: 91,
-      address: '321 Elm Dr, City, State 12345',
-      emergencyContact: 'Susan Wilson - (555) 654-3210',
-      schedule: 'Full-time',
-      avatar: null
-    }
-  ]);
+  const [staffMembers, setStaffMembers] = useState<StaffMember[]>(staffData);
+  const [filteredStaff, setFilteredStaff] = useState<StaffMember[]>(staffMembers);
+  
+  // Schedule data
+  const [weeklySchedule, setWeeklySchedule] = useState<ScheduleEntry[]>(scheduleData);
+  
+  // Training records
+  const [trainingRecords, setTrainingRecords] = useState<TrainingRecord[]>(trainingData);
 
-  // Mock schedule data (now as state to allow adding new shifts)
-  const [weeklySchedule, setWeeklySchedule] = useState([
-    {
-      employeeId: 'EMP-001',
-      name: 'Dr. Sarah Johnson',
-      role: 'Pharmacist',
-      schedule: {
-        monday: { start: '08:00', end: '17:00', status: 'scheduled' },
-        tuesday: { start: '08:00', end: '17:00', status: 'scheduled' },
-        wednesday: { start: '08:00', end: '17:00', status: 'scheduled' },
-        thursday: { start: '08:00', end: '17:00', status: 'scheduled' },
-        friday: { start: '08:00', end: '17:00', status: 'scheduled' },
-        saturday: { start: 'off', end: 'off', status: 'off' },
-        sunday: { start: 'off', end: 'off', status: 'off' }
-      }
-    },
-    {
-      employeeId: 'EMP-002',
-      name: 'Mike Chen',
-      role: 'Pharmacy Technician',
-      schedule: {
-        monday: { start: '09:00', end: '18:00', status: 'scheduled' },
-        tuesday: { start: '09:00', end: '18:00', status: 'scheduled' },
-        wednesday: { start: '09:00', end: '18:00', status: 'scheduled' },
-        thursday: { start: 'off', end: 'off', status: 'off' },
-        friday: { start: '09:00', end: '18:00', status: 'scheduled' },
-        saturday: { start: '10:00', end: '15:00', status: 'scheduled' },
-        sunday: { start: 'off', end: 'off', status: 'off' }
-      }
-    },
-    {
-      employeeId: 'EMP-003',
-      name: 'Emily Rodriguez',
-      role: 'Pharmacy Intern',
-      schedule: {
-        monday: { start: '14:00', end: '20:00', status: 'scheduled' },
-        tuesday: { start: 'off', end: 'off', status: 'off' },
-        wednesday: { start: '14:00', end: '20:00', status: 'scheduled' },
-        thursday: { start: '14:00', end: '20:00', status: 'scheduled' },
-        friday: { start: 'off', end: 'off', status: 'off' },
-        saturday: { start: '10:00', end: '18:00', status: 'scheduled' },
-        sunday: { start: 'off', end: 'off', status: 'off' }
-      }
-    }
-  ]);
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(6);
 
-  // Mock training records (now as state to allow adding new training)
-  const [trainingRecords, setTrainingRecords] = useState([
-    {
-      employeeId: 'EMP-001',
-      name: 'Dr. Sarah Johnson',
-      trainings: [
-        { course: 'Advanced Clinical Pharmacy', completed: '2024-01-10', expiry: '2025-01-10', status: 'completed' },
-        { course: 'Immunization Updates', completed: '2023-12-15', expiry: '2024-12-15', status: 'current' },
-        { course: 'HIPAA Compliance', completed: '2023-11-20', expiry: '2024-11-20', status: 'expiring' }
-      ]
-    },
-    {
-      employeeId: 'EMP-002',
-      name: 'Mike Chen',
-      trainings: [
-        { course: 'Sterile Compounding Safety', completed: '2023-10-05', expiry: '2024-10-05', status: 'expiring' },
-        { course: 'Customer Service Excellence', completed: '2024-01-08', expiry: '2025-01-08', status: 'completed' },
-        { course: 'Pharmacy Technology Updates', completed: null, expiry: null, status: 'pending' }
-      ]
-    },
-    {
-      employeeId: 'EMP-003',
-      name: 'Emily Rodriguez',
-      trainings: [
-        { course: 'Pharmacy Intern Orientation', completed: '2023-09-01', expiry: '2024-09-01', status: 'current' },
-        { course: 'Patient Counseling Basics', completed: '2023-10-15', expiry: '2024-10-15', status: 'current' },
-        { course: 'Emergency Procedures', completed: null, expiry: null, status: 'pending' }
-      ]
-    }
-  ]);
-
-  const roles = ['all', 'Pharmacist', 'Pharmacy Technician', 'Pharmacy Intern', 'Store Manager'];
+  const roles = ['all', 'Pharmacist', 'Pharmacy Technician', 'Pharmacy Intern', 'Store Manager', 'Assistant Manager', 'Cashier'];
   const statuses = ['all', 'active', 'on-leave', 'terminated'];
   const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+  // Filter staff based on search term and filters
+  useEffect(() => {
+    const filtered = staffMembers.filter(staff => {
+      const matchesSearch =
+        staff.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        staff.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        staff.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        staff.id.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesRole = filterRole === 'all' || staff.role === filterRole;
+      const matchesStatus = filterStatus === 'all' || staff.status === filterStatus;
+      return matchesSearch && matchesRole && matchesStatus;
+    });
+    
+    setFilteredStaff(filtered);
+    setCurrentPage(1); // Reset to first page when filtering
+  }, [searchTerm, filterRole, filterStatus, staffMembers]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -237,32 +117,40 @@ const StaffManagement = () => {
     }
   };
 
-  const filteredStaff = staffMembers.filter(staff => {
-    const matchesSearch =
-      staff.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      staff.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      staff.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      staff.id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = filterRole === 'all' || staff.role === filterRole;
-    const matchesStatus = filterStatus === 'all' || staff.status === filterStatus;
-    return matchesSearch && matchesRole && matchesStatus;
-  });
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredStaff.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredStaff.length / itemsPerPage);
 
-  const handleAddStaff = (newStaff: any) => {
-    setStaffMembers(prev => [...prev, newStaff]);
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
   };
 
-  const handleViewDetails = (staff: any) => {
+  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to first page when changing items per page
+  };
+
+  const handleAddStaff = (newStaff: StaffMember) => {
+    setStaffMembers(prev => [...prev, newStaff]);
+    toast({
+      title: "Staff Added",
+      description: `${newStaff.firstName} ${newStaff.lastName} has been added successfully.`
+    });
+  };
+
+  const handleViewDetails = (staff: StaffMember) => {
     setSelectedStaff(staff);
     setViewDetailsDialogOpen(true);
   };
 
-  const handleEditStaff = (staff: any) => {
+  const handleEditStaff = (staff: StaffMember) => {
     setSelectedStaff(staff);
     setEditStaffDialogOpen(true);
   };
 
-  const handleSaveEdit = (updatedStaff: any) => {
+  const handleSaveEdit = (updatedStaff: StaffMember) => {
     setStaffMembers(prev =>
       prev.map(staff => staff.id === updatedStaff.id ? updatedStaff : staff)
     );
@@ -309,6 +197,11 @@ const StaffManagement = () => {
         return [...prev, newEmployeeSchedule];
       }
     });
+    
+    toast({
+      title: "Shift Added",
+      description: `Shift added for ${shiftData.employeeName} on ${shiftData.day}.`
+    });
   };
 
   const handleAddTraining = (trainingData: any) => {
@@ -334,6 +227,11 @@ const StaffManagement = () => {
         return [...prev, newEmployeeTraining];
       }
     });
+    
+    toast({
+      title: "Training Added",
+      description: `Training record added for ${trainingData.employeeName}.`
+    });
   };
 
   return (
@@ -347,7 +245,7 @@ const StaffManagement = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Total Staff</p>
-                  <p className="text-2xl font-bold text-gray-900">4</p>
+                  <p className="text-2xl font-bold text-gray-900">{staffMembers.length}</p>
                 </div>
                 <Users className="w-8 h-8 text-walgreens-red" />
               </div>
@@ -359,7 +257,7 @@ const StaffManagement = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">On Duty Today</p>
-                  <p className="text-2xl font-bold text-green-600">3</p>
+                  <p className="text-2xl font-bold text-green-600">{staffMembers.filter(s => s.status === 'active').length}</p>
                 </div>
                 <CheckCircle className="w-8 h-8 text-green-500" />
               </div>
@@ -371,7 +269,9 @@ const StaffManagement = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Avg Performance</p>
-                  <p className="text-2xl font-bold text-blue-600">91.5%</p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {(staffMembers.reduce((sum, staff) => sum + staff.performance, 0) / staffMembers.length).toFixed(1)}%
+                  </p>
                 </div>
                 <TrendingUp className="w-8 h-8 text-blue-500" />
               </div>
@@ -383,7 +283,10 @@ const StaffManagement = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Training Due</p>
-                  <p className="text-2xl font-bold text-orange-600">3</p>
+                  <p className="text-2xl font-bold text-orange-600">
+                    {trainingRecords.reduce((sum, record) => 
+                      sum + record.trainings.filter(t => t.status === 'pending' || t.status === 'expiring').length, 0)}
+                  </p>
                 </div>
                 <AlertTriangle className="w-8 h-8 text-orange-500" />
               </div>
@@ -454,12 +357,12 @@ const StaffManagement = () => {
 
             {/* Staff Cards */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {filteredStaff.map((staff) => (
+              {currentItems.map((staff) => (
                 <Card key={staff.id} className="border border-gray-200 hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex items-start space-x-4">
                       <Avatar className="w-16 h-16">
-                        <AvatarImage src={staff.avatar} alt={`${staff.firstName} ${staff.lastName}`} />
+                        <AvatarImage src={staff.avatar || undefined} alt={`${staff.firstName} ${staff.lastName}`} />
                         <AvatarFallback className="bg-walgreens-red text-white text-lg">
                           {staff.firstName[0]}{staff.lastName[0]}
                         </AvatarFallback>
@@ -529,6 +432,34 @@ const StaffManagement = () => {
                 </Card>
               ))}
             </div>
+
+            {/* Pagination Controls */}
+            {filteredStaff.length > 0 && (
+              <div className="mt-6 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-600">Items per page:</span>
+                  <select 
+                    value={itemsPerPage} 
+                    onChange={handleItemsPerPageChange}
+                    className="border border-gray-300 rounded-md text-sm p-1 focus:border-walgreens-blue focus:ring-walgreens-blue"
+                  >
+                    <option value={6}>6</option>
+                    <option value={12}>12</option>
+                    <option value={24}>24</option>
+                  </select>
+                </div>
+                
+                <PaginationControls 
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+                
+                <div className="text-sm text-gray-600">
+                  Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredStaff.length)} of {filteredStaff.length}
+                </div>
+              </div>
+            )}
           </TabsContent>
 
           {/* Schedule Tab */}
@@ -665,7 +596,7 @@ const StaffManagement = () => {
                 {/* Header with Avatar and Basic Info */}
                 <div className="flex items-center space-x-6 p-4 bg-gray-50 rounded-lg">
                   <Avatar className="w-20 h-20">
-                    <AvatarImage src={selectedStaff.avatar} alt={`${selectedStaff.firstName} ${selectedStaff.lastName}`} />
+                    <AvatarImage src={selectedStaff.avatar || undefined} alt={`${selectedStaff.firstName} ${selectedStaff.lastName}`} />
                     <AvatarFallback className="bg-walgreens-red text-white text-xl">
                       {selectedStaff.firstName[0]}{selectedStaff.lastName[0]}
                     </AvatarFallback>
