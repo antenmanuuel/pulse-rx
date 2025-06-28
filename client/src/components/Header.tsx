@@ -19,7 +19,8 @@ import {
   Moon,
   Sun,
   AlertTriangle,
-  Shield
+  Shield,
+  UserCog
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -181,6 +182,18 @@ const Header = () => {
                     <Package className="w-4 h-4" />
                     <span>Vendor Management</span>
                   </button>
+                  <button
+                    onClick={() => navigate('/user-management')}
+                    className={cn(
+                      "flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200",
+                      isActivePage('/user-management')
+                        ? "text-walgreens-red bg-red-50 border border-red-100"
+                        : "text-gray-700 hover:text-walgreens-red hover:bg-gray-50"
+                    )}
+                  >
+                    <UserCog className="w-4 h-4" />
+                    <span>User Management</span>
+                  </button>
                 </div>
               </nav>
             )}
@@ -291,6 +304,12 @@ const Header = () => {
                       Admin Dashboard
                     </DropdownMenuItem>
                   )}
+                  {isAdmin() && (
+                    <DropdownMenuItem onClick={() => navigate('/user-management')} className="hover:bg-gray-50">
+                      <UserCog className="w-4 h-4 mr-2" />
+                      User Management
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={() => navigate('/settings')} className="hover:bg-gray-50">
                     <Settings className="w-4 h-4 mr-2" />
                     Settings
@@ -393,6 +412,18 @@ const Header = () => {
                   >
                     <Package className="w-5 h-5" />
                     <span>Vendor Management</span>
+                  </button>
+                  <button
+                    onClick={() => handleNavigation('/user-management')}
+                    className={cn(
+                      "flex items-center space-x-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 w-full",
+                      isActivePage('/user-management')
+                        ? "text-white bg-gradient-to-r from-walgreens-red to-red-600 shadow-lg"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                    )}
+                  >
+                    <UserCog className="w-5 h-5" />
+                    <span>User Management</span>
                   </button>
                 </div>
               )}

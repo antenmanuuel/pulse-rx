@@ -23,6 +23,7 @@ import Issues from "./pages/Issues";
 import AdminDashboard from "./pages/AdminDashboard";
 import StaffManagement from "./pages/StaffManagement";
 import VendorManagement from "./pages/VendorManagement";
+import UserManagement from "./pages/UserManagement";
 import AdminRoute from "./components/AdminRoute";
 import NotFound from "./pages/NotFound";
 
@@ -142,6 +143,11 @@ const App = () => (
             <Route path="/vendor-management" element={
               <AdminRoute>
                 <VendorManagement />
+              </AdminRoute>
+            } />
+            <Route path="/user-management" element={
+              <AdminRoute>
+                <UserManagement />
               </AdminRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
