@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -17,7 +16,6 @@ import Inventory from "./pages/Inventory";
 import Alerts from "./pages/Alerts";
 import Appointments from "./pages/Appointments";
 import Deliveries from "./pages/Deliveries";
-import NewPrescription from "./pages/NewPrescription";
 import Settings from "./pages/Settings";
 import Messages from "./pages/Messages";
 import Help from "./pages/Help";
@@ -108,11 +106,6 @@ const App = () => (
                 <UserRoute>
                   <Deliveries />
                 </UserRoute>
-              </ProtectedRoute>
-            } />
-            <Route path="/new-prescription" element={
-              <ProtectedRoute>
-                <NewPrescription />
               </ProtectedRoute>
             } />
             <Route path="/settings" element={

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import NewPrescriptionDialog from '@/components/NewPrescriptionDialog';
 import {
   Plus,
   Search,
@@ -22,16 +23,6 @@ const QuickActions = () => {
 
   const actions = [
     {
-      icon: Plus,
-      label: 'New Prescription',
-      description: 'Add prescription to queue',
-      gradient: 'from-walgreens-red to-red-600',
-      route: '/new-prescription',
-      stats: '12 in queue',
-      urgency: 'normal',
-      priority: 1
-    },
-    {
       icon: Search,
       label: 'Patient Lookup',
       description: 'Search patient records',
@@ -39,7 +30,7 @@ const QuickActions = () => {
       route: '/patient-lookup',
       stats: '1,247 patients',
       urgency: 'normal',
-      priority: 2
+      priority: 1
     },
     {
       icon: Calendar,
@@ -49,7 +40,7 @@ const QuickActions = () => {
       route: '/appointments',
       stats: '8 today',
       urgency: 'normal',
-      priority: 3
+      priority: 2
     },
     {
       icon: Truck,
@@ -59,7 +50,7 @@ const QuickActions = () => {
       route: '/deliveries',
       stats: '5 active',
       urgency: 'warning',
-      priority: 4
+      priority: 3
     },
     {
       icon: Package,
@@ -69,7 +60,7 @@ const QuickActions = () => {
       route: '/inventory',
       stats: '5 low stock',
       urgency: 'warning',
-      priority: 5
+      priority: 4
     },
     {
       icon: AlertCircle,
@@ -79,7 +70,7 @@ const QuickActions = () => {
       route: '/alerts',
       stats: '3 active',
       urgency: 'urgent',
-      priority: 6
+      priority: 5
     },
     {
       icon: Bug,
@@ -89,7 +80,7 @@ const QuickActions = () => {
       route: '/issues',
       stats: 'System: Online',
       urgency: 'normal',
-      priority: 7
+      priority: 6
     },
     {
       icon: HelpCircle,
@@ -99,7 +90,7 @@ const QuickActions = () => {
       route: '/help',
       stats: 'Get support',
       urgency: 'normal',
-      priority: 8
+      priority: 7
     }
   ];
 
@@ -112,6 +103,12 @@ const QuickActions = () => {
       default:
         return <div className="w-2 h-2 bg-green-500 rounded-full"></div>;
     }
+  };
+
+  const handleNewPrescription = (prescriptionData: any) => {
+    console.log('New prescription created:', prescriptionData);
+    // Navigate to prescription queue after creating
+    navigate('/prescription-queue');
   };
 
   return (
@@ -133,6 +130,9 @@ const QuickActions = () => {
       </CardHeader>
       <CardContent className="p-6">
         <div className="grid grid-cols-1 gap-3">
+          {/* New Prescription Button */}
+          <NewPrescriptionDialog onSubmit={handleNewPrescription} />
+          
           {actions.map((action, index) => (
             <Button
               key={index}

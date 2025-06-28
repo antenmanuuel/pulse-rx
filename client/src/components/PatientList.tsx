@@ -1,11 +1,11 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import PatientProfileDialog from '@/components/PatientProfileDialog';
 import PatientHistoryDialog from '@/components/PatientHistoryDialog';
+import NewPrescriptionDialog from '@/components/NewPrescriptionDialog';
 import {
   User,
   Calendar,
@@ -14,8 +14,7 @@ import {
   MapPin,
   Pill,
   AlertTriangle,
-  Clock,
-  Plus
+  Clock
 } from 'lucide-react';
 
 interface Patient {
@@ -39,8 +38,6 @@ interface PatientListProps {
 }
 
 const PatientList: React.FC<PatientListProps> = ({ patients, onViewProfile, onCreatePrescription }) => {
-  const navigate = useNavigate();
-
   if (patients.length === 0) {
     return (
       <div className="text-center py-12">
@@ -50,6 +47,11 @@ const PatientList: React.FC<PatientListProps> = ({ patients, onViewProfile, onCr
       </div>
     );
   }
+
+  const handleNewPrescription = (prescriptionData: any, patient: Patient) => {
+    console.log('New prescription created for patient:', patient.id, prescriptionData);
+    // In a real app, you would handle the new prescription
+  };
 
   return (
     <div className="space-y-4">
@@ -112,15 +114,10 @@ const PatientList: React.FC<PatientListProps> = ({ patients, onViewProfile, onCr
               <div className="flex flex-col space-y-2">
                 <PatientProfileDialog patient={patient} />
                 <PatientHistoryDialog patient={patient} />
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="border-gray-300 hover:border-walgreens-blue hover:text-walgreens-blue"
-                  onClick={() => onCreatePrescription(patient)}
-                >
-                  <Plus className="w-4 h-4 mr-1" />
-                  New Prescription
-                </Button>
+                <NewPrescriptionDialog 
+                  onSubmit={(prescriptionData) => handleNewPrescription(prescriptionData, patient)} 
+                  selectedPatient={patient}
+                />
               </div>
             </div>
           </CardContent>
