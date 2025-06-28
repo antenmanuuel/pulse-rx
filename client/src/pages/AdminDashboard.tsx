@@ -247,29 +247,32 @@ const AdminDashboard = () => {
             <div className="max-w-7xl mx-auto space-y-6">
 
                 {/* Quick Actions */}
-                <div className="flex flex-wrap gap-4">
-                    <Button onClick={handleNavigateToStaff} className="bg-walgreens-red hover:bg-red-600">
-                        <Users className="w-4 h-4 mr-2" />
-                        Manage Staff
-                    </Button>
-                    <Button onClick={handleNavigateToVendors} className="bg-blue-600 hover:bg-blue-700">
-                        <Building2 className="w-4 h-4 mr-2" />
-                        Manage Vendors
-                    </Button>
-                    <Button onClick={handleNavigateToUsers} className="bg-purple-600 hover:bg-purple-700">
-                        <UserCog className="w-4 h-4 mr-2" />
-                        Manage Users
-                    </Button>
-                    <Button
-                        onClick={() => toast({
-                            title: "Export Started",
-                            description: "Dashboard data is being exported to PDF."
-                        })}
-                        variant="outline"
-                    >
-                        <Download className="w-4 h-4 mr-2" />
-                        Export Data
-                    </Button>
+                <div className="space-y-4">
+                    <h2 className="text-xl font-semibold text-gray-900">Quick Actions</h2>
+                    <div className="flex flex-wrap gap-4">
+                        <Button onClick={handleNavigateToStaff} className="bg-walgreens-red hover:bg-red-600">
+                            <Users className="w-4 h-4 mr-2" />
+                            Manage Staff
+                        </Button>
+                        <Button onClick={handleNavigateToVendors} className="bg-blue-600 hover:bg-blue-700">
+                            <Building2 className="w-4 h-4 mr-2" />
+                            Manage Vendors
+                        </Button>
+                        <Button onClick={handleNavigateToUsers} className="bg-purple-600 hover:bg-purple-700">
+                            <UserCog className="w-4 h-4 mr-2" />
+                            Manage Users
+                        </Button>
+                        <Button
+                            onClick={() => toast({
+                                title: "Export Started",
+                                description: "Dashboard data is being exported to PDF."
+                            })}
+                            variant="outline"
+                        >
+                            <Download className="w-4 h-4 mr-2" />
+                            Export Data
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Key Metrics Cards */}
