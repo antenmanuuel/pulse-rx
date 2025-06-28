@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
+import PaginationControls from '@/components/ui/pagination-controls';
 import {
   Package,
   Search,
@@ -140,6 +141,153 @@ const InventoryPage = () => {
       dosageForm: 'Delayed Release Capsule',
       strength: '20mg',
       storageConditions: 'Store at room temperature, keep container tightly closed'
+    },
+    {
+      ndc: '0310-0751-30',
+      name: 'Sertraline 50mg',
+      brand: 'Zoloft',
+      quantity: 120,
+      minStock: 60,
+      location: 'B-14',
+      expiry: '10/2025',
+      cost: '$0.22',
+      status: 'In Stock',
+      category: 'Mental Health',
+      lastUpdated: '12/23/2023',
+      manufacturer: 'Pfizer Inc',
+      supplier: 'Cardinal Health',
+      lotNumber: 'PF2023E556',
+      batchDate: '09/05/2023',
+      description: 'SSRI antidepressant used to treat depression, anxiety, and other mental health conditions',
+      dosageForm: 'Tablet',
+      strength: '50mg',
+      storageConditions: 'Store at room temperature, protect from light and moisture'
+    },
+    {
+      ndc: '0173-0519-00',
+      name: 'Fluticasone Propionate Inhaler',
+      brand: 'Flovent',
+      quantity: 25,
+      minStock: 30,
+      location: 'C-08',
+      expiry: '08/2024',
+      cost: '$45.75',
+      status: 'Low Stock',
+      category: 'Respiratory',
+      lastUpdated: '12/20/2023',
+      manufacturer: 'GlaxoSmithKline',
+      supplier: 'AmerisourceBergen',
+      lotNumber: 'GS2023F667',
+      batchDate: '07/15/2023',
+      description: 'Corticosteroid inhaler used to prevent asthma attacks',
+      dosageForm: 'Inhaler',
+      strength: '110mcg/actuation',
+      storageConditions: 'Store at room temperature, away from heat and direct light'
+    },
+    {
+      ndc: '0006-0074-31',
+      name: 'Simvastatin 40mg',
+      brand: 'Zocor',
+      quantity: 90,
+      minStock: 45,
+      location: 'A-18',
+      expiry: '07/2025',
+      cost: '$0.20',
+      status: 'In Stock',
+      category: 'Cholesterol',
+      lastUpdated: '12/21/2023',
+      manufacturer: 'Merck & Co',
+      supplier: 'Cardinal Health',
+      lotNumber: 'MK2023G778',
+      batchDate: '06/30/2023',
+      description: 'Statin medication used to lower cholesterol and reduce risk of heart disease',
+      dosageForm: 'Tablet',
+      strength: '40mg',
+      storageConditions: 'Store at room temperature, protect from moisture'
+    },
+    {
+      ndc: '0069-4200-30',
+      name: 'Amlodipine 5mg',
+      brand: 'Norvasc',
+      quantity: 180,
+      minStock: 60,
+      location: 'B-22',
+      expiry: '05/2025',
+      cost: '$0.15',
+      status: 'In Stock',
+      category: 'Cardiovascular',
+      lastUpdated: '12/19/2023',
+      manufacturer: 'Pfizer Inc',
+      supplier: 'McKesson Corporation',
+      lotNumber: 'PF2023H889',
+      batchDate: '05/15/2023',
+      description: 'Calcium channel blocker used to treat high blood pressure and angina',
+      dosageForm: 'Tablet',
+      strength: '5mg',
+      storageConditions: 'Store at room temperature, protect from light'
+    },
+    {
+      ndc: '0093-7192-56',
+      name: 'Albuterol Sulfate Inhaler',
+      brand: 'ProAir HFA',
+      quantity: 5,
+      minStock: 20,
+      location: 'C-05',
+      expiry: '04/2024',
+      cost: '$25.50',
+      status: 'Low Stock',
+      category: 'Respiratory',
+      lastUpdated: '12/18/2023',
+      manufacturer: 'Teva Pharmaceuticals',
+      supplier: 'AmerisourceBergen',
+      lotNumber: 'TV2023I990',
+      batchDate: '04/10/2023',
+      description: 'Bronchodilator used to treat or prevent bronchospasm in people with asthma or COPD',
+      dosageForm: 'Inhaler',
+      strength: '90mcg/actuation',
+      storageConditions: 'Store at room temperature, away from heat and open flame'
+    },
+    {
+      ndc: '0007-4200-20',
+      name: 'Levothyroxine 50mcg',
+      brand: 'Synthroid',
+      quantity: 100,
+      minStock: 50,
+      location: 'D-12',
+      expiry: '12/2025',
+      cost: '$0.30',
+      status: 'In Stock',
+      category: 'Endocrine',
+      lastUpdated: '12/22/2023',
+      manufacturer: 'AbbVie Inc',
+      supplier: 'Cardinal Health',
+      lotNumber: 'AB2023J101',
+      batchDate: '11/01/2023',
+      description: 'Synthetic thyroid hormone used to treat hypothyroidism',
+      dosageForm: 'Tablet',
+      strength: '50mcg',
+      storageConditions: 'Store at room temperature, protect from light and moisture'
+    },
+    {
+      ndc: '0074-3799-13',
+      name: 'Insulin Glargine',
+      brand: 'Lantus',
+      quantity: 10,
+      minStock: 15,
+      location: 'E-01',
+      expiry: '03/2024',
+      cost: '$125.00',
+      status: 'Low Stock',
+      category: 'Diabetes',
+      lastUpdated: '12/20/2023',
+      manufacturer: 'Sanofi',
+      supplier: 'McKesson Corporation',
+      lotNumber: 'SA2023K212',
+      batchDate: '03/15/2023',
+      description: 'Long-acting insulin used to treat diabetes',
+      dosageForm: 'Solution',
+      strength: '100 units/mL',
+      storageConditions: 'Refrigerate until opened, then can be kept at room temperature for up to 28 days'
     }
   ]);
 
@@ -150,6 +298,10 @@ const InventoryPage = () => {
   const [detailsItem, setDetailsItem] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editForm, setEditForm] = useState({});
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   const inventoryStats = [
     {
@@ -207,6 +359,7 @@ const InventoryPage = () => {
     }
 
     setFilteredInventory(filtered);
+    setCurrentPage(1); // Reset to first page when filtering
   };
 
   const handleSearch = (term: string) => {
@@ -218,6 +371,7 @@ const InventoryPage = () => {
       item.category.toLowerCase().includes(term.toLowerCase())
     );
     setFilteredInventory(filtered);
+    setCurrentPage(1); // Reset to first page when searching
   };
 
   const handleAddItem = (newItem: any) => {
@@ -311,9 +465,27 @@ const InventoryPage = () => {
       'Diabetes': 'bg-blue-100 text-blue-700',
       'Antibiotic': 'bg-green-100 text-green-700',
       'Cholesterol': 'bg-purple-100 text-purple-700',
-      'Gastrointestinal': 'bg-orange-100 text-orange-700'
+      'Gastrointestinal': 'bg-orange-100 text-orange-700',
+      'Mental Health': 'bg-pink-100 text-pink-700',
+      'Respiratory': 'bg-cyan-100 text-cyan-700',
+      'Endocrine': 'bg-indigo-100 text-indigo-700'
     };
     return colors[category] || 'bg-gray-100 text-gray-700';
+  };
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredInventory.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredInventory.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to first page when changing items per page
   };
 
   return (
@@ -351,7 +523,10 @@ const InventoryPage = () => {
                   <CardTitle className="text-2xl font-bold text-gray-900">
                     Inventory Items
                   </CardTitle>
-                  <p className="text-gray-600">{filteredInventory.length} of {inventory.length} items displayed</p>
+                  <p className="text-gray-600">
+                    {filteredInventory.length} of {inventory.length} items displayed • 
+                    Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredInventory.length)} of {filteredInventory.length}
+                  </p>
                 </div>
               </div>
 
@@ -389,7 +564,7 @@ const InventoryPage = () => {
               </Card>
             ) : (
               <div className="space-y-4">
-                {filteredInventory.map((item, index) => (
+                {currentItems.map((item, index) => (
                   <Card key={index} className="group hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 hover:border-gray-300">
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between">
@@ -508,6 +683,34 @@ const InventoryPage = () => {
                     </CardContent>
                   </Card>
                 ))}
+              </div>
+            )}
+
+            {/* Pagination Controls */}
+            {filteredInventory.length > 0 && (
+              <div className="mt-6 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-600">Items per page:</span>
+                  <select 
+                    value={itemsPerPage} 
+                    onChange={handleItemsPerPageChange}
+                    className="border border-gray-300 rounded-md text-sm p-1 focus:border-walgreens-blue focus:ring-walgreens-blue"
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                  </select>
+                </div>
+                
+                <PaginationControls 
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+                
+                <div className="text-sm text-gray-600">
+                  Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredInventory.length)} of {filteredInventory.length}
+                </div>
               </div>
             )}
           </CardContent>
