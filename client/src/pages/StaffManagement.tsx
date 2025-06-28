@@ -14,6 +14,7 @@ import AddStaffDialog from '@/components/AddStaffDialog';
 import EditStaffForm from '@/components/EditStaffForm';
 import AddShiftDialog from '@/components/AddShiftDialog';
 import AddTrainingDialog from '@/components/AddTrainingDialog';
+import StaffDetailsDialog from '@/components/StaffDetailsDialog';
 import PaginationControls from '@/components/ui/pagination-controls';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -583,158 +584,14 @@ const StaffManagement = () => {
         </Tabs>
 
         {/* View Staff Details Dialog */}
-        <Dialog open={viewDetailsDialogOpen} onOpenChange={setViewDetailsDialogOpen}>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Staff Member Details</DialogTitle>
-              <DialogDescription>
-                Complete information for staff member
-              </DialogDescription>
-            </DialogHeader>
-            {selectedStaff && (
-              <div className="space-y-6">
-                {/* Header with Avatar and Basic Info */}
-                <div className="flex items-center space-x-6 p-4 bg-gray-50 rounded-lg">
-                  <Avatar className="w-20 h-20">
-                    <AvatarImage src={selectedStaff.avatar || undefined} alt={`${selectedStaff.firstName} ${selectedStaff.lastName}`} />
-                    <AvatarFallback className="bg-walgreens-red text-white text-xl">
-                      {selectedStaff.firstName[0]}{selectedStaff.lastName[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-gray-900">
-                      {selectedStaff.firstName} {selectedStaff.lastName}
-                    </h3>
-                    <p className="text-lg text-gray-600">{selectedStaff.role}</p>
-                    <div className="flex items-center space-x-3 mt-2">
-                      <Badge className={getStatusColor(selectedStaff.status)}>
-                        {selectedStaff.status.charAt(0).toUpperCase() + selectedStaff.status.slice(1)}
-                      </Badge>
-                      <span className="text-sm text-gray-500">ID: {selectedStaff.id}</span>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="flex items-center space-x-1">
-                      <Star className="w-5 h-5 text-yellow-500 fill-current" />
-                      <span className={`text-lg font-semibold ${getPerformanceColor(selectedStaff.performance)}`}>
-                        {selectedStaff.performance}%
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600">Performance Score</p>
-                  </div>
-                </div>
-
-                {/* Information Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Contact Information */}
-                  <Card className="border border-gray-200">
-                    <CardHeader>
-                      <CardTitle className="text-lg">Contact Information</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div className="flex items-center space-x-3">
-                        <Mail className="w-4 h-4 text-gray-400" />
-                        <div>
-                          <p className="text-sm text-gray-600">Email</p>
-                          <p className="font-medium">{selectedStaff.email}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Phone className="w-4 h-4 text-gray-400" />
-                        <div>
-                          <p className="text-sm text-gray-600">Phone</p>
-                          <p className="font-medium">{selectedStaff.phone}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-3">
-                        <MapPin className="w-4 h-4 text-gray-400 mt-1" />
-                        <div>
-                          <p className="text-sm text-gray-600">Address</p>
-                          <p className="font-medium">{selectedStaff.address}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Shield className="w-4 h-4 text-gray-400" />
-                        <div>
-                          <p className="text-sm text-gray-600">Emergency Contact</p>
-                          <p className="font-medium">{selectedStaff.emergencyContact}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Employment Information */}
-                  <Card className="border border-gray-200">
-                    <CardHeader>
-                      <CardTitle className="text-lg">Employment Details</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div className="flex items-center space-x-3">
-                        <Briefcase className="w-4 h-4 text-gray-400" />
-                        <div>
-                          <p className="text-sm text-gray-600">Department</p>
-                          <p className="font-medium">{selectedStaff.department}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Calendar className="w-4 h-4 text-gray-400" />
-                        <div>
-                          <p className="text-sm text-gray-600">Hire Date</p>
-                          <p className="font-medium">{selectedStaff.hireDate}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Clock className="w-4 h-4 text-gray-400" />
-                        <div>
-                          <p className="text-sm text-gray-600">Schedule</p>
-                          <p className="font-medium">{selectedStaff.schedule}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Activity className="w-4 h-4 text-gray-400" />
-                        <div>
-                          <p className="text-sm text-gray-600">Last Login</p>
-                          <p className="font-medium">{selectedStaff.lastLogin}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Certifications */}
-                <Card className="border border-gray-200">
-                  <CardHeader>
-                    <CardTitle className="text-lg">Certifications & Qualifications</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedStaff.certifications.map((cert: string, index: number) => (
-                        <Badge key={index} variant="outline" className="text-sm">
-                          <GraduationCap className="w-3 h-3 mr-1" />
-                          {cert}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Actions */}
-                <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setViewDetailsDialogOpen(false)}>
-                    Close
-                  </Button>
-                  <Button onClick={() => {
-                    setViewDetailsDialogOpen(false);
-                    handleEditStaff(selectedStaff);
-                  }} className="bg-walgreens-red hover:bg-red-600">
-                    <Edit className="w-4 h-4 mr-2" />
-                    Edit Staff Member
-                  </Button>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
+        <StaffDetailsDialog
+          staff={selectedStaff}
+          open={viewDetailsDialogOpen}
+          onOpenChange={setViewDetailsDialogOpen}
+          onEdit={handleEditStaff}
+          getStatusColor={getStatusColor}
+          getPerformanceColor={getPerformanceColor}
+        />
 
         {/* Edit Staff Dialog */}
         <Dialog open={editStaffDialogOpen} onOpenChange={setEditStaffDialogOpen}>
