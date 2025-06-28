@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   User,
   Settings as SettingsIcon,
@@ -23,16 +24,21 @@ import {
   AlertTriangle,
   Save,
   Lock,
-  Smartphone
+  Smartphone,
+  Users,
+  Building2,
+  Database
 } from 'lucide-react';
 
 const SettingsPage = () => {
+  const { user, isAdmin } = useAuth();
+  
   const [profileData, setProfileData] = useState({
-    firstName: 'John',
-    lastName: 'Smith',
-    email: 'john.smith@walgreens.com',
+    firstName: '',
+    lastName: '',
+    email: '',
     phone: '(555) 123-4567',
-    role: 'Pharmacy Technician',
+    role: '',
     employeeId: 'WT-12345',
     storeLocation: 'Store #001 - Main Street'
   });
@@ -42,7 +48,10 @@ const SettingsPage = () => {
     pushNotifications: true,
     prescriptionAlerts: true,
     inventoryAlerts: false,
-    deliveryUpdates: true
+    deliveryUpdates: true,
+    staffUpdates: false,
+    vendorUpdates: false,
+    systemAlerts: true
   });
 
   const [preferences, setPreferences] = useState({
@@ -52,7 +61,20 @@ const SettingsPage = () => {
     defaultView: 'dashboard'
   });
 
-
+  // Update profile data when user changes
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email || '',
+        phone: '(555) 123-4567', // Example data
+        role: user.role || 'user',
+        employeeId: 'WT-12345', // Example data
+        storeLocation: 'Store #001 - Main Street' // Example data
+      });
+    }
+  }, [user]);
 
   return (
     <Layout title="Settings" subtitle="Manage your profile and application preferences">
@@ -151,7 +173,9 @@ const SettingsPage = () => {
                   <div className="space-y-2">
                     <Label className="text-sm font-medium text-gray-700">Role</Label>
                     <div className="p-3 bg-gray-50 rounded-md border border-gray-200">
-                      <p className="font-medium text-gray-900">{profileData.role}</p>
+                      <p className="font-medium text-gray-900">
+                        {isAdmin() ? 'Administrator' : profileData.role || 'Staff Member'}
+                      </p>
                     </div>
                   </div>
                   <div className="col-span-2 space-y-2">
@@ -236,14 +260,27 @@ const SettingsPage = () => {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-sm font-medium text-gray-700">Default View</Label>
-                    <Select value={preferences.defaultView} onValueChange={(value) => setPreferences({ ...preferences, defaultView: value })}>
+                    <Select 
+                      value={preferences.defaultView} 
+                      onValueChange={(value) => setPreferences({ ...preferences, defaultView: value })}
+                    >
                       <SelectTrigger className="focus:border-walgreens-red focus:ring-walgreens-red">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="dashboard">📊 Dashboard</SelectItem>
-                        <SelectItem value="prescription-queue">💊 Prescription Queue</SelectItem>
-                        <SelectItem value="patient-lookup">👤 Patient Lookup</SelectItem>
+                        {isAdmin() ? (
+                          <>
+                            <SelectItem value="admin-dashboard">📊 Admin Dashboard</SelectItem>
+                            <SelectItem value="staff-management">👥 Staff Management</SelectItem>
+                            <SelectItem value="vendor-management">🏢 Vendor Management</SelectItem>
+                          </>
+                        ) : (
+                          <>
+                            <SelectItem value="dashboard">📊 Dashboard</SelectItem>
+                            <SelectItem value="prescription-queue">💊 Prescription Queue</SelectItem>
+                            <SelectItem value="patient-lookup">👤 Patient Lookup</SelectItem>
+                          </>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
@@ -269,53 +306,136 @@ const SettingsPage = () => {
               <p className="text-sm text-gray-600">Configure how you receive alerts and updates</p>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
-              {[
-                {
-                  key: 'emailAlerts',
-                  label: 'Email Alerts',
-                  description: 'Receive important updates via email',
-                  icon: '📧'
-                },
-                {
-                  key: 'pushNotifications',
-                  label: 'Push Notifications',
-                  description: 'Browser notifications for urgent matters',
-                  icon: '🔔'
-                },
-                {
-                  key: 'prescriptionAlerts',
-                  label: 'Prescription Alerts',
-                  description: 'New prescriptions and refill requests',
-                  icon: '💊'
-                },
-                {
-                  key: 'inventoryAlerts',
-                  label: 'Inventory Alerts',
-                  description: 'Low stock and expiration warnings',
-                  icon: '📦'
-                },
-                {
-                  key: 'deliveryUpdates',
-                  label: 'Delivery Updates',
-                  description: 'Status updates for prescription deliveries',
-                  icon: '🚛'
-                }
-              ].map((notification, index) => (
-                <div key={notification.key} className={`flex items-center justify-between py-3 ${index !== 4 ? 'border-b border-gray-100' : ''}`}>
-                  <div className="flex items-center space-x-3">
-                    <span className="text-lg">{notification.icon}</span>
-                    <div>
-                      <Label className="font-medium text-gray-900">{notification.label}</Label>
-                      <p className="text-sm text-gray-600">{notification.description}</p>
-                    </div>
+              {/* Common notifications for all users */}
+              <div className={`flex items-center justify-between py-3 border-b border-gray-100`}>
+                <div className="flex items-center space-x-3">
+                  <span className="text-lg">📧</span>
+                  <div>
+                    <Label className="font-medium text-gray-900">Email Alerts</Label>
+                    <p className="text-sm text-gray-600">Receive important updates via email</p>
                   </div>
-                  <Switch
-                    checked={notifications[notification.key as keyof typeof notifications]}
-                    onCheckedChange={(checked) => setNotifications({ ...notifications, [notification.key]: checked })}
-                    className="data-[state=checked]:bg-walgreens-red"
-                  />
                 </div>
-              ))}
+                <Switch
+                  checked={notifications.emailAlerts}
+                  onCheckedChange={(checked) => setNotifications({ ...notifications, emailAlerts: checked })}
+                  className="data-[state=checked]:bg-walgreens-red"
+                />
+              </div>
+              
+              <div className={`flex items-center justify-between py-3 border-b border-gray-100`}>
+                <div className="flex items-center space-x-3">
+                  <span className="text-lg">🔔</span>
+                  <div>
+                    <Label className="font-medium text-gray-900">Push Notifications</Label>
+                    <p className="text-sm text-gray-600">Browser notifications for urgent matters</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={notifications.pushNotifications}
+                  onCheckedChange={(checked) => setNotifications({ ...notifications, pushNotifications: checked })}
+                  className="data-[state=checked]:bg-walgreens-red"
+                />
+              </div>
+
+              {/* Role-specific notifications */}
+              {!isAdmin() && (
+                <>
+                  <div className={`flex items-center justify-between py-3 border-b border-gray-100`}>
+                    <div className="flex items-center space-x-3">
+                      <span className="text-lg">💊</span>
+                      <div>
+                        <Label className="font-medium text-gray-900">Prescription Alerts</Label>
+                        <p className="text-sm text-gray-600">New prescriptions and refill requests</p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={notifications.prescriptionAlerts}
+                      onCheckedChange={(checked) => setNotifications({ ...notifications, prescriptionAlerts: checked })}
+                      className="data-[state=checked]:bg-walgreens-red"
+                    />
+                  </div>
+                  
+                  <div className={`flex items-center justify-between py-3 border-b border-gray-100`}>
+                    <div className="flex items-center space-x-3">
+                      <span className="text-lg">📦</span>
+                      <div>
+                        <Label className="font-medium text-gray-900">Inventory Alerts</Label>
+                        <p className="text-sm text-gray-600">Low stock and expiration warnings</p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={notifications.inventoryAlerts}
+                      onCheckedChange={(checked) => setNotifications({ ...notifications, inventoryAlerts: checked })}
+                      className="data-[state=checked]:bg-walgreens-red"
+                    />
+                  </div>
+                  
+                  <div className={`flex items-center justify-between py-3`}>
+                    <div className="flex items-center space-x-3">
+                      <span className="text-lg">🚛</span>
+                      <div>
+                        <Label className="font-medium text-gray-900">Delivery Updates</Label>
+                        <p className="text-sm text-gray-600">Status updates for prescription deliveries</p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={notifications.deliveryUpdates}
+                      onCheckedChange={(checked) => setNotifications({ ...notifications, deliveryUpdates: checked })}
+                      className="data-[state=checked]:bg-walgreens-red"
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* Admin-specific notifications */}
+              {isAdmin() && (
+                <>
+                  <div className={`flex items-center justify-between py-3 border-b border-gray-100`}>
+                    <div className="flex items-center space-x-3">
+                      <span className="text-lg">👥</span>
+                      <div>
+                        <Label className="font-medium text-gray-900">Staff Updates</Label>
+                        <p className="text-sm text-gray-600">Staff activity and performance alerts</p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={notifications.staffUpdates}
+                      onCheckedChange={(checked) => setNotifications({ ...notifications, staffUpdates: checked })}
+                      className="data-[state=checked]:bg-walgreens-red"
+                    />
+                  </div>
+                  
+                  <div className={`flex items-center justify-between py-3 border-b border-gray-100`}>
+                    <div className="flex items-center space-x-3">
+                      <span className="text-lg">🏢</span>
+                      <div>
+                        <Label className="font-medium text-gray-900">Vendor Updates</Label>
+                        <p className="text-sm text-gray-600">Vendor performance and contract alerts</p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={notifications.vendorUpdates}
+                      onCheckedChange={(checked) => setNotifications({ ...notifications, vendorUpdates: checked })}
+                      className="data-[state=checked]:bg-walgreens-red"
+                    />
+                  </div>
+                  
+                  <div className={`flex items-center justify-between py-3`}>
+                    <div className="flex items-center space-x-3">
+                      <span className="text-lg">⚙️</span>
+                      <div>
+                        <Label className="font-medium text-gray-900">System Alerts</Label>
+                        <p className="text-sm text-gray-600">System performance and maintenance notifications</p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={notifications.systemAlerts}
+                      onCheckedChange={(checked) => setNotifications({ ...notifications, systemAlerts: checked })}
+                      className="data-[state=checked]:bg-walgreens-red"
+                    />
+                  </div>
+                </>
+              )}
               
               <div className="flex justify-end pt-6 border-t border-gray-100">
                 <Button className="bg-walgreens-red hover:bg-red-600">
@@ -391,6 +511,58 @@ const SettingsPage = () => {
                   </Button>
                 </div>
               </div>
+
+              {/* Admin-specific security settings */}
+              {isAdmin() && (
+                <div className="space-y-4 pt-4 border-t border-gray-100">
+                  <h3 className="font-medium text-gray-900">Administrator Controls</h3>
+                  
+                  <div className="flex items-center justify-between py-3 border-b border-gray-100">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                        <Users className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">User Access Management</h4>
+                        <p className="text-sm text-gray-600">Manage user permissions and access levels</p>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      Manage Access
+                    </Button>
+                  </div>
+                  
+                  <div className="flex items-center justify-between py-3 border-b border-gray-100">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-purple-50 rounded-full flex items-center justify-center">
+                        <Building2 className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">Organization Settings</h4>
+                        <p className="text-sm text-gray-600">Configure organization-wide settings</p>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      Configure
+                    </Button>
+                  </div>
+                  
+                  <div className="flex items-center justify-between py-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center">
+                        <Database className="w-5 h-5 text-green-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">System Backup</h4>
+                        <p className="text-sm text-gray-600">Configure automated backups and data retention</p>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      Manage Backups
+                    </Button>
+                  </div>
+                </div>
+              )}
 
               {/* Data Management */}
               <div className="space-y-4 pt-4 border-t border-gray-100">
