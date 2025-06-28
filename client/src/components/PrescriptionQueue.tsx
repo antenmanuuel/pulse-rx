@@ -3,7 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Clock, User, Pill, AlertTriangle, ArrowRight, Calendar } from 'lucide-react';
+import {
+  Clock,
+  User,
+  Pill,
+  AlertTriangle,
+  ArrowRight,
+  Calendar
+} from 'lucide-react';
 
 const PrescriptionQueue = () => {
   const navigate = useNavigate();
@@ -189,6 +196,7 @@ const PrescriptionQueue = () => {
                       size="sm"
                       variant="outline"
                       className="text-xs h-7 px-3 border-gray-300 hover:border-walgreens-blue hover:text-walgreens-blue transition-colors duration-200"
+                      onClick={() => navigate('/prescription-queue')}
                     >
                       Details
                     </Button>
