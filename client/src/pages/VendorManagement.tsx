@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import {
   Building2,
@@ -13,14 +11,14 @@ import {
   Clock,
   DollarSign,
   ArrowUpDown,
-  Search
+  FileText
 } from 'lucide-react';
 import { Vendor, vendorData } from '@/data/vendorData';
 import { PurchaseOrder, purchaseOrderData } from '@/data/purchaseOrderData';
 
 // Import components
 import VendorSection from '@/components/VendorSection';
-import PurchaseOrderTable from '@/components/PurchaseOrderTable';
+import PurchaseOrdersSection from '@/components/PurchaseOrdersSection';
 import VendorDetailsDialog from '@/components/VendorDetailsDialog';
 import CreatePODialog from '@/components/CreatePODialog';
 import PurchaseOrderDetailsDialog from '@/components/PurchaseOrderDetailsDialog';
@@ -342,53 +340,13 @@ const VendorManagement = () => {
 
           {/* Purchase Orders Tab */}
           <TabsContent value="purchase-orders" className="space-y-6">
-            {/* Search and Filters */}
-            <Card className="border border-gray-200">
-              <CardContent className="p-4">
-                <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-1 relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <Input
-                      value={poSearchTerm}
-                      onChange={(e) => setPoSearchTerm(e.target.value)}
-                      placeholder="Search purchase orders..."
-                      className="pl-10 focus:border-walgreens-red focus:ring-walgreens-red"
-                    />
-                  </div>
-                  <Select value={poFilterStatus} onValueChange={setPoFilterStatus}>
-                    <SelectTrigger className="w-full md:w-48">
-                      <SelectValue placeholder="Filter by status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="approved">Approved</SelectItem>
-                      <SelectItem value="received">Received</SelectItem>
-                      <SelectItem value="cancelled">Cancelled</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select value={poFilterPriority} onValueChange={setPoFilterPriority}>
-                    <SelectTrigger className="w-full md:w-48">
-                      <SelectValue placeholder="Filter by priority" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Priorities</SelectItem>
-                      <SelectItem value="urgent">Urgent</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="normal">Normal</SelectItem>
-                      <SelectItem value="low">Low</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <CreatePODialog 
-                    onCreatePO={handleCreatePO} 
-                    vendors={vendors.filter(v => v.status === 'active')}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Purchase Orders Table */}
-            <PurchaseOrderTable
+            <PurchaseOrdersSection
+              poSearchTerm={poSearchTerm}
+              setPoSearchTerm={setPoSearchTerm}
+              poFilterStatus={poFilterStatus}
+              setPoFilterStatus={setPoFilterStatus}
+              poFilterPriority={poFilterPriority}
+              setPoFilterPriority={setPoFilterPriority}
               currentPOs={currentPOs}
               filteredPOs={filteredPOs}
               handleViewPODetails={handleViewPODetails}
@@ -402,35 +360,14 @@ const VendorManagement = () => {
                   vendors={vendors.filter(v => v.status === 'active')}
                 />
               }
+              currentPOPage={currentPOPage}
+              totalPOPages={totalPOPages}
+              handlePOPageChange={handlePOPageChange}
+              posPerPage={posPerPage}
+              handlePOsPerPageChange={handlePOsPerPageChange}
+              indexOfFirstPO={indexOfFirstPO}
+              indexOfLastPO={indexOfLastPO}
             />
-
-            {/* Pagination Controls for Purchase Orders */}
-            {filteredPOs.length > 0 && (
-              <div className="mt-6 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600">Items per page:</span>
-                  <select 
-                    value={posPerPage} 
-                    onChange={handlePOsPerPageChange}
-                    className="border border-gray-300 rounded-md text-sm p-1 focus:border-walgreens-blue focus:ring-walgreens-blue"
-                  >
-                    <option value={5}>5</option>
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
-                  </select>
-                </div>
-                
-                <PaginationControls 
-                  currentPage={currentPOPage}
-                  totalPages={totalPOPages}
-                  onPageChange={handlePOPageChange}
-                />
-                
-                <div className="text-sm text-gray-600">
-                  Showing {indexOfFirstPO + 1}-{Math.min(indexOfLastPO, filteredPOs.length)} of {filteredPOs.length}
-                </div>
-              </div>
-            )}
           </TabsContent>
         </Tabs>
 
