@@ -4,8 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Separator } from '@/components/ui/separator';
 import PaginationControls from '@/components/ui/pagination-controls';
 import {
   Package,
@@ -22,18 +20,13 @@ import {
   Calendar,
   DollarSign,
   Package2,
-  Eye,
-  RotateCcw,
-  Clock,
-  Building,
-  Truck,
-  FileText,
-  CheckCircle
+  Eye
 } from 'lucide-react';
 import AddItemDialog from '@/components/AddItemDialog';
 import FilterDialog from '@/components/FilterDialog';
 import UpdateStockDialog from '@/components/UpdateStockDialog';
 import ReorderDialog from '@/components/ReorderDialog';
+import InventoryDetailsDialog from '@/components/InventoryDetailsDialog';
 
 const InventoryPage = () => {
   const [inventory, setInventory] = useState([
@@ -296,8 +289,6 @@ const InventoryPage = () => {
   const [updateStockItem, setUpdateStockItem] = useState(null);
   const [reorderItem, setReorderItem] = useState(null);
   const [detailsItem, setDetailsItem] = useState(null);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [editForm, setEditForm] = useState({});
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -403,40 +394,6 @@ const InventoryPage = () => {
   const handleReorder = (orderData: any) => {
     console.log('Reorder placed:', orderData);
     // In a real app, this would send the order to a supplier system
-  };
-
-  const handleStartEdit = () => {
-    if (detailsItem) {
-      setEditForm({ ...detailsItem });
-      setIsEditMode(true);
-    }
-  };
-
-  const handleSaveEdit = () => {
-    if (detailsItem && editForm) {
-      const updatedInventory = inventory.map(item =>
-        item.ndc === detailsItem.ndc ? { ...editForm } : item
-      );
-      setInventory(updatedInventory);
-      setFilteredInventory(updatedInventory);
-      setDetailsItem({ ...editForm });
-      setIsEditMode(false);
-      setEditForm({});
-
-      console.log('Item updated:', editForm);
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setIsEditMode(false);
-    setEditForm({});
-  };
-
-  const handleEditFormChange = (field: string, value: string) => {
-    setEditForm(prev => ({
-      ...prev,
-      [field]: value
-    }));
   };
 
   const getStatusColor = (status: string) => {
@@ -568,7 +525,6 @@ const InventoryPage = () => {
                   <Card key={index} className="group hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 hover:border-gray-300">
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between">
-                        {/* Main Item Information */}
                         <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6">
                           {/* Left Column - Basic Info */}
                           <div className="space-y-3">
@@ -640,7 +596,7 @@ const InventoryPage = () => {
                                 <span className="text-gray-600">Expires: {item.expiry}</span>
                               </div>
                               <div className="flex items-center space-x-2">
-                                <RotateCcw className="w-4 h-4 text-gray-500" />
+                                <Clock className="w-4 h-4 text-gray-500" />
                                 <span className="text-gray-600">Updated: {item.lastUpdated}</span>
                               </div>
                             </div>
@@ -731,358 +687,14 @@ const InventoryPage = () => {
           onReorder={handleReorder}
         />
 
-        {/* Inventory Details Dialog */}
-        <Dialog open={!!detailsItem} onOpenChange={() => setDetailsItem(null)}>
-          <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
-            {detailsItem && (
-              <>
-                <DialogHeader className="pb-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-walgreens-blue to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                        <Package className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <DialogTitle className="text-2xl font-bold text-gray-900">
-                          {detailsItem.name}
-                        </DialogTitle>
-                        <p className="text-gray-600 mt-1">NDC: {detailsItem.ndc}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      <Badge className={`${getCategoryColor(detailsItem.category)} font-medium`}>
-                        {detailsItem.category}
-                      </Badge>
-                      <Badge className={`${getStatusColor(detailsItem.status)} font-medium`}>
-                        {getStatusIcon(detailsItem.status)}
-                        <span className="ml-1">{detailsItem.status}</span>
-                      </Badge>
-                    </div>
-                  </div>
-                </DialogHeader>
-
-                <div className="space-y-6">
-                  {/* Basic Information */}
-                  <Card className="border-gray-200">
-                    <CardContent className="p-6">
-                      <h3 className="font-semibold text-lg text-gray-900 flex items-center mb-4">
-                        <Package2 className="w-5 h-5 mr-2 text-walgreens-blue" />
-                        Basic Information
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-4">
-                          <div>
-                            <span className="text-sm text-gray-600">Medication Name</span>
-                            {isEditMode ? (
-                              <Input
-                                value={editForm.name || ''}
-                                onChange={(e) => handleEditFormChange('name', e.target.value)}
-                                className="mt-1"
-                              />
-                            ) : (
-                              <p className="font-semibold text-gray-900">{detailsItem.name}</p>
-                            )}
-                          </div>
-                          <div>
-                            <span className="text-sm text-gray-600">Brand Name</span>
-                            {isEditMode ? (
-                              <Input
-                                value={editForm.brand || ''}
-                                onChange={(e) => handleEditFormChange('brand', e.target.value)}
-                                className="mt-1"
-                              />
-                            ) : (
-                              <p className="font-semibold text-gray-900">{detailsItem.brand}</p>
-                            )}
-                          </div>
-                          <div>
-                            <span className="text-sm text-gray-600">Strength</span>
-                            {isEditMode ? (
-                              <Input
-                                value={editForm.strength || ''}
-                                onChange={(e) => handleEditFormChange('strength', e.target.value)}
-                                className="mt-1"
-                              />
-                            ) : (
-                              <p className="font-semibold text-gray-900">{detailsItem.strength}</p>
-                            )}
-                          </div>
-                          <div>
-                            <span className="text-sm text-gray-600">Dosage Form</span>
-                            {isEditMode ? (
-                              <Input
-                                value={editForm.dosageForm || ''}
-                                onChange={(e) => handleEditFormChange('dosageForm', e.target.value)}
-                                className="mt-1"
-                              />
-                            ) : (
-                              <p className="font-semibold text-gray-900">{detailsItem.dosageForm}</p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="space-y-4">
-                          <div>
-                            <span className="text-sm text-gray-600">NDC Number</span>
-                            {isEditMode ? (
-                              <Input
-                                value={editForm.ndc || ''}
-                                onChange={(e) => handleEditFormChange('ndc', e.target.value)}
-                                className="mt-1"
-                              />
-                            ) : (
-                              <p className="font-semibold text-gray-900">{detailsItem.ndc}</p>
-                            )}
-                          </div>
-                          <div>
-                            <span className="text-sm text-gray-600">Category</span>
-                            {isEditMode ? (
-                              <Input
-                                value={editForm.category || ''}
-                                onChange={(e) => handleEditFormChange('category', e.target.value)}
-                                className="mt-1"
-                              />
-                            ) : (
-                              <p className="font-semibold text-gray-900">{detailsItem.category}</p>
-                            )}
-                          </div>
-                          <div>
-                            <span className="text-sm text-gray-600">Manufacturer</span>
-                            {isEditMode ? (
-                              <Input
-                                value={editForm.manufacturer || ''}
-                                onChange={(e) => handleEditFormChange('manufacturer', e.target.value)}
-                                className="mt-1"
-                              />
-                            ) : (
-                              <p className="font-semibold text-gray-900 flex items-center">
-                                <Building className="w-4 h-4 mr-2 text-gray-500" />
-                                {detailsItem.manufacturer}
-                              </p>
-                            )}
-                          </div>
-                          <div>
-                            <span className="text-sm text-gray-600">Supplier</span>
-                            {isEditMode ? (
-                              <Input
-                                value={editForm.supplier || ''}
-                                onChange={(e) => handleEditFormChange('supplier', e.target.value)}
-                                className="mt-1"
-                              />
-                            ) : (
-                              <p className="font-semibold text-gray-900 flex items-center">
-                                <Truck className="w-4 h-4 mr-2 text-gray-500" />
-                                {detailsItem.supplier}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      <Separator className="my-4" />
-
-                      <div>
-                        <span className="text-sm text-gray-600">Description</span>
-                        {isEditMode ? (
-                          <textarea
-                            value={editForm.description || ''}
-                            onChange={(e) => handleEditFormChange('description', e.target.value)}
-                            className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:border-walgreens-blue focus:ring-walgreens-blue"
-                            rows={3}
-                          />
-                        ) : (
-                          <p className="font-medium text-gray-900 bg-gray-50 p-3 rounded-lg mt-1">
-                            {detailsItem.description}
-                          </p>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Stock Information */}
-                  <Card className="border-gray-200">
-                    <CardContent className="p-6">
-                      <h3 className="font-semibold text-lg text-gray-900 flex items-center mb-4">
-                        <BarChart3 className="w-5 h-5 mr-2 text-walgreens-blue" />
-                        Stock Information
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                          <span className="text-sm text-blue-600">Current Stock</span>
-                          <p className="text-3xl font-bold text-blue-900">{detailsItem.quantity}</p>
-                          <p className="text-sm text-blue-700">units available</p>
-                        </div>
-                        <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-                          <span className="text-sm text-orange-600">Minimum Stock</span>
-                          <p className="text-3xl font-bold text-orange-900">{detailsItem.minStock}</p>
-                          <p className="text-sm text-orange-700">reorder threshold</p>
-                        </div>
-                        <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                          <span className="text-sm text-green-600">Total Value</span>
-                          <p className="text-3xl font-bold text-green-900">
-                            ${(detailsItem.quantity * parseFloat(detailsItem.cost.replace('$', ''))).toFixed(2)}
-                          </p>
-                          <p className="text-sm text-green-700">inventory value</p>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                        <div>
-                          <span className="text-sm text-gray-600">Unit Cost</span>
-                          {isEditMode ? (
-                            <Input
-                              value={editForm.cost || ''}
-                              onChange={(e) => handleEditFormChange('cost', e.target.value)}
-                              className="mt-1"
-                              placeholder="$0.00"
-                            />
-                          ) : (
-                            <p className="font-semibold text-gray-900 flex items-center">
-                              <DollarSign className="w-4 h-4 mr-1 text-gray-500" />
-                              {detailsItem.cost}
-                            </p>
-                          )}
-                        </div>
-                        <div>
-                          <span className="text-sm text-gray-600">Location</span>
-                          {isEditMode ? (
-                            <Input
-                              value={editForm.location || ''}
-                              onChange={(e) => handleEditFormChange('location', e.target.value)}
-                              className="mt-1"
-                              placeholder="A-12"
-                            />
-                          ) : (
-                            <p className="font-semibold text-gray-900 flex items-center">
-                              <MapPin className="w-4 h-4 mr-2 text-gray-500" />
-                              {detailsItem.location}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Batch and Expiry Information */}
-                  <Card className="border-gray-200">
-                    <CardContent className="p-6">
-                      <h3 className="font-semibold text-lg text-gray-900 flex items-center mb-4">
-                        <Calendar className="w-5 h-5 mr-2 text-walgreens-blue" />
-                        Batch & Expiry Information
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-4">
-                          <div>
-                            <span className="text-sm text-gray-600">Lot Number</span>
-                            <p className="font-semibold text-gray-900">{detailsItem.lotNumber}</p>
-                          </div>
-                          <div>
-                            <span className="text-sm text-gray-600">Batch Date</span>
-                            <p className="font-semibold text-gray-900 flex items-center">
-                              <Clock className="w-4 h-4 mr-2 text-gray-500" />
-                              {detailsItem.batchDate}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="space-y-4">
-                          <div>
-                            <span className="text-sm text-gray-600">Expiry Date</span>
-                            <p className="font-semibold text-gray-900 flex items-center">
-                              <Calendar className="w-4 h-4 mr-2 text-gray-500" />
-                              {detailsItem.expiry}
-                            </p>
-                          </div>
-                          <div>
-                            <span className="text-sm text-gray-600">Last Updated</span>
-                            <p className="font-semibold text-gray-900 flex items-center">
-                              <RotateCcw className="w-4 h-4 mr-2 text-gray-500" />
-                              {detailsItem.lastUpdated}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <Separator className="my-4" />
-
-                      <div>
-                        <span className="text-sm text-gray-600">Storage Conditions</span>
-                        <p className="font-medium text-gray-900 bg-blue-50 p-3 rounded-lg mt-1 flex items-start">
-                          <FileText className="w-4 h-4 mr-2 text-blue-600 mt-0.5 flex-shrink-0" />
-                          {detailsItem.storageConditions}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Action Buttons */}
-                  <div className="flex justify-end space-x-3 pt-4">
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setDetailsItem(null);
-                        setIsEditMode(false);
-                        setEditForm({});
-                      }}
-                      className="border-gray-300 text-gray-700 hover:bg-gray-50"
-                    >
-                      Close
-                    </Button>
-
-                    {isEditMode ? (
-                      <>
-                        <Button
-                          variant="outline"
-                          onClick={handleCancelEdit}
-                          className="border-gray-300 text-gray-700 hover:bg-gray-50"
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          onClick={handleSaveEdit}
-                          className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
-                        >
-                          <CheckCircle className="w-4 h-4 mr-2" />
-                          Save Changes
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Button
-                          variant="outline"
-                          onClick={handleStartEdit}
-                          className="border-walgreens-blue text-walgreens-blue hover:bg-blue-50"
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                          Edit Details
-                        </Button>
-                        <Button
-                          className="bg-gradient-to-r from-walgreens-blue to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
-                          onClick={() => {
-                            setDetailsItem(null);
-                            setUpdateStockItem(detailsItem);
-                          }}
-                        >
-                          <TrendingUp className="w-4 h-4 mr-2" />
-                          Update Stock
-                        </Button>
-                        <Button
-                          className="bg-gradient-to-r from-walgreens-red to-red-600 hover:from-red-600 hover:to-red-700 text-white"
-                          onClick={() => {
-                            setDetailsItem(null);
-                            setReorderItem(detailsItem);
-                          }}
-                        >
-                          <ShoppingCart className="w-4 h-4 mr-2" />
-                          Reorder
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
-          </DialogContent>
-        </Dialog>
+        {/* Inventory Details Dialog - Now using the separate component */}
+        <InventoryDetailsDialog
+          item={detailsItem}
+          open={!!detailsItem}
+          onOpenChange={(open) => !open && setDetailsItem(null)}
+          onUpdateStock={setUpdateStockItem}
+          onReorder={setReorderItem}
+        />
       </div>
     </Layout>
   );
