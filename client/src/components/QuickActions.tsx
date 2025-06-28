@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import NewPrescriptionDialog from '@/components/NewPrescriptionDialog';
 import {
   Search,
   AlertTriangle,
@@ -115,12 +114,6 @@ const QuickActions = () => {
     }
   };
 
-  const handleNewPrescription = (prescriptionData: any) => {
-    console.log('New prescription created:', prescriptionData);
-    // Navigate to prescription queue after creating
-    navigate('/prescription-queue');
-  };
-
   return (
     <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white overflow-hidden">
       <CardHeader className="pb-4 bg-gradient-to-r from-gray-50 to-gray-100">
@@ -140,9 +133,6 @@ const QuickActions = () => {
       </CardHeader>
       <CardContent className="p-6">
         <div className="grid grid-cols-1 gap-3">
-          {/* New Prescription Button */}
-          <NewPrescriptionDialog onSubmit={handleNewPrescription} />
-          
           {actions.map((action, index) => (
             <Button
               key={index}
